@@ -1,0 +1,101 @@
+﻿/*
+  Note: in order to compile this file, you need to install the web compiler: https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64
+*/
+@import "auth-layout";
+@import "auth-brand-panel";
+@import "auth-form";
+@import "auth-components";
+
+:root {
+  --bs-primary: #57bc79;
+  --bs-primary-rgb: 87, 188, 121;
+  --bs-secondary: #736cd5;
+  --bs-secondary-rgb: 115, 108, 213;
+  --bs-success: #57bc79;
+  --bs-success-rgb: 87, 188, 121;
+  --bs-danger: #ef4444;
+  --bs-danger-rgb: 239, 68, 68;
+  --bs-warning: #f59e0b;
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-info: #3b82f6;
+  --bs-info-rgb: 59, 130, 246;
+  --bs-dark: #1a2738;
+  --bs-dark-rgb: 26, 39, 56;
+  --bs-body-bg: #fff;
+  --bs-body-color: #7a7a7a;
+  --bs-border-color: #d2dbe5;
+  --bs-link-color: var(--bs-secondary);
+  --bs-link-hover-color: var(--bs-dark);
+  --bs-emphasis-color: var(--bs-dark);
+  --bs-emphasis-color-rgb: 26, 39, 56;
+  --bs-success-text-emphasis: #2d7d50;
+  --bs-warning-text-emphasis: #b45309;
+  --bs-danger-text-emphasis: #991b1b;
+  --bs-info-text-emphasis: #1e40af;
+  --bs-success-bg-subtle: color-mix(in srgb, var(--bs-success) 10%, var(--bs-body-bg));
+  --bs-warning-bg-subtle: color-mix(in srgb, var(--bs-warning) 10%, var(--bs-body-bg));
+  --bs-danger-bg-subtle: color-mix(in srgb, var(--bs-danger) 10%, var(--bs-body-bg));
+  --bs-info-bg-subtle: color-mix(in srgb, var(--bs-info) 10%, var(--bs-body-bg));
+  --bs-success-border-subtle: color-mix(in srgb, var(--bs-success) 35%, var(--bs-body-bg));
+  --bs-warning-border-subtle: color-mix(in srgb, var(--bs-warning) 35%, var(--bs-body-bg));
+  --bs-danger-border-subtle: color-mix(in srgb, var(--bs-danger) 35%, var(--bs-body-bg));
+  --bs-info-border-subtle: color-mix(in srgb, var(--bs-info) 35%, var(--bs-body-bg));
+  --auth-shadow: 0 24px 48px rgba(var(--bs-dark-rgb), 0.16);
+  --auth-touch-target: 2.75rem;    /* 44px  — WCAG 2.5.5 minimum */
+  --auth-image-button-size: 6.25rem;    /* 100px */
+  --auth-provider-icon-size: 4.25rem;    /* 68px  */
+  --auth-logo-max-width: 13.75rem;   /* 220px */
+  --auth-visual-bg-start: #1a2f3f;
+  --auth-visual-bg-mid: #1e3150;
+  --auth-visual-bg-end: #1d2e49;
+  --auth-brand-shadow-rgb: 13, 21, 33;
+  --logo-image-light: url("../../images/logo_dark.svg");
+  --logo-image-dark: url("../../images/logo_light.svg");
+}
+
+html, body {
+  height: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+  background-size: cover;
+  font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.site-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.body-content {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+  flex-grow: 1;
+}
+
+.auth-layout .site-container {
+  min-height: 100vh;
+}
+
+.auth-layout .body-content {
+  max-width: none;
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+#cookieConsent {
+  background-color: var(--bs-body-bg);
+}
+
+hr {
+  margin-bottom: 0.625rem;
+  border-top: none;
+}
+
+footer {
+  background-color: var(--bs-body-bg);
+  padding: 1rem;
+  text-align: center;
+}

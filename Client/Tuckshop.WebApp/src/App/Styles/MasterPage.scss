@@ -1,0 +1,277 @@
+html {
+    font-size: $main-font-size;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+}
+
+.app-header-panel {
+    z-index: 5;
+    background: #fff;
+    font-size: 14px;
+    box-shadow: $box-shadow-root;
+    border-radius: $component-border-radius;
+
+    &.floating-header {
+        position: fixed;
+        top: 0;
+        border-radius: 0 0 $component-border-radius $component-border-radius;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+
+        .app-breadcrumb {
+            flex: auto;
+            padding: 15px 0px;
+        }
+
+        .app-user-icon {
+            padding: 10px 24px;
+        }
+    }
+
+    .app-header {
+        display: flex;
+        padding-left: $content-area-margin;
+    }
+
+    .app-hamburger-container {
+        display: flex;
+        flex: none;
+        align-self: stretch;
+        margin-right: $content-area-margin;
+        font-size: 24px;
+        align-items: center;
+        justify-content: center;
+        color: $grey-medium;
+        cursor: pointer;
+
+        &:hover {
+            color: $primary;
+        }
+    }
+
+    .app-breadcrumb {
+        flex: auto;
+        padding: 20px 0px;
+    }
+
+    .app-user-icon {
+        font-size: 20px;
+        padding: 15px 24px;
+        cursor: pointer;
+        position: relative;
+        color: $main-color;
+
+        &:hover .app-user-card {
+            display: inline-block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .app-user-card {
+            text-align: right;
+            display: inline-block;
+            min-width: 250px;
+            position: absolute;
+            top: 100%;
+            right: 4px;
+            z-index: 10;
+            font-size: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity ease 0.5s;
+
+            .card-arrow {
+                border-width: 0 10px 10px 10px;
+                border-color: transparent transparent darken($main-background, 1%) transparent;
+                border-style: solid;
+                position: absolute;
+                top: -8px;
+                right: 19px;
+                z-index: 1;
+            }
+
+            .card-body {
+                background: darken($main-background, 1%);
+            }
+
+            a {
+                color: $dark;
+            }
+        }
+    }
+}
+
+.page-progress {
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+    height: 6px;
+    z-index: 10;
+
+    .progress {
+        border-radius: 0;
+    }
+}
+
+div.bread-crumb {
+    display: inline;
+    font-size: $secondary-font-size;
+
+    div.bread-crumb-level {
+        display: inline;
+
+        // Highlights the final bread crumb including the separator
+        &:last-child {
+            font-weight: 700;
+
+            a,
+            span {
+                color: $main-color;
+            }
+        }
+
+        span.bread-crumb-seperator {
+            padding: 0 5px;
+        }
+
+        a,
+        span {
+            display: inline-block;
+            color: initial;
+        }
+    }
+}
+
+.app-left-panel {
+    position: fixed;
+    width: $menu-width;
+    z-index: 4;
+    height: 100%;
+    background: $component-header-background;
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.14);
+    transition: width ease-in-out $menu-animation-speed,
+        left ease-in-out $menu-animation-speed;
+}
+
+.app-content-area {
+    padding-right: $content-area-margin;
+    padding-left: $content-area-margin;
+
+    #content-panel {
+        padding-top: $content-area-margin;
+    }
+}
+
+.app-right-panel {
+    margin-left: $menu-width;
+    background: $main-background;
+    transition: margin-left ease-in-out $menu-animation-speed;
+}
+
+.app-footer {
+    padding: 13px 15px;
+    height: $footer-height;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: $content-area-margin;
+    background: $white;
+    border-top-left-radius: $component-border-radius;
+    border-top-right-radius: $component-border-radius;
+    box-shadow: $box-shadow-root;
+}
+
+.thin-sidebar {
+    .app-left-panel {
+        width: $menu-width-thin;
+    }
+
+    .app-right-panel {
+        margin-left: $menu-width-thin;
+    }
+}
+
+.sidebar-expanded {
+
+    .app-left-panel {
+        width: $menu-width;
+    }
+}
+
+.suppress-app-layout {
+    .app-right-panel {
+        min-height: 100vh;
+        margin-left: 0;
+        transition: none;
+    }
+    .app-content-area {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+
+        #content-panel {
+            padding-top: 0;
+            display: flow-root;
+        }
+    }
+
+    .reporting-view {
+        margin-top: 0.5rem;
+    }
+    .report-html-component {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (min-width: 1361px) {
+
+    // Huge screens
+
+    .constrain-width {
+        max-width: (1920px - $menu-width);
+    }
+
+    .container {
+        margin-left: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+@media (max-width: 1360.98px) {
+    // Smaller than 1360px - menu will be hidden
+
+    .container {
+        margin-left: auto;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .app-left-panel {
+        width: $menu-width;
+        left: -($menu-width + 3);
+        overflow: auto;
+    }
+
+    .app-right-panel {
+        margin-left: 0;
+        transition: none;
+    }
+
+    .app-header-panel {
+        left: 0;
+        transition: ease-in-out 0.3s;
+    }
+
+    .sidebar-expanded {
+        .app-left-panel {
+            left: 0;
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {}

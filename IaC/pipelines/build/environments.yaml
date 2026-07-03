@@ -1,0 +1,32 @@
+environments:
+  ts_build:
+    environment_variables:
+      NeoVerboseLogging: "false"
+      NeoDebugLogging: "false"
+      NeoPsVersion: "1.2.135"
+      AZURE_TENANT_ID: "c9871c9d-7fe6-4b1d-a97a-22b172b872e7"
+      CodeCoverageEnabled: "true"
+      ContainerRegistry: "singular.azurecr.io"
+      CodeCoverageClientName: "SingularSystems"
+      NugetConfig: "{{SECRET:[singular-secrets][nuget-config]}}"
+      AZURE_CLIENT_ID: "{{SECRET:[singular-secrets][singular-builder-service-principal]}}"
+      AZURE_CLIENT_SECRET: "{{SECRET:[singular-secrets][singular-builder-service-principal-secret]}}"
+      DOCKER_BUILDKIT: "1"
+    agents:
+      # LinuxAgent01 - LinuxAgent09
+      - 9ec5dc2d-8f51-451e-90da-0d9d79cfebf9
+      - b9293d3f-de6a-4b4b-82cf-592ee7818ba7
+      - b555da96-be19-4d1d-946b-26a94fea20e7
+      - 64839167-ebc4-45bc-86d6-f81e8a35205b
+      - f737ffb4-3d24-48a4-90ac-7224e8c1a320
+      - 16de8aa2-2127-4393-aa87-008e89fd205a
+      - f44bdbff-f872-4a0a-861e-04e84d202d69
+      - 0e611950-4998-4e66-9529-87c30fd8a7aa
+      - 50dc5f29-0ba4-4da5-b718-a8822f732bc3
+    pipelines:
+      - ts_build_ci_domain
+      - ts_build_hotfix_domain
+      - ts_build_ci_identity_server
+      - ts_build_hotfix_identity_server
+      - ts_build_ci_web_app
+      - ts_build_hotfix_web_app

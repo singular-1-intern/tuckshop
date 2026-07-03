@@ -1,0 +1,35 @@
+.color-controls {
+    display: flex;
+    width: 200px;
+
+    .color-hex-input {
+        font-size: 11px;
+        height: auto;
+        padding: 3px;
+        border-radius: 0;
+    }
+
+    .color-preview {
+        border: 1px solid #000;
+        width: 50px;
+    }
+}
+
+.react-colorful {
+    width: 200px;
+    
+    .react-colorful__saturation {
+        border-radius: 0;
+    }
+    .react-colorful__hue {
+        height: 12px;
+        margin: 4px 0;
+    }
+    .react-colorful__last-control {
+        border-radius: 0;
+    }
+    .react-colorful__pointer {
+        width: 12px;
+        height: 12px;
+    }
+}

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "neo-web-app.fullname" . }}
+  labels:
+    {{- include "neo-web-app.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.deployment.replicaCount | default 1 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "neo-web-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+      {{- with .Values.deployment.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+        {{- /*
+        This ensures that the pod is restarted if the ConfigMap changes
+        */}}
+        checksum/config: {{ toYaml .Values.config | sha256sum }}
+      labels:
+        {{- include "neo-web-app.selectorLabels" . | nindent 8 }}
+        {{- if .Values.azureWorkLoadIdentity.enabled }}
+        azure.workload.identity/use: "true"
+        {{- end }}
+        {{- if .Values.aadPodIdentity.enabled }}
+        aadpodidbinding: {{ include "neo-web-app.fullname" . }}
+        {{- end }}
+    spec:
+      {{- with .Values.deployment.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or (eq .Values.serviceAccount.create true) (.Values.serviceAccount.name) }}
+      serviceAccountName: {{ include "neo-web-app.serviceAccountName" . }}
+      {{- end }}
+      volumes:
+        {{- toYaml .Values.deployment.volumes | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.deployment.container.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: {{ include "neo-web-app.image" . }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          volumeMounts:
+            {{- toYaml .Values.deployment.container.volumeMounts | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          {{- if .Values.deployment.healthChecks.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.deployment.healthChecks.liveness.path }}
+              port: http
+          {{- end }}
+          {{- if .Values.deployment.healthChecks.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.deployment.healthChecks.readiness.path }}
+              port: http
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "neo-web-app.fullname" . }}-config-map
+          {{- with .Values.deployment.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

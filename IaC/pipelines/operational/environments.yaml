@@ -1,0 +1,74 @@
+environments:
+  ts_ops_dr:
+    environment_variables:
+      NeoVerboseLogging: "false"
+      NeoDebugLogging: "false"
+      NeoPsVersion: "1.2.135"
+      AZURE_TENANT_ID: "c9871c9d-7fe6-4b1d-a97a-22b172b872e7"
+      AZURE_SUBSCRIPTION_ID: "aa7782d9-0b79-4740-9750-caf85a5aba67"
+      AZURE_CLIENT_ID: "{{SECRET:[custom-secrets-sc-dr][sc-dr-sp-operations-app-id]}}"
+      AZURE_CLIENT_SECRET: "{{SECRET:[custom-secrets-sc-dr][sc-dr-sp-operations-secret]}}"
+    agents:
+      # ZeroTrust01 - ZeroTrust08
+      - e31184ff-0dca-46fd-a917-11218a3cd840
+      - da6ff6f6-a8a0-48c7-b71a-9ec1c2b8628d
+      - 5ebf84ba-c240-4980-bf44-883cb6c4d5a8
+      - 4ee24cb8-9645-4a9d-a115-91856d194d23
+      - 834f8c54-2fa7-4a0e-9419-b9b1829d411c
+      - 3035c8f9-6650-46e7-93b8-1820c4749c2a
+      - 792d8d0b-525f-4c03-88a5-1859c6299272
+      - ddbb9e66-2fcd-4c37-bcd9-715e8efa9c77
+    pipelines:
+      - ts_restore_databases_prd_to_dr
+      - ts_copy_storage_accounts_prd_to_dr
+      - ts_copy_key_vault_secrets_prd_to_dr
+      - ts_enable_rsv_database_backups_dr
+      - ts_disable_rsv_database_backups_dr
+
+  ts_ops_prd:
+    environment_variables:
+      NeoVerboseLogging: "false"
+      NeoDebugLogging: "false"
+      NeoPsVersion: "1.2.135"
+      AZURE_TENANT_ID: "c9871c9d-7fe6-4b1d-a97a-22b172b872e7"
+      AZURE_SUBSCRIPTION_ID: "aa7782d9-0b79-4740-9750-caf85a5aba67"
+      AZURE_CLIENT_ID: "{{SECRET:[custom-secrets-sc-prd][sc-prd-sp-operations-app-id]}}"
+      AZURE_CLIENT_SECRET: "{{SECRET:[custom-secrets-sc-prd][sc-prd-sp-operations-secret]}}"
+    agents:
+      # ZeroTrust01 - ZeroTrust08
+      - e31184ff-0dca-46fd-a917-11218a3cd840
+      - da6ff6f6-a8a0-48c7-b71a-9ec1c2b8628d
+      - 5ebf84ba-c240-4980-bf44-883cb6c4d5a8
+      - 4ee24cb8-9645-4a9d-a115-91856d194d23
+      - 834f8c54-2fa7-4a0e-9419-b9b1829d411c
+      - 3035c8f9-6650-46e7-93b8-1820c4749c2a
+      - 792d8d0b-525f-4c03-88a5-1859c6299272
+      - ddbb9e66-2fcd-4c37-bcd9-715e8efa9c77
+    pipelines:
+      - ts_enable_rsv_database_backups_prd
+      - ts_disable_rsv_database_backups_prd
+
+  ts_ops_infra-dr:
+    environment_variables:
+      NeoVerboseLogging: "false"
+      NeoDebugLogging: "false"
+      NeoPsVersion: "1.2.135"
+      AZURE_TENANT_ID: "c9871c9d-7fe6-4b1d-a97a-22b172b872e7"
+      AZURE_SUBSCRIPTION_ID: "9463ef9f-a1bf-4da6-87db-67794fdd3fe2"
+      AZURE_CLIENT_ID: "{{SECRET:[custom-secrets-provisioner-sc-dr][client-id]}}"
+      AZURE_CLIENT_SECRET: "{{SECRET:[custom-secrets-provisioner-sc-dr][client-secret]}}"
+    agents:
+      # ZeroTrust01 - ZeroTrust08
+      - e31184ff-0dca-46fd-a917-11218a3cd840
+      - da6ff6f6-a8a0-48c7-b71a-9ec1c2b8628d
+      - 5ebf84ba-c240-4980-bf44-883cb6c4d5a8
+      - 4ee24cb8-9645-4a9d-a115-91856d194d23
+      - 834f8c54-2fa7-4a0e-9419-b9b1829d411c
+      - 3035c8f9-6650-46e7-93b8-1820c4749c2a
+      - 792d8d0b-525f-4c03-88a5-1859c6299272
+      - ddbb9e66-2fcd-4c37-bcd9-715e8efa9c77
+    pipelines:
+      - ts_provision_app_space_dr
+      - ts_provision_host_space_dr
+      - ts_deprovision_app_space_dr
+      - ts_deprovision_host_space_dr

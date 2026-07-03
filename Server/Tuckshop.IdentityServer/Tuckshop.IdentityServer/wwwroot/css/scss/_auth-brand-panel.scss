@@ -1,0 +1,66 @@
+.logo-image {
+  background: var(--logo-image-light);
+  margin-bottom: 0.625rem;
+  width: 15.625rem;
+}
+
+.logo-style,
+.auth-page__logo,
+.auth-page__logo--dark {
+  max-width: var(--auth-logo-max-width);
+  width: 100%;
+  height: auto;
+  margin-bottom: 1.5rem;
+}
+
+.auth-page__visual {
+  position: relative;
+  background:
+    radial-gradient(130% 95% at 0% 0%, rgba(var(--bs-success-rgb), 0.08) 0%, rgba(var(--bs-success-rgb), 0) 44%),
+    linear-gradient(138deg, var(--auth-visual-bg-start) 0%, var(--auth-visual-bg-mid) 56%, var(--auth-visual-bg-end) 100%);
+  color: #fff;
+  padding: 3.25rem 2.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.auth-page__visual-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.auth-page__brand-display {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 730;
+  font-size: clamp(3rem, 6vw, 5rem);
+  letter-spacing: -0.038em;
+  line-height: 0.95;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(var(--auth-brand-shadow-rgb), 0.18);
+}
+
+.auth-page__brand-singular {
+  color: #fff;
+  font-weight: 500;
+}
+
+.auth-page__brand-one {
+  color: var(--bs-primary);
+  font-weight: 150;
+}
+
+.auth-page__visual-tagline {
+  margin-left: 0.3125rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(1.02rem, 1.25vw, 1.32rem);
+  font-weight: 150;
+  letter-spacing: -0.01em;
+}

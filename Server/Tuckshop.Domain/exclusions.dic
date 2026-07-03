@@ -1,0 +1,10 @@
+appsettings
+cors
+cshtml
+nvarchar
+serialisable
+serilog
+startup
+tinyint
+uniqueidentifier
+varbinary

@@ -1,0 +1,189 @@
+format_version: 9
+pipelines:
+  ts_provision_app_space_dr:
+    group: ts_infra_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 1
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC/terraform/app-space/run.ps1
+                    - -Location
+                    - ne
+                    - -Env
+                    - dr
+                    - -Action
+                    - apply
+                    - -ProjectPrefix
+                    - ts
+                    - -AutoApprove
+                  working_directory:
+                  command: pwsh
+                  run_if: passed
+
+  ts_provision_host_space_dr:
+    group: ts_infra_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 2
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC/terraform/host-space/run.ps1
+                    - -Location
+                    - ne
+                    - -Env
+                    - dr
+                    - -Action
+                    - apply
+                    - -ProjectPrefix
+                    - ts
+                    - -AutoApprove
+                  working_directory:
+                  command: pwsh
+                  run_if: passed
+
+  ts_deprovision_app_space_dr:
+    group: ts_infra_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC/terraform/app-space/run.ps1
+                    - -Location
+                    - ne
+                    - -Env
+                    - dr
+                    - -Action
+                    - destroy
+                    - -ProjectPrefix
+                    - ts
+                    - -AutoApprove
+                  working_directory:
+                  command: pwsh
+                  run_if: passed
+
+  ts_deprovision_host_space_dr:
+    group: ts_infra_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 4
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC/terraform/host-space/run.ps1
+                    - -Location
+                    - ne
+                    - -Env
+                    - dr
+                    - -Action
+                    - destroy
+                    - -ProjectPrefix
+                    - ts
+                    - -AutoApprove
+                  working_directory:
+                  command: pwsh
+                  run_if: passed

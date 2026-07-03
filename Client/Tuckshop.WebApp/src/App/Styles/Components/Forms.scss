@@ -1,0 +1,281 @@
+/* Form group (label and input container) */
+.form-group {
+  margin-bottom: 1rem;
+
+  label.form-label {
+    font-weight: 500;
+    font-size: $secondary-font-size;
+    margin: 0;
+    color: $text-color;
+
+    &.col-form-label {
+      font-weight: 400;
+      font-size: 1rem;
+      margin: auto;
+    }
+
+    &.custom-control-label {
+      font-weight: 400;
+      font-size: 1rem;
+    }
+  }
+
+  .invalid-feedback {
+    font-size: $secondary-font-size;
+  }
+}
+
+/* Input group (input, prepend and append container) */
+.input-group {
+  .btn {
+    padding: 2px 10px;
+  }
+
+  .input-group-text {
+    color: $grey-light;
+    border-color: $input-border-color;
+    transition: $input-transition;
+    background-color: white;
+
+    .material-symbols-outlined {
+      top: 0;
+    }
+  }
+
+  &.input-group-disabled {
+    .input-group-text {
+      color: $input-disabled-color;
+      background-color: $input-disabled-bg;
+      border-color: $input-disabled-bg;
+    }
+  }
+
+  /* Prepend overrides */
+  .input-group-prepend {
+    display: flex;
+
+    .input-group-text {
+      border-right: none;
+      padding-right: 0;
+    }
+
+    + .form-control {
+      border-left: none;
+      padding-left: 0.5rem;
+    }
+  }
+
+  /* Append overrides */
+  .form-control:has(+ .input-group-append) {
+    border-right: none;
+    padding-right: 0.5rem !important;
+  }
+
+  .input-group-append {
+    display: flex;
+    margin-left: 0;
+
+    .input-group-text {
+      border-left: none;
+      padding-left: 0;
+    }
+
+    .btn {
+      min-width: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
+  /* Append / prepend focus overrides */
+  &:not(.input-group-disabled):focus-within {
+    .input-group-text {
+      border-color: $input-focus-border-color;
+    }
+  }
+}
+
+.form-control {
+  padding: 0.375rem 0.75rem;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  background-color: white;
+
+  &.is-invalid {
+    padding-right: 0.75rem !important;
+  }
+
+  &:disabled,
+  &[readonly] {
+    border-color: $input-disabled-bg;
+    background-color: $input-disabled-bg;
+    color: $input-disabled-color;
+  }
+
+  &.form-select {
+    padding-right: 2.25rem;
+  }
+}
+
+/* Error / warning / info border styling */
+$error-focus-color: mix($danger-highlight, black, 80%);
+$warning-focus-color: mix($warning-highlight, black, 80%);
+
+@mixin input-group-borders($variant, $color, $focuscolor) {
+
+  .input-group {
+    .form-control.is-invalid.#{$variant} + .input-group-append {
+      .input-group-text {
+        border-color: $color;
+      }
+    }
+  
+    .input-group-prepend:has(+ .form-control.is-invalid.#{$variant}) {
+      .input-group-text {
+        border-color: $color;
+      }
+    }
+  
+    .form-control.is-invalid.#{$variant}:focus + .input-group-append {
+      .input-group-text {
+        border-color: $focuscolor;
+      }
+    }
+  
+    .input-group-prepend:has(+ .form-control.is-invalid.#{$variant}:focus) {
+      .input-group-text {
+        border-color: $focuscolor;
+      }
+    }
+  }
+  
+  .form-control.is-invalid.#{$variant} {
+    border-color: $color;
+
+    &:focus {
+      border-color: $focuscolor;
+      box-shadow: $validation-shadow-error;
+    }
+  }
+}
+
+@include input-group-borders("error", $danger, $error-focus-color);
+@include input-group-borders("warning", $warning, $warning-focus-color);
+@include input-group-borders("info", $info, $info-highlight);
+@include input-group-borders("busy", $info, $info-highlight);
+
+/* Async Select overrides */
+.react-select-bs {
+  flex-grow: 1;
+
+  .react-select-bs__control {
+    border: 1px solid $input-border-color;
+    border-radius: $input-border-radius;
+    min-height: calc(1.5em + 0.75rem + 2px);
+
+    &.react-select-bs__control--menu-is-open,
+    &.react-select-bs__control--is-focused {
+      border-color: $input-focus-border-color;
+      box-shadow: $input-focus-box-shadow;
+      outline: 0;
+    }
+
+    &.react-select-bs__control--is-disabled {
+      background-color: $input-disabled-bg;
+      border-color: $input-disabled-bg;
+    }
+
+    .react-select-bs__value-container {
+      padding-top: 1px;
+      padding-bottom: 1px;
+    }
+
+    .react-select-bs__indicator {
+      padding: 5px;
+    }
+  }
+
+  &.is-invalid.error {
+    .react-select-bs__control {
+      border-color: $validation-color-error;
+
+      &.react-select-bs__control--is-focused {
+        box-shadow: $validation-shadow-error;
+      }
+    }
+  }
+
+  &.is-invalid.warning {
+    .react-select-bs__control {
+      border-color: $validation-color-warning;
+
+      &.react-select-bs__control--is-focused {
+        box-shadow: $validation-shadow-warning;
+      }
+    }
+  }
+
+  &.is-invalid.info {
+    .react-select-bs__control {
+      border-color: $validation-color-info;
+
+      &.react-select-bs__control--is-focused {
+        box-shadow: $validation-shadow-info;
+      }
+    }
+  }
+
+  &.is-invalid.busy {
+    .react-select-bs__control {
+      border-color: $validation-color-info;
+
+      &.react-select-bs__control--is-focused {
+        box-shadow: $validation-shadow-info;
+      }
+    }
+  }
+}
+
+/* Datepicker overrides */
+
+.neo-datepicker-container {
+  .neo-datepicker-popup {
+    .neo-datepicker-header {
+      background: $primary;
+      color: white;
+
+      button {
+        color: white;
+        &:not(:disabled):hover {
+          background-color: adjust-color($primary, $lightness: 15%);
+        }
+      }
+
+      .header-text.selectable:hover {
+        background-color: adjust-color($primary, $lightness: 15%);
+      }
+    }
+    .neo-datepicker-content{
+      table {
+        td{
+          &.selectable:hover {
+            background-color: adjust-color($primary, $lightness: 15%);
+          }
+    
+          &.today {
+            border: 1px solid $primary;
+          }
+    
+          &.selected, &.selected:hover {
+            background-color: $primary;
+          }
+        }
+      }
+    }
+  }
+}
+
+.neo-datepicker-container {
+  .input-group-text {
+    cursor: pointer;
+  }
+}

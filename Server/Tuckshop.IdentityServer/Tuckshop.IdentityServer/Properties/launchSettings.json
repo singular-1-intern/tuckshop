@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Tuckshop.IdentityServer": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "launchUrl": "Identity/Account/Login",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5000"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://host.docker.internal:{ServicePort}/Identity/Account/Login",
+      "publishAllPorts": true,
+      "useSSL": true,
+      "sslPort": 5000,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DEBUG_ENVIRONMENT": "Docker"
+      }
+    }
+  }
+}

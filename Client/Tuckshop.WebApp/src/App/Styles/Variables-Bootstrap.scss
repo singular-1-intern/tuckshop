@@ -1,0 +1,56 @@
+$body-color: $text-color;
+
+// Override bootstrap colors
+$primary: $main-color;
+$secondary: #495057;
+$success: #12ce74;
+$danger: #e34548;
+$warning: #f5853f;
+$info: #6bb8ff;
+$light: #ecf0f4;
+$dark: #343a40;
+
+$primary-highlight: #2541c2;
+$secondary-highlight: #2c3238;
+$tertiary-highlight: #727c87;
+$success-highlight: #17a35f;
+$danger-highlight: #d52124;
+$warning-highlight: #ef5e04;
+$info-highlight: #057ded;
+
+// BS component variables:
+$border-radius-lg: $component-border-radius;
+$btn-border-radius: $component-border-radius;
+$modal-border-radius: $component-border-radius;
+$input-border-radius: 2px;
+$input-color: $text-color;
+$input-border-color: $grey-light;
+$input-focus-box-shadow: 0 0 0px 0px mix($primary, white, 20%);
+$input-focus-border-color: $text-color;
+$input-placeholder-color: $grey-medium;
+$input-disabled-color: rgba($text-color, 0.75);
+$input-disabled-bg: #f3f4f7;
+
+// Gradients on buttons
+$enable-gradients: false;
+
+// Shadows on buttons / modals
+$enable-shadows: false;
+
+// Slightly modifies the xl breakpoint by changing the max-width from 1140 to 1160 (to cater for larger padding).
+// Adds an xxl breakpoint for full HD screens.
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1800px,
+);
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1160px,
+  xxl: 1559px,
+);

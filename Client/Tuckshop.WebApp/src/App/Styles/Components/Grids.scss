@@ -1,0 +1,78 @@
+@mixin removeEdgeCellPadding() {
+    &:not(.table-bordered):not(.table-striped) {
+        >tbody {
+            td.editable-column {
+                padding: 3px;
+            }
+
+            tr td:first-of-type {
+                padding-left: 0px;
+            }
+
+            td.neo-grid-expand-column {
+                padding-left: 0;
+            }
+
+            td.neo-grid-button-column:last-of-type {
+                padding-right: 0px;
+            }
+        }
+
+        >thead tr th:first-of-type {
+            padding-left: 0;
+        }
+
+        >tfoot>tr>td:first-of-type {
+            padding-left: 0;
+        }
+
+        >tfoot>tr:last-of-type {
+            td {
+                border-bottom: none;
+            }
+        }
+    }
+}
+
+table.table {
+    width: 100%;
+    margin-bottom: 0px;
+
+    .form-control {
+        border-radius: 1px;
+    }
+
+    >thead th {
+        padding: 6px;
+        vertical-align: middle;
+        background: $component-header-background;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    >tfoot th {
+        font-weight: 500;
+        padding: 7px;
+    }
+
+    >tfoot th.editable-column {
+        font-weight: 500;
+        padding: 7px 5px;
+    }
+
+    td {
+        padding: 6px;
+        vertical-align: middle;
+
+        .btn {
+            min-width: 0;
+        }
+    }
+
+    td.editable-column {
+        padding: 5px;
+    }
+
+    /* Removes left and right padding on borderless tables. */
+    // @include removeEdgeCellPadding();
+}

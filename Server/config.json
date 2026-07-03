@@ -1,0 +1,19 @@
+﻿{
+    "name": "Tuckshop",
+    "basePath": ".",
+    "publishPathTemplate": "Tuckshop.{key}\\Tuckshop.{key}.Api\\bin\\publish",
+    "dllNameTemplate": "Tuckshop.{key}.Api.dll",
+	"environmentVariables": [
+		{ "key": "ASPNETCORE_ENVIRONMENT", "value": "DevStaging" }
+	],
+    "serviceGroups": [{
+            "name": "IDS",
+            "services": [{
+                    "name": "IdentityServer",
+					"publishPath": "Tuckshop.IdentityServer\\Tuckshop.IdentityServer\\bin\\publish",
+                    "dllName": "Tuckshop.IdentityServer.dll"
+                }
+            ]
+        }
+    ]
+}

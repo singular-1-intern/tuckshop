@@ -1,0 +1,24 @@
+﻿@page
+@model Tuckshop.IdentityServer.Areas.Identity.Pages.Account.EmailVerificationConfirmationModel
+@{
+  ViewData["Title"] = "Email Verification Confirmation";
+  ViewData["AuthPageTitle"] = "Verification email sent";
+  ViewData["AuthPageSubtitle"] = "Check your inbox to continue.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<div class="auth-page__outcome-card auth-page__outcome-card--success">
+  <div class="auth-page__outcome-icon" aria-hidden="true">
+    <span class="material-symbols-rounded">mark_email_read</span>
+  </div>
+  <div class="auth-page__outcome-body">
+    <p class="auth-page__outcome-title">Verification email sent</p>
+    <p class="auth-page__outcome-text">A verification email has been sent, please check your in-box.</p>
+    <p class="auth-page__outcome-meta">The email link will expire in @Model.LinkExpiryHours.ToString("#,##0.#") hours.</p>
+  </div>
+</div>
+
+<div class="text-center mt-3">
+  <span class="material-symbols-rounded auth-page__success-icon" aria-hidden="true">check_circle</span>
+</div>

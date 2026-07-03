@@ -1,0 +1,32 @@
+﻿@page
+@model LockoutModel
+
+@{
+  ViewData["Title"] = "Lockout";
+  ViewData["AuthPageTitle"] = "Account locked";
+  ViewData["AuthPageSubtitle"] = "Please contact your system administrator.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<div class="auth-page__outcome-card auth-page__outcome-card--danger">
+  <div class="auth-page__outcome-icon" aria-hidden="true">
+    <span class="material-symbols-rounded">lock</span>
+  </div>
+  <div class="auth-page__outcome-body">
+    <p class="auth-page__outcome-title">This account has been locked.</p>
+    <p class="auth-page__outcome-text">Please contact system admin for assistance.</p>
+  </div>
+</div>
+<div class="text-center mt-3">
+  <span class="material-symbols-rounded auth-page__danger-icon" aria-hidden="true">lock_person</span>
+</div>
+<div class="row auth-page__cta-row">
+  <div class="col-md-12 text-center">
+    <button id="to-login-button" class="btn btn-primary w-100">Back to Login</button>
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_HelperScripts" />
+}

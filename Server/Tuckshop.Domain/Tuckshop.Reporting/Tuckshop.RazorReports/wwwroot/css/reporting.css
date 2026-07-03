@@ -1,0 +1,124 @@
+﻿/* Reset default styles */
+body, .report-view {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.1;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+p {
+  margin: 5mm 0;
+}
+
+pre {
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+table {
+  page-break-inside: auto;
+  border-collapse: collapse;
+  font-size: inherit;
+}
+
+  table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  table:not(.grid) th:first-child, table:not(.grid) td:first-child {
+    padding-left: 0;
+  }
+
+  table:not(.grid) th:last-child, table:not(.grid) td:last-child {
+    padding-right: 0;
+  }
+
+  table.grid {
+    width: 100%;
+    border: 1px solid #000;
+  }
+
+    table.grid th {
+      padding: 5px;
+      text-align: left;
+      vertical-align: bottom;
+      border: 1px solid #000;
+    }
+
+      table.grid th.text-right {
+        text-align: right;
+      }
+
+      table.grid th.text-center {
+        text-align: center;
+      }
+
+    table.grid td {
+      padding: 3px 5px;
+      border: 1px solid #ccc;
+      border-left-color: #000;
+      border-right-color: #000;
+    }
+
+    table.grid tr .number-negative {
+      padding-right: 2px;
+    }
+
+    table.grid tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.grid td.no-border {
+      border: none;
+    }
+
+/* Components */
+
+.report-page-header {
+  padding-top: 7.5mm;
+  padding-bottom: 1mm;
+  margin-bottom: 1px; /* Required since iron pdf cuts off the bottom row of pixels. */
+}
+
+.report-page-footer {
+  border-top: 1px solid #000;
+  padding-top: 3mm;
+  padding-bottom: 5mm;
+  font-size: 7pt;
+  color: #333;
+}
+
+.new-page {
+  page-break-before: always;
+}
+
+.flex-layout {
+  display: flex;
+}
+
+@media screen {
+  .new-page {
+    border-top: 1px dashed #ccc;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+}

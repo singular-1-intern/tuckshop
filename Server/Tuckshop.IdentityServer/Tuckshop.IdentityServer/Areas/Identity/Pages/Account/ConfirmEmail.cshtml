@@ -1,0 +1,38 @@
+﻿@page
+@model ConfirmEmailModel
+
+@{
+  ViewData["Title"] = "Confirm Email";
+  ViewData["AuthPageTitle"] = "Email confirmation";
+  ViewData["AuthPageSubtitle"] = "Confirmation result";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<div class="auth-page__outcome-card auth-page__outcome-card--info">
+  <div class="auth-page__outcome-icon" aria-hidden="true">
+    <span class="material-symbols-rounded">mark_email_read</span>
+  </div>
+  <div class="auth-page__outcome-body">
+    <p class="auth-page__outcome-title">@Model.StatusMessage</p>
+    <p class="auth-page__outcome-text">You will be redirected to login in a moment.</p>
+  </div>
+</div>
+
+<div class="row auth-page__cta-row">
+  <div class="col-md-12 text-center mt-2">
+    <button id="to-login-button" class="btn btn-primary w-100">Login</button>
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_HelperScripts" />
+
+  <script type="text/javascript" nws-csp-add-nonce="true">
+    $(document).ready(function () {
+      setTimeout(function () {
+        window.location.href = 'Login';
+      }, 4000);
+    });
+  </script>
+}

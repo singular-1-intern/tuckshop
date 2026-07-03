@@ -1,0 +1,121 @@
+﻿@page
+@using Tuckshop.IdentityServer.Models
+@using Tuckshop.IdentityServer.Areas.Identity.Pages.Account
+@model LoginModel
+
+@{
+  ViewData["Title"] = "Log in";
+  ViewData["AuthPageTitle"] = "Welcome back";
+  ViewData["AuthPageSubtitle"] = "Use your credentials to access your workspace.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<form method="post" class="auth-page__form-stack">
+  <div asp-validation-summary="ModelOnly" class="auth-page__status-error" role="alert"></div>
+
+  <div class="form-group mb-3 auth-page__field">
+    <label asp-for="Input.Email"></label>
+    <input asp-for="Input.Email" class="form-control" autofocus />
+    <span asp-validation-for="Input.Email" class="invalid-feedback"></span>
+  </div>
+
+  <div class="form-group mb-3 auth-page__field">
+    <label asp-for="Input.Password"></label>
+    <div class="input-group auth-page__input-group">
+      <input asp-for="Input.Password" class="form-control bg-white" type="password" id="passwordInput" />
+      <button type="button" class="input-group-text auth-page__icon-button" id="togglePasswordButton" aria-label="Show password" aria-controls="passwordInput" aria-pressed="false">
+        <span class="material-symbols-rounded" id="showPasswordIcon" aria-hidden="true">visibility</span>
+      </button>
+    </div>
+    <span asp-validation-for="Input.Password" class="invalid-feedback"></span>
+  </div>
+
+  <div class="checkbox mb-3 auth-page__remember">
+    <label asp-for="Input.RememberMe">
+      <input asp-for="Input.RememberMe" />
+      @Html.DisplayNameFor(m => m.Input.RememberMe)
+    </label>
+  </div>
+
+  <div class="row auth-page__cta-row">
+    <div class="col-12">
+      <button type="submit" class="w-100 btn btn-primary">Login</button>
+    </div>
+  </div>
+
+  <div class="row mt-2 text-center auth-page__link-grid">
+    <div class="col-12">
+      <a asp-page="./ForgotPassword" class="auth-page__action-link">Forgot Password</a>
+    </div>
+    <div class="col-12 mt-2">
+      <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="auth-page__action-link">Register</a>
+    </div>
+  </div>
+</form>
+
+@{
+  if (Model.ExternalLogins != null && Model.ExternalLogins.Count > 0)
+  {
+    <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal mt-4 auth-page__provider-section">
+      <div class="row text-center">
+        <div class="col-12">
+          <p class="auth-page__provider-title">or login with</p>
+        </div>
+        <div class="col-12 text-center auth-page__provider-grid">
+          @foreach (var provider in Model.ExternalLogins)
+          {
+            <button type="submit" class="btn image-button pt-3" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+              <img src="@Url.Content(Model.GetProviderImageUrl(provider.Name))" alt="@provider.Name" />
+            </button>
+          }
+        </div>
+      </div>
+    </form>
+  }
+}
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+
+  <script type="text/javascript" nws-csp-add-nonce="true">
+    var showPasswordIcon = document.getElementById("showPasswordIcon");
+    var passwordInput = document.getElementById("passwordInput");
+    var togglePasswordButton = document.getElementById("togglePasswordButton");
+
+    if (showPasswordIcon && passwordInput && togglePasswordButton) {
+      var showPassword = function () {
+        passwordInput.type = "text";
+        showPasswordIcon.textContent = "visibility_off";
+        togglePasswordButton.setAttribute("aria-label", "Hide password");
+        togglePasswordButton.setAttribute("aria-pressed", "true");
+      };
+
+      var hidePassword = function () {
+        passwordInput.type = "password";
+        showPasswordIcon.textContent = "visibility";
+        togglePasswordButton.setAttribute("aria-label", "Show password");
+        togglePasswordButton.setAttribute("aria-pressed", "false");
+      };
+
+      togglePasswordButton.addEventListener("mousedown", showPassword);
+      togglePasswordButton.addEventListener("mouseup", hidePassword);
+      togglePasswordButton.addEventListener("mouseleave", hidePassword);
+      togglePasswordButton.addEventListener("blur", hidePassword);
+
+      togglePasswordButton.addEventListener("keydown", function (event) {
+        if (event.key === " " || event.key === "Enter") {
+          event.preventDefault();
+          showPassword();
+        }
+      });
+
+      togglePasswordButton.addEventListener("keyup", function (event) {
+        if (event.key === " " || event.key === "Enter") {
+          event.preventDefault();
+          hidePassword();
+        }
+      });
+    }
+  </script>
+}

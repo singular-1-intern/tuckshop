@@ -1,0 +1,90 @@
+{{-
+# Domain API - Helm Chart Configuration Template
+
+# This is a Scriban Template which produces a YAML file.
+# (See: https://github.com/scriban/scriban/tree/master/doc)
+#
+# Configuration is populated from IaC state in the template's model object (E.g. SharedHosts, HostSpace, AppSpace)
+# The schema for these state objects can be found in the associated shared-hosts, host-space or app-space Automation Account Variables.
+#
+# NOTE: You can still specify per-environment override files (E.g. domain.qa.yaml) to hard code environment specific values.
+
+# Common
+appName = "domain"
+projectPrefix = AppSpace.prefixes.app_space_project
+environment = AppSpace.prefixes.app_space_environment
+isProduction = ["prd", "dr"] | array.any @string.equals_ignore_case environment
+
+# Domain / Ingress settings
+domain = AppSpace.dns_zone.name
+subDomain = AppSpace.apps[appName].sub_domain
+fullyQualifiedDomainName = subDomain + "." + domain
+certificateSecret = AppSpace.k8s_namespace.certificates[domain].secret_name
+
+# SQL Server settings
+sqlKey = (AppSpace.sql_servers | object.keys | array.sort @string.compare | array.first) # Select the 1st SQL Server's key deterministically
+databasePrefix = (AppSpace.sql_servers[sqlKey].database_prefix)
+sqlServerName = AppSpace.sql_servers[sqlKey].type == "shared" ? SharedHosts.sql_servers[sqlKey].virtual_machine.computer_name : HostSpace.sql_servers[sqlKey].virtual_machine.computer_name
+
+~}}
+
+azureWorkLoadIdentity:
+  enabled: true
+  clientId: {{ AppSpace.apps[appName].identity.client_id }}
+
+deployment:
+  image:
+    registry: singular.azurecr.io
+    repository: {{ projectPrefix }}.{{ appName }}
+    tag: v1
+  resources:
+    requests:
+      cpu: 5m
+      memory: 200Mi
+    limits:
+      memory: 1000Mi
+
+ingress:
+  enabled: true
+  hosts:
+    - host: {{ fullyQualifiedDomainName }}
+      paths:
+        - path: /{{ appName }}(/|$)(.*)
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: {{ certificateSecret }}
+      hosts:
+        - {{ fullyQualifiedDomainName }}
+
+service:
+  name: {{ appName }}
+  targetPort: 8080
+
+serviceAccount:
+  create: true
+
+# This configuration is loaded as environment variables in the application container.
+config:
+  # Environment
+  ASPNETCORE_ENVIRONMENT: "{{ isProduction ? "Production" : "Staging" }}"
+  App__Environment: "{{ environment }}"
+
+  # Application Configuration
+  AlwaysEncrypted__DatabaseKeyPrefix: "{{ projectPrefix }}-{{ environment }}"
+  ConnectionStrings__Main: "Server={{ sqlServerName }};Initial Catalog={{ databasePrefix }}Domain;User ID={KeyVault:SqlAppUsername};Password={KeyVault:SqlAppPassword};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;Column Encryption Setting=Enabled;MultipleActiveResultSets=True;Persist Security Info=True;"
+  ConnectionStrings__Notifications: "Server={{ sqlServerName }};Initial Catalog={{ databasePrefix }}Notifications;User ID={KeyVault:SqlAppUsername};Password={KeyVault:SqlAppPassword};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;Column Encryption Setting=Enabled;MultipleActiveResultSets=True;Persist Security Info=True;"
+  ConnectionStrings__Reporting: "Server={{ sqlServerName }};Initial Catalog={{ databasePrefix }}Reporting;User ID={KeyVault:SqlAppUsername};Password={KeyVault:SqlAppPassword};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;Column Encryption Setting=Enabled;MultipleActiveResultSets=True;Persist Security Info=True;"
+  ConnectionStrings__Authorisation: "Server={{ sqlServerName }};Initial Catalog={{ databasePrefix }}AuthorisationServer;User ID={KeyVault:SqlAppUsername};Password={KeyVault:SqlAppPassword};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;Column Encryption Setting=Enabled;MultipleActiveResultSets=True;Persist Security Info=True;"
+
+  # Local Services
+  Authentication__AuthenticationAuthorityUrl: "https://{{ fullyQualifiedDomainName }}/identity-server"
+  Authentication__AuthorizationUrl: "https://{{ fullyQualifiedDomainName }}/identity-server/connect/authorize"
+  Authentication__TokenUrl: "https://{{ fullyQualifiedDomainName }}/identity-server/connect/token"
+  AuthorisationServer__Publication__FullyQualifiedNamespace: "{{ AppSpace.service_bus.fqdn }}"
+  Authentication__DisableTokenEncryption: "true"
+
+  # External Services
+  AzureBlobFileStores__0__Connection__StorageAccountName: "{{ AppSpace.storage_accounts.documents.name }}"
+  KeyVaults__0__Name: "{{ AppSpace.key_vault.key_vault.name }}"
+  ServiceBus__FullyQualifiedNamespace: "{{ AppSpace.service_bus.fqdn }}"
+

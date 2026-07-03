@@ -1,0 +1,30 @@
+.modal-content {
+  border: none;
+
+  .modal-header {
+    background: $main-color;
+    color: $main-text-color;
+    border: none;
+    padding: 0.8rem 1rem;
+
+    .modal-title {
+      font-size: 1.1rem;
+    }
+
+    .btn-close {
+      filter: invert(1);
+    }
+  }
+
+  .modal-footer {
+    border-top: none;
+    padding: 0 0.75rem 0.75rem 1rem;
+  }
+
+  .validation-summary-model-rules {
+
+    .material-symbols-outlined {
+      font-size: 16px;
+    }
+  }
+}

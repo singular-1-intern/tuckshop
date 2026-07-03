@@ -1,0 +1,48 @@
+<Solution>
+  <Folder Name="/Authorisation/">
+    <Project Path="Tuckshop.AuthorisationServer/Tuckshop.AuthorisationServer.Api/Tuckshop.AuthorisationServer.Api.csproj" />
+    <Project Path="Tuckshop.AuthorisationServer/Tuckshop.AuthorisationServer.Models.Migrations/Tuckshop.AuthorisationServer.Models.Migrations.csproj" />
+    <Project Path="Tuckshop.AuthorisationServer/Tuckshop.AuthorisationServer.Models/Tuckshop.AuthorisationServer.Models.csproj" />
+  </Folder>
+  <Folder Name="/Documentation/">
+    <File Path="Documentation/Databases.md" />
+    <File Path="Documentation/URLs.md" />
+  </Folder>
+  <Folder Name="/Identity/">
+    <Project Path="../Tuckshop.IdentityServer/Tuckshop.IdentityServer.Clients/Tuckshop.IdentityServer.Clients.csproj" />
+    <Project Path="../Tuckshop.IdentityServer/Tuckshop.IdentityServer.Contracts/Tuckshop.IdentityServer.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/Notifications/">
+    <Project Path="Tuckshop.Notifications/Tuckshop.Notifications.App/Tuckshop.Notifications.App.csproj" />
+    <Project Path="Tuckshop.Notifications/Tuckshop.Notifications.Migrations/Tuckshop.Notifications.Migrations.csproj" />
+    <Project Path="Tuckshop.Notifications/Tuckshop.Notifications/Tuckshop.Notifications.csproj" />
+  </Folder>
+  <Folder Name="/Reporting/">
+    <Project Path="Tuckshop.Reporting/Tuckshop.RazorReports/Tuckshop.RazorReports.csproj" />
+    <Project Path="Tuckshop.Reporting/Tuckshop.Reporting.App/Tuckshop.Reporting.App.csproj" />
+    <Project Path="Tuckshop.Reporting/Tuckshop.Reporting.Migrations/Tuckshop.Reporting.Migrations.csproj" />
+    <Project Path="Tuckshop.Reporting/Tuckshop.Reporting.Tests/Tuckshop.Reporting.Tests.csproj" />
+    <Project Path="Tuckshop.Reporting/Tuckshop.Reporting/Tuckshop.Reporting.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../Directory.Packages.props" />
+    <File Path="../NuGet.Config" />
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Dockerfile" />
+    <File Path="exclusions.dic" />
+    <File Path="global.json" />
+    <File Path="ReadMe.md" />
+    <File Path="testenvironments.json" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tuckshop.Core.Api.Tests/Tuckshop.Core.Api.Tests.csproj" />
+    <Project Path="Tuckshop.Core.Tests/Tuckshop.Core.Tests.csproj" />
+  </Folder>
+  <Project Path="Tuckshop.Core.Api/Tuckshop.Core.Api.csproj" />
+  <Project Path="Tuckshop.Core.App/Tuckshop.Core.App.csproj" />
+  <Project Path="Tuckshop.Core.Contracts/Tuckshop.Core.Contracts.csproj" />
+  <Project Path="Tuckshop.Core.Models.Migrations/Tuckshop.Core.Models.Migrations.csproj" />
+  <Project Path="Tuckshop.Core.Models/Tuckshop.Core.Models.csproj" />
+</Solution>

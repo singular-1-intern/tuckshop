@@ -1,0 +1,16 @@
+﻿// TO GENERATE A MIGRATION
+// =======================
+// 'InitialMigration' is used as the name for the first migration
+// For delta migrations, {Name} should be a short description of the feature/change
+
+dotnet ef migrations add InitialMigration --project .\Tuckshop.Notifications\Tuckshop.Notifications.Migrations --context NotificationsDbContext
+
+dotnet ef migrations add {Name} --project .\Tuckshop.Notifications\Tuckshop.Notifications.Migrations --context NotificationsDbContext
+
+// TO ROLLBACK MIGRATIONS IN THE DB TO A SPECIFIC MIGRATION
+// ========================================================
+dotnet ef database update {PreviousMigrationName} --project .\Tuckshop.Notifications\Tuckshop.Notifications.Migrations --context NotificationsDbContext
+
+// TO REMOVE THE LAST ADDED MIGRATION FROM CODE
+// ============================================
+dotnet ef migrations remove --project .\Tuckshop.Notifications\Tuckshop.Notifications.Migrations --context NotificationsDbContext

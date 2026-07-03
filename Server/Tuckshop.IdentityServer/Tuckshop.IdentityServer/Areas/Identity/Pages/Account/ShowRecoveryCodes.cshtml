@@ -1,0 +1,70 @@
+﻿@page
+@model Tuckshop.IdentityServer.Areas.Identity.Pages.Account.ShowRecoveryCodesModel
+@{
+  ViewData["Title"] = "Recovery codes";
+  ViewData["AuthPageTitle"] = "Recovery codes";
+  ViewData["AuthPageSubtitle"] = "Store these codes securely before continuing.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<div class="auth-page__outcome-card auth-page__outcome-card--danger">
+  <div class="auth-page__outcome-icon" aria-hidden="true">
+    <span class="material-symbols-rounded">warning</span>
+  </div>
+  <div class="auth-page__outcome-body">
+    <p class="auth-page__outcome-title">Put these codes in a safe place.</p>
+    <p class="auth-page__outcome-text">You have successfully setup your authenticator, however what happens if you lose your device?</p>
+    <p class="auth-page__outcome-text">If you lose your device and don't have the recovery codes you will lose access to your account.</p>
+  </div>
+</div>
+
+<div class="mb-3 mt-3">
+  <p class="text-center text-large mb-2 auth-page__recovery-grid">
+    @for (var row = 0; row < Model.RecoveryCodes!.Length; row += 2)
+    {
+      <code>@Model.RecoveryCodes[row]</code>
+
+      <text>&nbsp;</text>
+
+      <code>@Model.RecoveryCodes[row + 1]</code>
+
+      <br />
+    }
+  </p>
+
+  <div class="text-center mb-2 auth-page__cta-row">
+    <div class="row text-center">
+      <button id="downloadButton" type="button" class="btn btn-primary w-100" aria-label="Download recovery codes">
+        <span class="material-symbols-rounded" aria-hidden="true">download</span>
+        Download Codes
+      </button>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <div class="col-md-12 mt-2">
+      <a href="@Model.ReturnUrl" class="auth-page__action-link">OK, I've saved them, take me to the app</a>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mt-4">
+  <span class="material-symbols-rounded auth-page__success-icon" aria-hidden="true">check_circle</span>
+</div>
+
+@section Scripts {
+  <script type="text/javascript" nws-csp-add-nonce="true">
+    var downloadText = "@string.Join(", ", Model.RecoveryCodes)";
+
+    var downloadButton = document.getElementById("downloadButton");
+    if (downloadButton) {
+      downloadButton.onclick = (function () {
+        let j = document.createElement("a");
+        j.download = "Tuckshop_RecoveryCodes.txt";
+        j.href = URL.createObjectURL(new Blob([downloadText], { type: "text/plain" }));
+        j.click();
+      });
+    }
+  </script>
+}

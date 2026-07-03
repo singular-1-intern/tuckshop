@@ -1,0 +1,4 @@
+﻿/*
+  Normally these styles would be nested in a @media screen {} section, however,
+  iron pdf renders headers and footers in 'screen' mode instead of 'print' mode like the rest of the document.
+*/

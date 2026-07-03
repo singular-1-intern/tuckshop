@@ -1,0 +1,128 @@
+# Tuckshop.WebApp Build Pipelines
+format_version: 9
+pipelines:
+  ts_build_ci_web_app:
+    group: ts_build_ci
+    label_template: v${COUNT}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+    materials:
+      git:
+        git: 
+        shallow_clone: true
+        auto_update: false
+        branch: main
+        # Only trigger if the app folder, app config or IaC scripts were modified
+        includes:
+          - Client/Tuckshop.WebApp/**/*
+          - IaC/config/apps/web-app/**/*
+          - IaC/config/apps/web-app.*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - Client/Tuckshop.WebApp/**/*
+          - IaC/config/apps/web-app/**/*
+          - IaC/config/apps/web-app.*
+    stages:
+    - build:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          build:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "IaC/scripts/build/build.ps1" -ProjectName "WebApp" -ClientName "SingularSystems" -ProjectPath "Client/Tuckshop.WebApp" -Repository "ts.web-app" -Tag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory:
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "IaC/scripts/build/push-image.ps1" -Repository "ts.web-app" -Tag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory:
+                  run_if: passed
+          package:
+            timeout: 0
+            artifacts:
+            - build:
+                source: IaC/**/*
+                destination: IaC
+            tasks:
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh -c "Write-Host Packaging IaC Resources"
+                  command: sh
+                  working_directory: 
+                  run_if: passed
+
+  ts_build_hotfix_web_app:
+    group: ts_build_hotfix
+    label_template: v${COUNT}-hf
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+    materials:
+      git:
+        git: 
+        shallow_clone: true
+        auto_update: false
+        branch: hotfix
+        # Only trigger if the app folder, app config or IaC scripts were modified
+        includes:
+          - Client/Tuckshop.WebApp/**/*
+          - IaC/config/apps/web-app/**/*
+          - IaC/config/apps/web-app.*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - Client/Tuckshop.WebApp/**/*
+          - IaC/config/apps/web-app/**/*
+          - IaC/config/apps/web-app.*
+    stages:
+    - build:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          build:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "IaC/scripts/build/build.ps1" -ProjectName "WebApp" -ClientName "SingularSystems" -ProjectPath "Client/Tuckshop.WebApp" -Repository "ts.web-app" -Tag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory:
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "IaC/scripts/build/push-image.ps1" -Repository "ts.web-app" -Tag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory:
+                  run_if: passed
+          package:
+            timeout: 0
+            artifacts:
+            - build:
+                source: IaC/**/*
+                destination: IaC
+            tasks:
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh -c "Write-Host Packaging IaC Resources"
+                  command: sh
+                  working_directory: 
+                  run_if: passed

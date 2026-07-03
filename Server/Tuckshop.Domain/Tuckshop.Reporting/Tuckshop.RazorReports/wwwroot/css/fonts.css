@@ -1,0 +1,22 @@
+﻿@font-face {
+  font-family: 'Arial';
+  src: url('../fonts/arial.ttf') format('truetype');
+  font-weight: normal;
+}
+@font-face {
+  font-family: 'Arial';
+  src: url('../fonts/arialbd.ttf') format('truetype');
+  font-weight: bold;
+}
+@font-face {
+  font-family: 'Arial';
+  src: url('../fonts/ariali.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Arial';
+  src: url('../fonts/arialbi.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}

@@ -1,0 +1,86 @@
+﻿@using Neo.Reporting.Pdf;
+@using Tuckshop.Core.Models.Files;
+@using Neo.Reporting;
+@using Tuckshop.RazorReports;
+@using Tuckshop.Reporting.Reports.Example;
+
+@inherits ReportView<ExampleCriteria, List<ExampleReportLookup>>
+
+@inject ReportStyleService styleService
+@inject IHtmlScriptProvider scriptProvider
+
+@styleService.RenderReportingStyles(Options.Embedded)
+
+<link rel="stylesheet" href="@styleService.AbsolutePath(this.Url, Options.Embedded, "css/fonts.css")">
+
+@Html.Raw(scriptProvider.EnsureFontsLoaded(Options.Embedded))
+
+@{
+  // Note: this is for demo purposes, never create a file descriptor like this.
+  var neoLogo = new FileDescriptor() 
+  { 
+    FileName = "neo.png", 
+    FileData = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAYAAAAaLWrhAAAAFnRFWHRDcmVhdGlvbiBUaW1lADA0LzE1LzE5gOuTFAAAAAd0SU1FB+UIGQc4BfWGLbQAAAAJcEhZcwAACxEAAAsRAX9kX5EAAAAEZ0FNQQAAsY8L/GEFAAAIiklEQVR42u3dzW8UZQDH8WdL3TalblsrJBUpFC4WE8QDBzh4IjHeuJl48OWmfwH8C+hVQ9E/AoiKB8QgChxJ5Ax90+JB6G7Le+uuM1O6rFN02p1n5jfPM99PQlwNxaH2y8yPp0VjAAAAAAAAAAAAMlHp9g2PHTumvnbAeT3qCwDKjAABIQIEhHrVF6B0/Pjx1r1799SXAQ/19fWZixcvJv4eS2kDrNVqrXPnzqkvAyVXygCHhoZajUZDfRm5u/LbvPoSvPfOwd1b+v6lC3B4eLhVr9ej1w9XjLkz+LZp9fj9bqiOTpjmm++b8XfVV+K/meDbjh8+MNt7nmzq+/v9kRczMjLSWlxcjF4/WKmY669+Enx0DqovK3M7xg6Ykf6a+jJKo1kJs9pcgKX5XdBw863H9yi4810f/bAU8aHYShFguPmWlpai1+Fj59XR4M7XN6S+LMD/AMPNt/4bLmF810Y/DuJ7WX1ZQMTrDVjWzQd3eHsH7Nx8D9l8KCgvA4xvvmuvsvlQTN4FuHHzhY+dbD4Uk1cbkM0H13hzBwwfO9l8cI0Xd8DOz+1sbz4eO+EA5++A4WPnhnM+4oMjnL4DsvngOmfvgJzzwQdOBsg5H3zhXICc88EnTm3Azi+mZfPBB87cAcPN1/mV7Gw++MCJANl88FXhA2TzwWeF3oBsPviusHfA8LGTzQffFfIOyOd2oiwKdwdk86FMCnUHZPOhbApzB+ScD2VUiAA550NZyQNk86HMpBuQzYeyk90B2XyAKEA2H7Am9wDZfMBzuW5ANh/wb7ndAdl8wEa5BMjmA14s8wDZfMB/y3QDsvmA/5fZHZDNByTLJEA2H7A51gPcsPn4YlrgP1ndgGw+YGus3QE3br6PiA9IYCXAF2++mvrnBhRe6gA55wO6l2oDsvmAdLq+Ax4+fJjNB6TU9R3wxo0b0V+dPmporhpz/09jWi31lWRq9a+qedrzRH0ZiSq9feal0YnghfxPSslN6mOIa6986GZ8gTcWL5jXmzPqy8je9LNvDph977ypVAfUl5Gb9L/UBL9qAehOof5gXpVqtWqOHj2qvozSagUT4PLly6ZSqagvJXcEGNi5c2f4AVC+//oF0mw2W9u2bVNfRu7Ks3aBAiJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAiAABIQIEhAgQECJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAiAABIQIEhAgQECJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAiAABIQIEhAgQECJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAiAABIQIEhAgQECJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAiAABIQIEhAgQECJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAiAABIQIEhAgQECJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAiAABIQIEhAgQECJAQIgAASECBIQIEBAiQECIAAEhAgSECBAQIkBAqNQBbms+UV8CPNNaeWQqreamv39pAzzw11kzZu5Er0dGRtSXAw+0Vh6b2sVPzWDPo02/TSkDnLx73rzWmo9e796929y8ebOiviY4rvl3EN9nZmRlIfrb/v7+TX1MlS7Aybtnza7mbPR6fHzczM/PEx/SCeK7d+mLIL7f1/9J5fHjx5t601IFOHn3XBDf2p1vz549Zm5ujviQSrj56le+MoceXjL1et2cOnVqS29fmgDDzberORe9npiYMLOzs8SHVMLNV/91yhxsfGvu379vpqamzIkTJ7b0cdWr/knkIb75pqeniQ/pBI+d9atnzFtLF0yj0egqvpD3AU6Gd77W88dO7nxILdx8P35uDj36ySwtLZmhoaFKEF9XP5TXAUab71l8e/fuNTMzM8SHVKLNd/XrKL5w8w0PD6f6mPJ2A3Zuvn379hEfUlvffG81vmtvvrS8DDC++W7fvk18SCe2+QYHBysnT55M/XHl3SPo2jkfmw8WPTvnC48a1jefrR/aqwA7z/nYfLAh3HyNq9+0z/nSbr44bx5B2XywrfOcb3l52crmi/PiDsjmg3Udmy+88505c6arc74kzgfIOR+sizbf58Fj59o5X/jY2e05XxKnA+ScD7a1z/ke2jnnS+LsBmTzwbYszvmSOBkgmw/WZXTOl8S5R1A2H6x7wed25vWvdipANh9ss/25nVvlzCMomw+2KTZfnBMBsvlgnWjzxRX+EZTNB+uEmy+u0AGy+WCbevPFFfYRlM0H26LN98vp9uYLP71MrZABsvlg3frmW/6hvfmy+NzOrSrcIyibD9bFPrdTufniChUgmw+2rX09X36f27lVhXkEZfPBtrVzvtPmYIE2X1whAmTzwbr2OV+xNl+c/BGUzQfrCnTOl0QaIJsPthXtnC+J7BGUzQfbinjOl0QSIJsP1kWbb6pw53xJcn8EZfPBOoc2X1yuAbL5YJtrmy8ut0dQNh9sc3HzxeUSIJsP1jm6+eIyfwRl88G2VhDfoqObLy7TO2B88xEf0lr7f7J/2d58tVrN6Y+pzALs3Hz79+9n8yG1zs334MEDJzdfXCYBxjffrVu3iA/pxDbf9u3bndx8cdY3IJsP1jl8zpfEaoCc88E218/5klh7BOWcD7b5cM6XxE6Ai9Oc88EuT875kqR+BJ1c/D6I7w9jKhU2H6zw6ZwvSeoAd5mFKL5qtUp8SK0ZbL6la994u/nirDyCjo+Pm6dPn3r9jkI+Os/5fI8vlDrAsbExMzc35/07CtlbXV01bz/5uX3Op76ePHT9CDowMBAOY7OwsFCKdxSy19vba5aXl73efBt+zt2+YTCOK+FABmwpw+aLK8QfSwgcOXKkdPEBAAAAAAAAAAAAAAAA/vgHx77vm1pkA5YAAAAASUVORK5CYII=") 
+  };
+}
+
+<style type="text/css">
+  .report-page-header {
+      border-bottom: 1px solid #000;
+  }
+</style>
+
+<div class="report-view example-report">
+
+  <page-header>
+    <flex-layout>
+      <div>
+        <h1>Tuckshop</h1>
+        <h2>Example Report</h2>
+      </div>
+      <div>
+        <inline-image file="@neoLogo" style="max-width: 50px" />
+      </div>
+    </flex-layout>
+    
+  </page-header>
+
+  <div class="report-header">
+    <p class="mt-0">
+      Search string: <strong>@Criteria.SearchString</strong>
+    </p>
+  </div>
+
+  <table class="grid">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <date-cell>Join Date</date-cell>
+        <number-cell>Salary</number-cell>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var user in Data)
+      {
+        <tr>
+          <td>@user.FirstName</td>
+          <td>@user.LastName</td>
+          <date-cell value="@user.JoinDate" />
+          <number-cell value="@user.Salary" />
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <new-page>
+    This should print on a new page.
+  </new-page>
+
+  <page-footer>
+    <flex-layout>
+      <div>Created on @Options.LocalDateTime.ToString("dd MMM yyyy") at @Options.LocalDateTime.ToString("HH:mm")</div>
+      <div>Page {page} of {total-pages}</div>
+    </flex-layout>
+  </page-footer>
+</div>

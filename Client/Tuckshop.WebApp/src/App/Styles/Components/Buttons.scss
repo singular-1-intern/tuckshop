@@ -1,0 +1,149 @@
+.btn {
+  border-radius: $btn-border-radius;
+  padding: 5px 10px;
+  min-width: 100px;
+
+  &.min-width {
+    min-width: 0;
+  }
+
+  // Default Button Icon Size
+  .material-symbols-outlined {
+    font-size: 18px
+  }
+
+  // Small Button Icon Size
+  &.btn-sm .material-symbols-outlined {
+    font-size: 16px;
+  }
+
+  // Large Button Icon Size
+  &.btn-lg .material-symbols-outlined {
+    font-size: 24px;
+  }
+
+  &.btn-sm {
+    min-width: 0;
+    padding: 4px 6px;
+    font-size: 13px;
+  }
+
+  &.btn-lg {
+    padding: 8px 10px;
+  }
+  
+  &:focus:not(:focus-visible) {
+    box-shadow: none !important;
+  }
+
+  &.btn-link-inline {
+    padding: 0;
+    vertical-align: inherit;
+  }
+}
+
+.button-input-align .btn, .btn.form-btn {
+  margin-top: 22px;
+  width: 100%;
+}
+
+.btn-group {
+  .btn {
+    min-width: 0;
+  }
+  .dropdown-menu {
+    position: fixed;
+  }
+}
+
+// Active state colour for each variant
+@mixin button-styles($variant, $bg-color, $bg-color-highlight) {
+
+  // Solid
+  &.btn-#{$variant} {
+
+    &:active,
+    &:hover,
+    &:active:focus {
+      background-color: $bg-color-highlight;
+      border-color: $bg-color-highlight;
+    }
+
+    &:disabled {
+      color: white;
+      background-color: $grey-light;
+      border-color: $grey-light;
+    }
+  }
+
+  // Outline
+  &.btn-outline-#{$variant} {
+    color: $bg-color;
+    border-color: $bg-color;
+
+    &:active,
+    &:hover,
+    &:active:focus {
+      color: $bg-color-highlight;
+      border-color: $bg-color-highlight;
+      background-color: rgba($bg-color-highlight, 0.25);
+    }
+
+    &:disabled {
+      color: $grey-light;
+      background-color: transparent;
+      border-color: $grey-light;
+    }
+  }
+}
+
+.btn {
+
+  @include button-styles("primary", $primary, $primary-highlight);
+  @include button-styles("secondary", $secondary, $secondary-highlight);
+  @include button-styles("info", $info, $info-highlight);
+  @include button-styles("danger", $danger, $danger-highlight);
+  @include button-styles("warning", $warning, $warning-highlight);
+  @include button-styles("success", $success, $success-highlight);
+  @include button-styles("light", $light, mix($light, black, 90%));
+  @include button-styles("dark", $dark, mix($dark, white, 80%));
+
+  color: white;
+
+  &.btn-light, &.btn-outline-light {
+    &:not(:disabled) {
+      color: $text-color;
+    }
+  }
+
+  &.btn-link, &.btn-outline-link  {
+      color: $primary;
+    &:disabled {
+      color: $grey-light;
+    }
+  }
+}
+
+/* Inline buttons */
+.btn.btn-inline {
+  border-width: 0;
+  padding: 2px;
+  min-width: 0;
+  vertical-align: baseline;
+
+  &:hover:not(:disabled) {
+    background: none;
+    
+    .material-symbols-outlined {
+      transform: scale(1.2);
+    }
+  }
+
+  &.dropdown-toggle::after {
+    margin-left: 0;
+  }
+
+  &.btn-bordered {
+    border-width: 1px;
+  }
+}

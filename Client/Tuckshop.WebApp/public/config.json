@@ -1,0 +1,12 @@
+{
+  "apiBaseUrl": "https://{domain}:5001",
+  "apiPath": "https://{domain}:5001/api",
+  "identityServer": {
+    "client_id": "Tuckshop.WebApp",
+    "url": "https://{domain}:5000"
+  },
+  "authorisationServer": {
+    "apiPath": "https://{domain}:5001/authorisation/api"
+  },
+  "environment": "Development"
+}

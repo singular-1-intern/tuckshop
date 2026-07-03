@@ -1,0 +1,346 @@
+# Tuckshop.WebApp Deployment Pipelines
+format_version: 9
+pipelines:
+  ts_deploy_ci_qa_web_app:
+    group: ts_deploy_ci_qa
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: stg
+      LocationPrefix: we
+      EnvironmentPrefix: qa
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_build_ci_web_app
+        stage: build
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_ci_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed
+
+  ts_deploy_ci_uat_web_app:
+    group: ts_deploy_ci_uat
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: stg
+      LocationPrefix: we
+      EnvironmentPrefix: uat
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_deploy_ci_qa_web_app
+        stage: deploy
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: manual
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_ci_web_app/ts_deploy_ci_qa_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed
+
+  ts_deploy_ci_pp_web_app:
+    group: ts_deploy_ci_pp
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: prd
+      LocationPrefix: we
+      EnvironmentPrefix: pp
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_deploy_ci_uat_web_app
+        stage: deploy
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: manual
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_ci_web_app/ts_deploy_ci_qa_web_app/ts_deploy_ci_uat_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed
+
+  ts_deploy_ci_prd_web_app:
+    group: ts_deploy_ci_prd
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: prd
+      LocationPrefix: we
+      EnvironmentPrefix: prd
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_deploy_ci_pp_web_app
+        stage: deploy
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: manual
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_ci_web_app/ts_deploy_ci_qa_web_app/ts_deploy_ci_uat_web_app/ts_deploy_ci_pp_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed
+
+  ts_deploy_ci_dr_web_app:
+    group: ts_deploy_ci_dr
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: dr
+      LocationPrefix: ne
+      EnvironmentPrefix: dr
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_deploy_ci_prd_web_app
+        stage: deploy
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: manual
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_ci_web_app/ts_deploy_ci_qa_web_app/ts_deploy_ci_uat_web_app/ts_deploy_ci_pp_web_app/ts_deploy_ci_prd_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed
+
+  ts_deploy_hotfix_pp_web_app:
+    group: ts_deploy_hotfix_pp
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: prd
+      LocationPrefix: we
+      EnvironmentPrefix: pp
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_build_hotfix_web_app
+        stage: build
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: manual
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_hotfix_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed
+
+  ts_deploy_hotfix_prd_web_app:
+    group: ts_deploy_hotfix_prd
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: prd
+      LocationPrefix: we
+      EnvironmentPrefix: prd
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_deploy_hotfix_pp_web_app
+        stage: deploy
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: manual
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_hotfix_web_app/ts_deploy_hotfix_pp_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed
+
+  ts_deploy_hotfix_dr_web_app:
+    group: ts_deploy_hotfix_dr
+    label_template: ${build}
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+      ProjectPrefix: ts
+      HostPrefix: dr
+      LocationPrefix: ne
+      EnvironmentPrefix: dr
+    materials:
+      build:
+        ignore_for_scheduling: false
+        pipeline: ts_build_hotfix_web_app
+        stage: build
+    stages:
+    - deploy:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: manual
+          allow_only_on_success: false
+        jobs:
+          deploy:
+            timeout: 0
+            tasks:
+              - fetch:
+                  is_file: false
+                  source: IaC
+                  pipeline: ts_build_hotfix_web_app
+                  stage: build
+                  job: package
+                  artifact_origin: gocd
+                  run_if: passed
+              - exec:
+                  arguments:
+                  - -c
+                  - pwsh "./IaC/scripts/deploy/deploy-helm-chart.ps1" -AppName "web-app" -Chart "./IaC/helm/neo-web-app" -ImageTag "$GO_PIPELINE_LABEL"
+                  command: sh
+                  working_directory: .
+                  run_if: passed

@@ -1,0 +1,80 @@
+﻿@page
+@model RegisterModel
+
+@{
+  ViewData["Title"] = "Register";
+  ViewData["AuthPageTitle"] = "Create account";
+  ViewData["AuthPageSubtitle"] = "Set up your secure account in a few steps.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<hr class="auth-page__divider" />
+
+<form id="form" asp-route-returnUrl="@Model.ReturnUrl" method="post" onsubmit="onSubmit()" class="auth-page__form-stack">
+  <div asp-validation-summary="ModelOnly" class="auth-page__status-error" role="alert"></div>
+
+  <div class="row auth-page__field-row">
+    <div class="col-md-6 form-group mb-3 auth-page__field">
+      <label asp-for="Input.FirstName"></label>
+      <input asp-for="Input.FirstName" class="form-control" />
+      <span asp-validation-for="Input.FirstName" class="invalid-feedback"></span>
+    </div>
+    <div class="col-md-6 form-group mb-3 auth-page__field">
+      <label asp-for="Input.LastName"></label>
+      <input asp-for="Input.LastName" class="form-control" />
+      <span asp-validation-for="Input.LastName" class="invalid-feedback"></span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 form-group mb-3 auth-page__field">
+      <label asp-for="Input.Email"></label>
+      <input asp-for="Input.Email" class="form-control" value='@(Request.Query["email"])' />
+      <span asp-validation-for="Input.Email" class="invalid-feedback"></span>
+    </div>
+  </div>
+
+  <div class="row auth-page__field-row">
+    <div class="col-md-6 form-group mb-3 auth-page__field">
+      <label asp-for="Password"></label>
+      <input asp-for="Password" class="form-control" />
+      <span asp-validation-for="Password" class="invalid-feedback"></span>
+    </div>
+    <div class="col-md-6 form-group mb-3 auth-page__field">
+      <label asp-for="ConfirmPassword"></label>
+      <input asp-for="ConfirmPassword" class="form-control" />
+      <span asp-validation-for="ConfirmPassword" class="invalid-feedback"></span>
+    </div>
+  </div>
+
+  <div class="row text-center auth-page__cta-row">
+    <div class="col-12">
+      <button type="submit" id="submitButton" class="btn btn-primary w-100">Register</button>
+    </div>
+    <div class="col-12 mt-2 text-center">
+      <a asp-page="./Login" class="auth-page__action-link">Back to Login</a>
+    </div>
+    <div class="col-12 mt-2 text-center">
+      <a asp-page="./EmailVerification" class="auth-page__action-link">Resend Email Verification Link</a>
+    </div>
+  </div>
+</form>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+
+  <script type="text/javascript" nws-csp-add-nonce="true">
+
+    function onSubmit() {
+      // ensure we only disable the submit button if the client side validation passes.
+      var validator = $("#form").validate();
+      var isValid = validator.form();
+      if (isValid) {
+        var submitButton = document.getElementById("submitButton");
+        submitButton.disabled = true;
+      }
+    }
+
+  </script>
+}

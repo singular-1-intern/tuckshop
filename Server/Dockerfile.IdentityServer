@@ -1,0 +1,186 @@
+# syntax=docker/dockerfile:1
+# See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# NOTE: This Dockerfile requires BuildKit. (You can use the DOCKER_BUILDKIT = 1 environment variable to enable it)
+ARG ProjectPath="Tuckshop.IdentityServer"
+ARG AptCacheId="apt"
+ARG NugetCacheId="nuget"
+ARG NeoPsVersion="1.2.135"
+ARG CodeCoverageEnabled="false"
+
+# =================================================================================================
+# Base Runtime Container
+# (This is used as a base by the debug and final runtime containers)
+# =================================================================================================
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.9-noble-amd64 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+# =================================================================================================
+# Debug Runtime Container
+# (This is what the Visual Studio debugger runs the app inside)
+# =================================================================================================
+FROM base AS debug
+ARG ProjectPath
+ADD ${ProjectPath}/Tuckshop.IdentityServer/Certificates/neo-docker.crt /usr/local/share/ca-certificates/neo-docker.crt
+RUN chmod 644 /usr/local/share/ca-certificates/neo-docker.crt && update-ca-certificates
+
+# =================================================================================================
+# Build-Base Container (To setup testing dependencies)
+# =================================================================================================
+FROM mcr.microsoft.com/dotnet/sdk:10.0.301-noble-amd64 AS build-base
+ARG NeoPsVersion
+
+# This is needed for any dotnet tool being installed
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Packages needed for install process
+RUN apt-get update \
+    && apt-get install ca-certificates curl apt-transport-https lsb-release gnupg -y
+
+# Install all of the needed dotnet tools
+RUN dotnet tool update dotnet-reportgenerator-globaltool --global
+
+# Install Neo.PS Module
+# =====================
+RUN --mount=type=secret,id=NugetConfig \
+    pwsh -c " \
+    \$nugetConfig = [xml](Get-Content /run/secrets/NugetConfig -Raw); `` \
+    \$nugetRepoUrl = \$nugetConfig.configuration.packageSources.add | Where-Object { \$_.key -eq \"Singular GitHub\" } | Select-Object -ExpandProperty value; `` \
+    if ([string]::IsNullOrEmpty(\$nugetRepoUrl)) { throw 'NugetRepoUrl is not provided or is empty.' }; `` \
+    \$nugetRepoUsername = \$nugetConfig.configuration.packageSourceCredentials.Singular_x0020_GitHub.add[0].value; `` \
+    \$nugetRepoPassword = \$nugetConfig.configuration.packageSourceCredentials.Singular_x0020_GitHub.add[1].value; `` \
+    \$patToken = (ConvertTo-SecureString -String \$nugetRepoPassword -AsPlainText -Force); `` \
+    \$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList \$nugetRepoUsername, \$patToken; `` \
+    Install-Module Microsoft.PowerShell.PSResourceGet -Repository PSGallery -Force; `` \
+    Register-PSResourceRepository -Name SingularPowerShell -Uri \$nugetRepoUrl -Trusted; `` \
+    Install-PSResource -Name @('Neo.PS','Neo.PS.Core','Neo.PS.Configuration','Neo.PS.Azure') -Repository SingularPowerShell -Version ${NeoPsVersion} -Credential \$credential; \
+    "
+
+# THIS IS A HACK: The Neo.PS modules are not being imported correctly. This is a workaround to fix it. SEE: https://github.com/PowerShell/PSResourceGet/issues/1402
+RUN pwsh -c " \
+    mv /root/.local/share/powershell/Modules/neo.ps /root/.local/share/powershell/Modules/Neo.PS; `` \
+    mv /root/.local/share/powershell/Modules/neo.ps.core /root/.local/share/powershell/Modules/Neo.PS.Core; `` \
+    mv /root/.local/share/powershell/Modules/neo.ps.azure /root/.local/share/powershell/Modules/Neo.PS.Azure; `` \
+    mv /root/.local/share/powershell/Modules/neo.ps.configuration /root/.local/share/powershell/Modules/Neo.PS.Configuration; `` \
+    "
+
+# =================================================================================================
+# Build Container
+# =================================================================================================
+FROM build-base AS build
+ARG AptCacheId
+ARG ProjectPath
+ARG NugetCacheId
+ARG CodeCoverageEnabled
+
+# Update certificates
+RUN --mount=type=cache,id=${AptCacheId},target=/var/cache/apt,sharing=locked \
+    apt-get update && apt-get upgrade -y
+
+# Set the working directory to the source folder (Can be referenced using ./ in subsequent steps)
+WORKDIR /src
+
+# Copy in the Directory.Packages.props file to enable Central Package Management
+COPY Directory.Packages.props ./
+
+# Set the working directory to the project's base folder (Can be referenced using ./ in subsequent steps)
+WORKDIR /src/${ProjectPath}
+
+# Build Speed Optimisation: Copy Solution (.sln, .slnx), EditorConfig (.editorconfig) and Project (.csproj) files first
+# This allows the package restore to be done on a distinct layer, meaning if your dependencies don't change, a cached copy can be used.
+# =================================================================================================
+COPY ${ProjectPath}/*.slnx ${ProjectPath}/.editorconfig **/*.csproj **/**/*.csproj **/**/**/*.csproj **/**/**/**/*.csproj **/**/**/**/**/*.csproj **/**/**/**/**/**/*.csproj **/**/**/**/**/**/**/*.csproj **/**/**/**/**/**/**/**/*.csproj **/**/**/**/**/**/**/**/**/*.csproj ./
+
+RUN dotnet sln list | grep ".csproj" \
+    | while read -r line; do \ 
+    mkdir -p $(dirname $line); \
+    mv $(basename $line) $(dirname $line); \
+    done; \
+    rm -f *.csproj
+
+# Restore nuget packages, use a cache volume to speed up the restore. It must run from the project base folder.
+RUN --mount=type=cache,id=${NugetCacheId},target=/root/.nuget/packages,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/v3-cache,sharing=shared\
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/plugins-cache,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/tmp/NuGetScratch,sharing=shared \
+    --mount=type=secret,id=NugetConfig \
+    dotnet restore --configfile /run/secrets/NugetConfig
+
+# Copy in the source code from the host to the build container.
+COPY / /src
+
+# Build, then run tests
+RUN --mount=type=cache,id=${NugetCacheId},target=/root/.nuget/packages,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/v3-cache,sharing=shared\
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/plugins-cache,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/tmp/NuGetScratch,sharing=shared \
+    --mount=type=secret,id=NugetConfig \
+    dotnet build -c Release --configfile /run/secrets/NugetConfig && \
+    dotnet test -c Release --no-restore --no-build
+
+# Generate Code Coverage Report
+RUN --mount=type=cache,id=${NugetCacheId},target=/root/.nuget/packages,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/v3-cache,sharing=shared\
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/plugins-cache,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/tmp/NuGetScratch,sharing=shared \ 
+    --mount=type=secret,id=NugetConfig \
+    pwsh -c " \
+    \$codeCoverageEnabled = \$Env:CodeCoverageEnabled; `` \
+    if (\$codeCoverageEnabled -eq 'true') { `` \
+    Write-Host 'Code coverage is enabled, running...'; `` \
+    \$outputPath = 'Tuckshop'; `` \
+    Write-Host 'OutputPath: ' \$outputPath; `` \
+    Invoke-NeoCodeCoverageReportGeneration -OutputPath \$outputPath -SolutionName 'Tuckshop' -AppName 'IdentityServer' -InformationAction Continue -Verbose; `` \
+    } else { `` \
+    Write-Host 'Code coverage is not enabled'; exit 0; `` \
+    } `` \
+    "
+
+# =================================================================================================
+# Publish Container
+# =================================================================================================
+FROM build AS publish
+ARG NugetCacheId
+
+# Publish the app to a local folder on the build container
+RUN --mount=type=cache,id=${NugetCacheId},target=/root/.nuget/packages,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/v3-cache,sharing=shared\
+    --mount=type=cache,id=${NugetCacheId},target=/root/.local/share/NuGet/plugins-cache,sharing=shared \
+    --mount=type=cache,id=${NugetCacheId},target=/tmp/NuGetScratch,sharing=shared \
+    --mount=type=secret,id=NugetConfig \
+    dotnet publish -c Release --configfile /run/secrets/NugetConfig -o /app/publish --self-contained false --no-restore --no-build ./Tuckshop.IdentityServer/Tuckshop.IdentityServer.csproj
+
+# App Container Size Optimisation: Move the common files out of /app to /appdeps so they can be
+# copied over in their own layer
+RUN mkdir -p /appdeps
+RUN mv /app/publish/*/ \
+    /app/publish/Azure.*.* /app/publish/Microsoft.*.* /app/publish/System.*.* \
+    /app/publish/Namotion.Reflection.dll /app/publish/NJsonSchema.* /app/publish/StarkbankEcdsa.dll \
+    /app/publish/Extensions.*.* /app/publish/FluentValidation.* \
+    /app/publish/LazyCache.* /app/publish/MediatR.* /app/publish/Neo.*.* /app/publish/Newtonsoft.* \ 
+    /app/publish/Polly.* /app/publish/Quartz.* /app/publish/SendGrid.* /app/publish/Serilog.* \
+    /app/publish/TrackableEntities.* /app/publish/OpenIddict.* \
+    /appdeps
+
+# =================================================================================================
+# Final Runtime Container
+# =================================================================================================
+FROM base AS final
+ARG ProjectPath
+
+# Make this the current folder (Can be referenced using ./)
+WORKDIR /app
+
+# Copy the app dependencies and application separately so that they go into different layers
+# (This should allow docker to cache layers more efficiently. If the dependencies didn't
+#  change, only the /app/publish layer will need to be rebuilt)
+COPY --from=publish /appdeps ./
+COPY --from=publish /app/publish ./
+
+# Copy the generated code coverage asset tar.gz from the build stage to the final image
+RUN mkdir -p ./code-coverage
+COPY --from=build /src/${ProjectPath}/Tuckshop-IdentityServer-*.tar.gz ./code-coverage
+
+# This is the command that the container will run on startup
+ENTRYPOINT ["dotnet", "./Tuckshop.IdentityServer.dll"]

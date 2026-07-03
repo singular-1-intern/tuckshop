@@ -1,0 +1,10 @@
+{{ if .Values.aadPodIdentity.enabled }}
+{{- $fullName := include "neo-web-app.fullname" . -}}
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: {{ $fullName }}-azure-identity-binding
+spec:
+  azureIdentity: {{ $fullName }}-azure-identity
+  selector: {{ $fullName }}
+{{ end }}

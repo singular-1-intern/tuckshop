@@ -1,0 +1,26 @@
+// General colors
+$grey-light: #dee2e6;       // bs-grey-300
+$grey-medium: #adb5bd;      // bs-grey-500
+$grey-medium-dark: #6c757d; // bs-grey-600
+
+// App style
+$main-color: #4361ee;
+$main-text-color: white;
+$main-font-size: 14px;
+$secondary-font-size: 12px;
+$main-background: #f1f4f8;
+$text-color: #212529;
+$component-header-background: #ffffff;
+$component-header-text-color: #212529;
+$nested-component-border-color: $grey-light;
+$box-shadow-color: #212529;
+$box-shadow-root: 0px 2px 4px 0px rgba($box-shadow-color, 0.05);
+$box-shadow-inner: 0px 4px 8px 0px rgba($box-shadow-color, 0.08);
+$component-border-radius: 4px;
+
+// App layout
+$menu-width: 260px;
+$menu-width-thin: 92px;
+$footer-height: 50px;
+$menu-animation-speed: 0.3s;
+$content-area-margin: 20px;

@@ -1,0 +1,36 @@
+﻿@page
+@model Tuckshop.IdentityServer.Areas.Identity.Pages.Account.EmailVerificationModel
+@{
+  ViewData["Title"] = "Resend Email Verification";
+  ViewData["AuthPageTitle"] = "Resend verification email";
+  ViewData["AuthPageSubtitle"] = "Enter your email and we will send a new verification link.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<form method="post" class="auth-page__form-stack">
+  <div asp-validation-summary="ModelOnly" class="auth-page__status-error" role="alert"></div>
+  <div class="auth-page__status-info auth-page__info-block mb-3">
+    <p class="mb-0">Enter your email address and we will re-send you your verification link.</p>
+  </div>
+  <div class="row">
+    <div class="col-lg-12 form-group mt-2 mb-3 auth-page__field">
+      <label asp-for="Input.Email">Email</label>
+      <input asp-for="Input.Email" class="form-control" />
+      <span asp-validation-for="Input.Email" class="invalid-feedback"></span>
+    </div>
+  </div>
+  <div class="row text-center auth-page__cta-row">
+    <div class="col-md-12 mb-2">
+      <button type="submit" class="btn btn-primary w-100">Send</button>
+    </div>
+    <div class="col-md-12 mt-2 text-center">
+      <a asp-page="./Login" class="auth-page__action-link">Back to Login</a>
+    </div>
+  </div>
+</form>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}
+

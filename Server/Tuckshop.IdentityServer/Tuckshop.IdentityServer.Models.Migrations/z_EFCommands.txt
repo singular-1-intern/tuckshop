@@ -1,0 +1,32 @@
+﻿// SETUP
+// =====
+// To generate migrations, you must have the EF Core CLI installed.
+// Reference: https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/dotnet
+
+// Install EF Tools using
+dotnet tool install --global dotnet-ef --version {version}
+// Upgrade EF Tools using
+dotnet tool update --global dotnet-ef
+
+// Once this is done, move this section to the bottom of this file.
+
+// TO GENERATE A MIGRATION
+// =======================
+// 'InitialMigration' is used as the name for the first migration
+// For delta migrations, {Name} should be a short description of the feature/change
+// Run the migration command in your solution root.
+
+// IdentityDbContext
+dotnet ef migrations add {Name} --project Tuckshop.IdentityServer.Models.Migrations\Tuckshop.IdentityServer.Models.Migrations.csproj --context IdentityDbContext -o IdentityDb
+
+
+// TO ROLLBACK MIGRATIONS IN THE DB TO A SPECIFIC MIGRATION
+
+// IdentityDbContext
+dotnet ef database update {PreviousMigrationName} --project Tuckshop.IdentityServer.Models.Migrations\Tuckshop.IdentityServer.Models.Migrations.csproj --context Tuckshop.IdentityServer.IdentityDbContext
+
+
+// TO REMOVE THE LAST ADDED MIGRATION FROM CODE
+
+// IdentityDbContext
+dotnet ef migrations remove --project Tuckshop.IdentityServer.Models.Migrations\Tuckshop.IdentityServer.Models.Migrations.csproj --context IdentityDbContext

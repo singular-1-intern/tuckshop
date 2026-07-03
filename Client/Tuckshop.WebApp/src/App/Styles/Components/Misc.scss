@@ -1,0 +1,351 @@
+@import "~bootstrap/scss/_functions.scss";
+@import "~bootstrap/scss/_variables.scss";
+
+// bootstrap 4 backwards compatibility for neo lib components
+.mr-2 {
+    margin-right: 0.5rem;
+}
+.ml-2 {
+    margin-left: 0.5rem;
+}
+
+// Custom checkbox overrides
+.form-check-input {
+    width: 16px;
+    height: 16px;
+}
+
+// Alerts and toasts
+div.toast-container {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    padding: 10px;
+    padding-bottom: 50px;
+    backdrop-filter: blur(3px);
+    border-radius: $component-border-radius;
+}
+
+@each $color, $value in $theme-colors {
+    .toast-header-#{$color} {
+        background-color: $value;
+        border-color: $value;
+    }
+
+    .toast-count-down-#{$color} {
+        background-color: mix($value, white, 50%);
+    }
+
+    .alert-#{$color} {
+        background-color: $value;
+        border-color: $value;
+    }
+
+    .alert.alert-#{$color}.alert-outline {
+        border-color: $value;
+
+        .neo-icon {
+            color: $value;
+        }
+    }
+}
+
+.alert {
+    color: white;
+    box-shadow: $box-shadow-root;
+
+    strong {
+        font-weight: 500;
+    }
+
+    h6 {
+        font-weight: 500;
+        margin: 0;
+    }
+
+    &.with-heading .alert-body:not(:empty) {
+        margin-top: 0.25rem;
+    }
+
+    .notification-icon-container {
+        margin-bottom: -4px;
+    }
+}
+
+.alert.alert-outline {
+    background: #fff;
+    color: $text-color;
+    border-width: 2px;
+}
+
+.alert.alert-light {
+    color: $text-color;
+    box-shadow: none;
+  }
+
+.toast {
+    border: none;
+    
+    .toast-header {
+        color: white;
+
+        strong {
+            font-weight: 500;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+    }
+
+    .toast-count-down {
+        height: 3px;
+    }
+
+    .toast-header-light {
+        color: $text-color;
+
+        .btn-close {
+            filter: none;
+        }
+    }
+}
+
+div.toast-container:empty {
+    visibility: hidden;
+}
+
+/* Card overrides */
+.neo-card.card {
+    margin-top: 25px;
+    border-radius: $component-border-radius;
+    border: none;
+    box-shadow: $box-shadow-root;
+
+    .card-header {
+        padding: 10px 1rem;
+        border-bottom-color: transparent;
+        margin-bottom: 0;
+        color: $primary;
+        font-weight: 500;
+        background: none;
+        font-size: 20px;
+
+        .card-header-title {
+            >.material-symbols-outlined {
+                margin-right: 0.5rem;
+                font-size: 22px;
+            }
+        }
+    }
+
+    /* Card in a card */
+    .neo-card.card {
+        border: 1px solid $nested-component-border-color;
+        box-shadow: none;
+
+        .card-header {
+            font-size: 16px;
+            padding: 10px 1rem;
+        }
+
+        .card-body {
+            padding: 1.25rem 1rem;
+        }
+    }
+
+    /* Tabs in a card */
+    .neo-tab-container.neo-tab-card-mode {
+        div.tabs-header .nav-tabs .nav-link {
+            margin-left: 0;
+        }
+
+        div.tab-content {
+            box-shadow: none;
+            border: 1px solid $nested-component-border-color;
+            border-top: 0;
+        }
+    }
+
+    &:last-of-type {
+        margin-bottom: 0;
+    }
+}
+
+// Card header background example
+.neo-card.card.card-header-filled {
+    .card-header {
+        background-color: $primary;
+        color: $white;
+    }
+}
+
+// Shadows
+
+.shadow-root {
+    box-shadow: $box-shadow-root !important;
+}
+
+.shadow {
+    box-shadow: $box-shadow-inner !important;
+    border: none !important;
+}
+
+//scroll bar
+
+body::-webkit-scrollbar {
+    width: 10px;
+}
+
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.15);
+    border-radius: 1px;
+}
+
+body::-webkit-scrollbar-thumb {
+    border-radius: 1px;
+    background: $grey-light;
+}
+
+/* Tab overrides */
+
+.neo-tab-card-mode {
+    div.tabs-header {
+        margin-bottom: 0px;
+        z-index: 1;
+
+        .nav-tabs {
+            .nav-link {
+                margin-left: -1px;
+                border-radius: $component-border-radius;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                border-bottom: none;
+
+                >.material-symbols-outlined {
+                    margin-right: 0.25rem;
+                    font-size: 22px;
+                }
+            }
+
+            .nav-link:hover {
+                background: adjust-color($component-header-background, $lightness: -4%);
+            }
+
+            .nav-link.active {
+                background: $component-header-background;
+                color: $component-header-text-color;
+                font-weight: 500;
+
+                border-left: 1px solid rgba(0, 0, 0, 0.1);
+                border-right: 1px solid rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+
+    div.tab-content {
+        background: #fff;
+        padding: 1rem;
+        box-shadow: $box-shadow-root;
+        border-radius: $component-border-radius;
+        border-top-left-radius: 0;
+
+        >.tab-pane {
+            padding: 0;
+
+            > .neo-card.card:first-of-type {
+                margin-top: 0;
+            }
+        }
+
+        /* Card in a tab */
+        .neo-card.card {
+            box-shadow: none;
+            border: 1px solid $nested-component-border-color;
+
+            .card-header {
+                font-size: 16px;
+                padding: 10px 1rem;
+            }
+
+            .card-body {
+                padding: 1.25rem 1rem;
+            }
+        }
+    }
+}
+
+/* Reporting */
+
+.report-grid-container {
+    padding: 2px;
+    background: #fff;
+    margin-top: 0.5rem;
+    border-radius: 2px;
+}
+.report-grid-tabs .report-grid-container {
+    padding: 0;
+}
+
+// Material symbols icons
+.material-symbols-outlined {
+    vertical-align: middle;
+    position: relative;
+    top: -1px; // The text alignment of material icons seems off. This shifts icons up slightly.
+    font-size: inherit;
+    max-width: 1em;
+    overflow: hidden;
+}
+
+// Rounded progress bar
+.progress {
+    border-radius: $component-border-radius;
+    height: 8px;
+}
+
+div.badge {
+    font-size: $secondary-font-size;
+    color: white;
+    font-weight: 500;
+}
+
+.neo-tooltip {
+    background-color: $secondary;
+}
+
+.neo-file-drop {
+    border: 1px dashed $primary;
+    border-radius: $component-border-radius;
+
+    .material-symbols-outlined {
+        color: $primary;
+    }
+}
+
+.neo-file-progress-container {
+
+    .neo-file-progress {
+        padding: 15px;
+        background-color: $input-disabled-bg;
+        border-radius: $component-border-radius;
+        margin-top: 0.5rem;
+
+        .progress {
+            background-color: white;
+        }
+    }
+}
+
+/* Authorisation screen overrides */
+.user-groups-view .group-roles ul.role-group-level-3 > li > .role-item {
+    font-weight: 300;
+    
+    .role-item-text:has(.role-item-description) {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .role-item-description {
+        margin-bottom: 10px;
+    }
+}

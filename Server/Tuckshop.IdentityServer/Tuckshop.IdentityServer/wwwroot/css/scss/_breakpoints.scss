@@ -1,0 +1,11 @@
+// Bootstrap-compatible responsive breakpoints
+// Max-width values are 0.02px below the lower bound of the next tier
+// so that range-based media queries do not overlap.
+
+// Upper bounds (use with max-width)
+$bp-xs-max:  575.98px;   // below sm  — xs and below
+$bp-md-max:  991.98px;   // below lg  — md and below
+$bp-lg-max: 1199.98px;   // below xl  — lg and below
+
+// Lower bounds (use with min-width)
+$bp-lg-min:   992px;     // lg and above

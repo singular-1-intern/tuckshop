@@ -1,0 +1,99 @@
+deployment:
+  # replicaCount: 1
+  image:
+    registry: mcr.microsoft.com
+    repository: dotnet/samples
+    tag: aspnetapp
+    pullPolicy: IfNotPresent
+
+  # Volumes to attach to the deployment (https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/volume/#Volume)
+  volumes: []
+
+  container:
+    securityContext: {}
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      # runAsUser: 1000
+
+    # Container volume mounts (https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#volumes-1)
+    volumeMounts: []
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+  healthChecks:
+    liveness:
+      enabled: false
+      path: /health/live
+    readiness:
+      enabled: false
+      path: /health/ready
+  imagePullSecrets: []
+  podSecurityContext: {}
+  # fsGroup: 2000
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+service:
+  name: neo-web-app
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  # hosts:
+  #   - host: localhost
+  #     paths:
+  #       - path: /test(/|$)(.*)
+  #         pathType: ImplementationSpecific
+  # tls:
+  #   - secretName: prefix-test-secret-certificate
+  #     hosts:
+  #       - localhost
+
+# Create an AAD Pod Identity linked to an external managed identity?
+aadPodIdentity:
+  enabled: false
+  resourceId: "" # Azure AD Resource ID of the Managed Identity
+  clientId: "" # Azure AD Client ID for the Managed Identity
+
+# Link the pods to an external managed identity via a service account?
+azureWorkLoadIdentity:
+  enabled: false
+  clientId: "" # Azure AD Client ID for the Managed Identity
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+config: {}

@@ -1,0 +1,21 @@
+@include media-breakpoint-down(md) { 
+
+    .app-right-panel {
+        background: #fff;
+    }
+
+    .neo-card.card {
+        border: none;
+        box-shadow: none;
+    
+        .card-header {
+            background: none;
+            padding: 10px 0px;
+            font-weight: 600;
+            border-bottom: 1px solid $component-header-text-color;
+        }
+        .card-body {
+            padding: 15px 0;
+        }
+    }
+}

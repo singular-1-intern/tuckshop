@@ -1,0 +1,27 @@
+﻿@page
+@model Tuckshop.IdentityServer.Areas.Identity.Pages.Account.RegisterConfirmationModel
+
+@{
+  ViewData["Title"] = "Registration Complete";
+  ViewData["AuthPageTitle"] = "Registration complete";
+  ViewData["AuthPageSubtitle"] = "Your account setup is complete.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<div class="auth-page__outcome-card auth-page__outcome-card--success">
+  <div class="auth-page__outcome-icon" aria-hidden="true">
+    <span class="material-symbols-rounded">task_alt</span>
+  </div>
+  <div class="auth-page__outcome-body">
+    <p class="auth-page__outcome-title">You have successfully registered.</p>
+    @if (@Model.EmailConfirmation)
+    {
+      <p class="auth-page__outcome-text">An email confirmation has been sent, please check your in-box.</p>
+      <p class="auth-page__outcome-meta">The email link will expire in <strong>@Model.LinkExpiryHours.ToString("#,##0.#") hours.</strong></p>
+    }
+  </div>
+</div>
+<div class="text-center mt-3">
+  <span class="material-symbols-rounded auth-page__success-icon" aria-hidden="true">check_circle</span>
+</div>

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tuckshop.Core</RootNamespace>
+    <Company>Singular Systems (Pty) Ltd</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>$([System.DateTime]::Now.ToString(yyyy)) by $(Company)</Copyright>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Neo.AuthorisationServer.Client" />
+    <PackageReference Include="Neo.Model.Audit" />
+    <PackageReference Include="Neo.Model.SqlServer" />
+    <PackageReference Include="Neo.NotificationServer.Core" />
+    <PackageReference Include="Neo.OneTimeTokens" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tuckshop.Core.Contracts\Tuckshop.Core.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

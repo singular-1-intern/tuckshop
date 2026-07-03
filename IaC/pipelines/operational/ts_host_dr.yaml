@@ -1,0 +1,275 @@
+format_version: 9
+pipelines:
+  ts_restore_databases_prd_to_dr:
+    group: ts_host_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 1
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "ne"
+                    - -Environment
+                    - "dr"
+                    - -EnableRsvBackups
+                    - -EnableAutoProtect
+                  command: pwsh
+                  run_if: passed
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-databases-restore.ps1
+                    - -Project
+                    - "ts"
+                    - -SourceLocation
+                    - "we"
+                    - -SourceEnvironment
+                    - "prd"
+                    - -TargetLocation
+                    - "ne"
+                    - -TargetEnvironment
+                    - "dr"
+                    - -AutoApprove
+                  command: pwsh
+                  run_if: passed
+
+  ts_copy_storage_accounts_prd_to_dr:
+    group: ts_host_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 2
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-blob-storage-accounts-clear.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "we"
+                    - -Environment
+                    - "dr"
+                    - -ForceClear
+                    - -AutoApprove
+                  command: pwsh
+                  run_if: passed
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-blob-storage-accounts-copy.ps1
+                    - -Project
+                    - "ts"
+                    - -SourceLocation
+                    - "we"
+                    - -SourceEnvironment
+                    - "prd"
+                    - -TargetLocation
+                    - "ne"
+                    - -TargetEnvironment
+                    - "dr"
+                    - -OverwriteExisting
+                    - -ForceCopy
+                    - -AutoApprove
+                  command: pwsh
+                  run_if: passed
+
+  ts_copy_key_vault_secrets_prd_to_dr:
+    group: ts_host_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 3
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-keyvault-secret-copy.ps1
+                    - -Project
+                    - "ts"
+                    - -SourceLocation
+                    - "we"
+                    - -SourceEnvironment
+                    - "prd"
+                    - -TargetLocation
+                    - "ne"
+                    - -TargetEnvironment
+                    - "dr"
+                  command: pwsh
+                  run_if: passed
+
+  ts_enable_rsv_database_backups_dr:
+    group: ts_host_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 4
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "ne"
+                    - -Environment
+                    - "dr"
+                    - -EnableRsvBackups
+                    - -EnableAutoProtect
+                  command: pwsh
+                  run_if: passed
+
+  ts_disable_rsv_database_backups_dr:
+    group: ts_host_dr_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 5
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "ne"
+                    - -Environment
+                    - "dr"
+                    - -DisableRsvBackups
+                  command: pwsh
+                  run_if: passed

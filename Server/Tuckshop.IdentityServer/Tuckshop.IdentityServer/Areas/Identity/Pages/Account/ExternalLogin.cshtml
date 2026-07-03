@@ -1,0 +1,36 @@
+﻿@page
+@model ExternalLoginModel
+
+@{
+  ViewData["Title"] = "External Login";
+  ViewData["AuthPageTitle"] = "External login";
+  ViewData["AuthPageSubtitle"] = $"Associate your {Model.ProviderDisplayName} account.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<div class="auth-page__status-info auth-page__info-block">
+  <p id="external-login-description" class="mb-0">
+    You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
+    Please enter an email address for this site below and click the Register button to finish
+    logging in.
+  </p>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="auth-page__form-stack">
+      <div asp-validation-summary="ModelOnly" class="auth-page__status-error" role="alert"></div>
+      <div class="form-group mb-3 auth-page__field">
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="invalid-feedback"></span>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}

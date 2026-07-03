@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Company>Singular Systems (Pty) Ltd</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>$([System.DateTime]::Now.ToString(yyyy)) by $(Company)</Copyright>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <UserSecretsId>Tuckshop.IdentityServer</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+    <DockerfileFile>..\Dockerfile</DockerfileFile>
+    <DockerfileFastModeStage>debug</DockerfileFastModeStage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Certificates\neo-localhost.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Certificates\neo-localhost.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+    <PackageReference Include="Neo.Azure.KeyVault" />
+    <PackageReference Include="Neo.Model.App" />
+    <PackageReference Include="Neo.Model.MediatR" />
+    <PackageReference Include="Neo.Model.Serilog" />
+    <PackageReference Include="Neo.Model.SqlServer" />
+    <PackageReference Include="Neo.NotificationServer.Client" />
+    <PackageReference Include="NWebsec.AspNetCore.Middleware" />
+    <PackageReference Include="NWebsec.AspNetCore.Mvc.TagHelpers" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
+    <None Include="Views\Authorization\Authorize.cshtml" />
+    <None Include="Views\Authorization\Logout.cshtml" />
+    <None Include="wwwroot\lib\qrcode\qrcode.js" />
+    <None Include="wwwroot\lib\qrcode\qrcode.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tuckshop.IdentityServer.App\Tuckshop.IdentityServer.App.csproj" />
+    <ProjectReference Include="..\Tuckshop.IdentityServer.Models.Migrations\Tuckshop.IdentityServer.Models.Migrations.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\Account\" />
+    <Folder Include="ViewModels\Authorization\" />
+  </ItemGroup>
+
+</Project>

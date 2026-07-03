@@ -1,0 +1,123 @@
+format_version: 9
+pipelines:
+  ts_enable_rsv_database_backups_prd:
+    group: ts_host_prd_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 1
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "we"
+                    - -Environment
+                    - "pp"
+                    - -EnableRsvBackups
+                    - -EnableAutoProtect
+                  command: pwsh
+                  run_if: passed
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "we"
+                    - -Environment
+                    - "prd"
+                    - -EnableRsvBackups
+                    - -EnableAutoProtect
+                  command: pwsh
+                  run_if: passed
+
+  ts_disable_rsv_database_backups_prd:
+    group: ts_host_prd_operations
+    label_template: "${COUNT}"
+    lock_behavior: unlockWhenFinished
+    display_order: 2
+    environment_variables:
+    materials:
+      source:
+        ignore_for_scheduling: true
+        git: 
+        shallow_clone: false
+        auto_update: false
+        branch: main
+        # If we don't want the operational pipelines to auto-trigger on a change to the repository, this is done using a filter which points to a location which does not exist.
+        includes:
+          - /folder/which/does/not/exist/**/*
+        # For GoCD < 20.8.0 or plugin version < 0.13.0, you need to use whitelist instead:
+        whitelist:
+          - /folder/which/does/not/exist/**/*
+    stages:
+    - stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: "manual"
+          allow_only_on_success: true
+        jobs:
+          job:
+            timeout: 0
+            tasks:
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "we"
+                    - -Environment
+                    - "pp"
+                    - -DisableRsvBackups
+                  command: pwsh
+                  run_if: passed
+              - exec:
+                  arguments:
+                    - IaC\scripts\operational\invoke-script-in-container.ps1
+                    - -Sr_ScriptPath
+                    - IaC\scripts\operational\azure-rsv-sqlserver-manage-backups.ps1
+                    - -Project
+                    - "ts"
+                    - -Location
+                    - "we"
+                    - -Environment
+                    - "prd"
+                    - -DisableRsvBackups
+                  command: pwsh
+                  run_if: passed

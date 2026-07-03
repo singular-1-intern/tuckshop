@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Company>Singular Systems (Pty) Ltd</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>$([System.DateTime]::Now.ToString(yyyy)) by $(Company)</Copyright>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IronPdf.Native.Chrome.Linux" />
+    <PackageReference Include="Neo.Model.App" />
+    <PackageReference Include="Neo.Model.Swagger" />
+    <PackageReference Include="Neo.Reporting.Api" />
+    <PackageReference Include="Neo.Reporting.IronPdf2022" />
+    <PackageReference Include="Neo.Reporting.Notifications" />
+    <PackageReference Include="Neo.Reporting.PdfSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tuckshop.RazorReports\Tuckshop.RazorReports.csproj" />
+    <ProjectReference Include="..\Tuckshop.Reporting.Migrations\Tuckshop.Reporting.Migrations.csproj" />
+  </ItemGroup>
+
+</Project>

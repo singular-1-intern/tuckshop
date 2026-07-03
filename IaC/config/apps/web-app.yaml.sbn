@@ -1,0 +1,54 @@
+{{-
+# Web App - Helm Chart Configuration Template
+
+# This is a Scriban Template which produces a YAML file.
+# (See: https://github.com/scriban/scriban/tree/master/doc)
+#
+# Configuration is populated from IaC state in the template's model object (E.g. SharedHosts, HostSpace, AppSpace)
+# The schema for these state objects can be found in the associated shared-hosts, host-space or app-space Automation Account Variables.
+#
+# NOTE: You can still specify per-environment override files (E.g. web-app.qa.yaml) to hard code environment specific values.
+
+# Common
+appName = "web-app"
+projectPrefix = AppSpace.prefixes.app_space_project
+
+# Domain / Ingress settings
+domain = AppSpace.dns_zone.name
+subDomain = AppSpace.apps[appName].sub_domain
+fullyQualifiedDomainName = subDomain + "." + domain
+certificateSecret = AppSpace.k8s_namespace.certificates[domain].secret_name
+
+~}}
+
+deployment:
+  image:
+    registry: singular.azurecr.io
+    repository: {{ projectPrefix }}.{{ appName }}
+    tag: v1
+  resources:
+    requests:
+      cpu: 5m
+      memory: 10Mi
+    limits:
+      memory: 20Mi
+
+ingress:
+  enabled: true
+  hosts:
+    - host: {{ fullyQualifiedDomainName}}
+      paths:
+        - path: /()(.*)
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: {{ certificateSecret }}
+      hosts:
+        - {{ fullyQualifiedDomainName }}
+
+service:
+  name: {{ appName }}
+
+# This configuration is loaded as environment variables in the application container.
+config:
+  Environment: "{{ AppSpace.prefixes.app_space_environment }}"
+

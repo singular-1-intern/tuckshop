@@ -1,0 +1,91 @@
+{{-
+# Identity Server - Helm Chart Configuration Template
+
+# This is a Scriban Template which produces a YAML file.
+# (See: https://github.com/scriban/scriban/tree/master/doc)
+#
+# Configuration is populated from IaC state in the template's model object (E.g. SharedHosts, Cluster, AppSpace)
+# The schema for these state objects can be found in the associated host-environment or app-environment Automation Account Variables.
+#
+# NOTE: You can still specify per-environment override files (E.g. identity-server.qa.yaml) to hard code environment specific values.
+
+# Common
+appName = "identity-server"
+projectPrefix = AppSpace.prefixes.app_space_project
+environment = AppSpace.prefixes.app_space_environment
+isProduction = ["prd", "dr"] | array.any @string.equals_ignore_case environment
+
+# Domain / Ingress settings
+domain = AppSpace.dns_zone.name
+subDomain = AppSpace.apps[appName].sub_domain
+fullyQualifiedDomainName = subDomain + "." + domain
+certificateSecret = AppSpace.k8s_namespace.certificates[domain].secret_name
+
+# SQL Server settings
+sqlKey = (AppSpace.sql_servers | object.keys | array.sort @string.compare | array.first) # Select the 1st SQL Server's key deterministically
+databasePrefix = (AppSpace.sql_servers[sqlKey].database_prefix)
+sqlServerName = AppSpace.sql_servers[sqlKey].type == "shared" ? SharedHosts.sql_servers[sqlKey].virtual_machine.computer_name : HostSpace.sql_servers[sqlKey].virtual_machine.computer_name
+
+~}}
+
+azureWorkLoadIdentity:
+  enabled: true
+  clientId: {{ AppSpace.apps[appName].identity.client_id }}
+
+deployment:
+  image:
+    registry: singular.azurecr.io
+    repository: {{ projectPrefix }}.{{ appName }}
+    tag: v1
+  resources:
+    requests:
+      cpu: 1m
+      memory: 200Mi
+    limits:
+      memory: 500Mi
+
+ingress:
+  enabled: true
+  hosts:
+    - host: {{ fullyQualifiedDomainName }}
+      paths:
+        - path: /{{ appName }}(/|$)(.*)
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: {{ certificateSecret }}
+      hosts:
+        - {{ fullyQualifiedDomainName }}
+
+service:
+  name: {{ appName }}
+  targetPort: 8080
+
+serviceAccount:
+  create: true
+
+# This configuration is loaded as environment variables in the application container.
+config:
+  # Environment
+  ASPNETCORE_ENVIRONMENT: "{{ isProduction ? "Production" : "Staging" }}"
+  App__Environment: "{{ environment }}"
+
+  # Application Configuration
+  AlwaysEncrypted__DatabaseKeyPrefix: "{{ projectPrefix }}-{{ environment }}"
+  AuthenticationServer__IssuerUri: "https://{{ fullyQualifiedDomainName }}/{{ appName }}"
+  AuthenticationClients__0__RedirectUris__0: "https://{{ fullyQualifiedDomainName }}/OidcLoginRedirect"
+  AuthenticationClients__0__RedirectUris__1: "https://{{ fullyQualifiedDomainName }}/OidcSilentLoginRedirect"
+  AuthenticationClients__1__RedirectUris__0: "https://{{ fullyQualifiedDomainName }}/domain/oauth2-redirect.html"
+  ConnectionStrings__Main: "Server={{ sqlServerName }};Initial Catalog={{ databasePrefix }}IdentityServer;User ID={KeyVault:SqlAppUsername};Password={KeyVault:SqlAppPassword};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;Column Encryption Setting=Enabled;MultipleActiveResultSets=True;Persist Security Info=True;"
+
+  # Local Services
+  Authentication__AuthenticationAuthorityUrl: "https://{{ fullyQualifiedDomainName }}/{{ appName }}"
+  Authentication__AuthorizationUrl: "https://{{ fullyQualifiedDomainName }}/{{ appName }}/connect/authorize"
+  Authentication__TokenUrl: "https://{{ fullyQualifiedDomainName }}/{{ appName }}/connect/token"
+  Authorisation__ServiceBusOptions__FullyQualifiedNamespace: "{{ AppSpace.service_bus.fqdn }}"
+  AuthenticationServer__DisableTokenEncryption: "true"
+  Urls__Dashboard: "https://{{ fullyQualifiedDomainName }}/"
+
+  # External Services
+  DataProtection__KeyVaultKeyId: "{{ AppSpace.key_vault.rsa_keys[appName + "-data-protection-keys-master-key"].id }}"
+  KeyVaults__0__Name: "{{ AppSpace.key_vault.key_vault.name }}"
+

@@ -1,0 +1,38 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "neo-web-app.fullname" . }}-hpa
+  labels:
+    {{- include "neo-web-app.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "neo-web-app.fullname" . }}
+  minReplicas: {{ .Values.autoscaling.minReplicas | default 1 }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas | default .Values.autoscaling.minReplicas | default 1 }}
+  metrics:
+    {{- $hasMetrics := false }}
+    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+      {{- $hasMetrics = true }}
+    {{- end }}
+    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+      {{- $hasMetrics = true }}
+    {{- end }}
+    {{- if not $hasMetrics }}
+    {{- fail "autoscaling.enabled is true, but no utilization targets (CPU or memory) are specified. Please set either 'autoscaling.targetCPUUtilizationPercentage' or 'autoscaling.targetMemoryUtilizationPercentage' in your values file." }}
+    {{- end }}
+{{- end }}

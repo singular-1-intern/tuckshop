@@ -1,0 +1,262 @@
+{
+  "$schema": "https://files.singular-devops.com/schemas/neo-blueprint/v2/neo-blueprint-v2.6.0.json?1",
+
+  "names": {
+    "clientName": "Singular Systems",
+    "fullName": "Tuckshop",
+    "shortName": "Tuckshop",
+    "prefix": "ts"
+  },
+
+  "projects": [
+    {
+      "name": "domain",
+      "folder": "Server/Tuckshop.Domain",
+      "type": "DotNet",
+      "dotNet": {
+        "template": "neomodapp",
+        "arguments": ["-n", "Tuckshop"],
+        "type": "WebApi"
+      }
+    },
+    {
+      "name": "identity-server",
+      "folder": "Server/Tuckshop.IdentityServer",
+      "type": "DotNet",
+      "dotNet": {
+        "template": "neoids",
+        "arguments": ["-n", "Tuckshop"],
+        "type": "WebApi"
+      }
+    },
+    {
+      "name": "web-app",
+      "folder": "Client/Tuckshop.WebApp",
+      "type": "React",
+      "react": {
+        "template": "neo-react",
+        "prefix": "Tuckshop",
+        "modules": [],
+        "includeNeoServices": true
+      }
+    },
+    {
+      "name": "service-runner",
+      "folder": "Server",
+      "type": "DotNet",
+      "dotNet": {
+        "template": "neotoolssr",
+        "arguments": ["-n", "Tuckshop"],
+        "type": "ServiceRunner"
+      }
+    }
+  ],
+
+  "iac": {
+    "repoUrl": "",
+    "containerRegistry": "singular.azurecr.io",
+    "infrastructureProvider": "azure",
+    "pipelinesType": "gocd",
+    "agentOS": "linux",
+    "buildPipelines": [
+      { "name": "ci"    , "branch": "main"   , "tasks": ["build-container", "push-container"], "versioning": { "prefix": "v" } },
+      { "name": "hotfix", "branch": "hotfix" , "tasks": ["build-container", "push-container"], "versioning": { "prefix": "v", "suffix": "-hf" } }
+    ],
+    "buildPipelinesVariableSets": ["all", "build"],
+
+    "deployPipelines": [
+      { "build": "ci", "location": "we", "host": "stg", "environment": "qa" , "parent": ""   , "tasks": ["deploy-helm-chart"], "trigger": "auto" },
+      { "build": "ci", "location": "we", "host": "stg", "environment": "uat", "parent": "qa" , "tasks": ["deploy-helm-chart"], "trigger": "manual" },
+      { "build": "ci", "location": "we", "host": "prd", "environment": "pp" , "parent": "uat", "tasks": ["deploy-helm-chart"], "trigger": "manual" },
+      { "build": "ci", "location": "we", "host": "prd", "environment": "prd", "parent": "pp" , "tasks": ["deploy-helm-chart"], "trigger": "manual" },
+      { "build": "ci", "location": "ne", "host": "dr" , "environment": "dr" , "parent": "prd", "tasks": ["deploy-helm-chart"], "trigger": "manual" },
+
+      { "build": "hotfix", "location": "we", "host": "prd", "environment": "pp" , "parent": ""  , "tasks": ["deploy-helm-chart"], "trigger": "manual" },
+      { "build": "hotfix", "location": "we", "host": "prd", "environment": "prd", "parent": "pp", "tasks": ["deploy-helm-chart"], "trigger": "manual" },
+      { "build": "hotfix", "location": "ne", "host": "dr" , "environment": "dr" , "parent": ""  , "tasks": ["deploy-helm-chart"], "trigger": "manual" }
+    ],
+
+    "operationalPipelines": [
+      {
+        "name": "restore-databases-prd-to-dr",
+        "description": "This pipeline restores databases from Production to a Disaster Recovery environment, and then enables RSV Backup Management capabilities.",
+        "location": "we",
+        "environment": "host-dr",
+        "tasks": [
+          { "type": "azure-rsv-sqlserver-manage-backups",   "azRsvSqlBackupManagement": { "environment": "dr", "location": "ne", "enableBackups": true, "enableAutoProtection": true }},
+          { "type": "azure-rsv-sqlserver-database-restore", "azRsvSqlDatabaseRestore": { "from": "prd", "to": "dr", "targetLocation": "ne" }}
+        ]
+      },
+      {
+        "name": "copy-storage-accounts-prd-to-dr",
+        "location": "we",
+        "environment": "host-dr",
+        "tasks": [
+          { "type": "azure-storage-accounts-clear", "azStorageClear": { "target": "dr", "forceClear": true }},
+          { "type": "azure-storage-accounts-copy" , "azStorageCopy" : { "from": "prd", "to": "dr", "targetLocation": "ne", "overwriteExisting": true, "forceCopy": true }}
+        ]
+      },
+      {
+        "name": "copy-key-vault-secrets-prd-to-dr",
+        "location": "we",
+        "environment": "host-dr",
+        "tasks": [{ "type": "azure-keyvault-secret-copy", "azKvSecretCopy": {"sourceLocation": "we", "sourceEnvironment": "prd", "targetLocation": "ne", "targetEnvironment": "dr" }}]
+      },
+
+      {
+        "name": "enable-rsv-database-backups-prd",
+        "description": "This pipeline enables RSV Database Backups for Production environment(s).",
+        "location": "we",
+        "environment":"host-prd",
+        "tasks": [
+          { "type": "azure-rsv-sqlserver-manage-backups", "azRsvSqlBackupManagement": { "environment": "pp", "location": "we", "enableBackups": true, "enableAutoProtection": true }},
+          { "type": "azure-rsv-sqlserver-manage-backups", "azRsvSqlBackupManagement": { "environment": "prd", "location": "we", "enableBackups": true, "enableAutoProtection": true }}
+        ]
+      },
+      {
+        "name": "disable-rsv-database-backups-prd",
+        "description": "This pipeline disables RSV Database Backups for Production environment(s).",
+        "location": "we",
+        "environment":"host-prd",
+        "tasks": [
+          { "type": "azure-rsv-sqlserver-manage-backups", "azRsvSqlBackupManagement": { "environment": "pp", "location": "we", "disableBackups": true }},
+          { "type": "azure-rsv-sqlserver-manage-backups", "azRsvSqlBackupManagement": { "environment": "prd", "location": "we", "disableBackups": true }}
+        ]
+      },
+      {
+        "name": "enable-rsv-database-backups-dr",
+        "description": "This pipeline enables RSV Database Backups for Disaster Recovery environment(s).",
+        "location": "ne",
+        "environment":"host-dr",
+        "tasks": [{ "type": "azure-rsv-sqlserver-manage-backups", "azRsvSqlBackupManagement": { "environment": "dr", "location": "ne", "enableBackups": true, "enableAutoProtection": true }}]
+      },
+      {
+        "name": "disable-rsv-database-backups-dr",
+        "description": "This pipeline disables RSV Database Backups for Disaster Recovery environment(s).",
+        "location": "ne",
+        "environment":"host-dr",
+        "tasks": [{ "type": "azure-rsv-sqlserver-manage-backups", "azRsvSqlBackupManagement": { "environment": "dr", "location": "ne", "disableBackups": true }}]
+      },
+
+      {
+        "name": "provision-app-space-dr", "location": "ne","environment": "infra-dr",
+        "description": "This pipeline along with the 'provision-host-space-dr' pipeline, provisions the client DR environment.",
+        "tasks": [{ "type": "run-terraform", "runTerraform": { "modulePath": "IaC/terraform/app-space" , "action": "apply", "location": "ne", "environment": "dr" }}]
+      },
+      {
+        "name": "provision-host-space-dr", "location": "ne","environment": "infra-dr",
+        "tasks": [{ "type": "run-terraform", "runTerraform": { "modulePath": "IaC/terraform/host-space" , "action": "apply", "location": "ne", "environment": "dr" }}]
+      },
+      {
+        "name": "deprovision-app-space-dr", "location": "ne","environment": "infra-dr",
+        "description": "This pipeline along with the 'deprovision-host-space-dr' pipeline, deprovisions the client DR environment.",
+        "tasks": [{ "type": "run-terraform", "runTerraform": { "modulePath": "IaC/terraform/app-space" , "action": "destroy", "location": "ne", "environment": "dr" }}]
+      },
+      {
+        "name": "deprovision-host-space-dr", "location": "ne","environment": "infra-dr",
+        "tasks": [{ "type": "run-terraform", "runTerraform": { "modulePath": "IaC/terraform/host-space" , "action": "destroy", "location": "ne", "environment": "dr" }}]
+      }
+    ],
+
+    "environments": [
+      { "name": "qa" , "variableSets": ["all", "deploy", "stg"] },
+      { "name": "uat", "variableSets": ["all", "deploy", "stg"] },
+      { "name": "pp" , "variableSets": ["all", "deploy", "prd"] },
+      { "name": "prd", "variableSets": ["all", "deploy", "prd"] },
+      { "name": "dr" , "variableSets": ["all", "deploy", "dr" ] },
+
+      { "name": "host-stg", "variableSets": ["all", "stg"] },
+      { "name": "host-prd", "variableSets": ["all", "prd"] },
+      { "name": "host-dr" , "variableSets": ["all", "dr" ] },
+
+      { "name": "infra-stg", "variableSets": ["all", "provision-stg"] },
+      { "name": "infra-prd", "variableSets": ["all", "provision-prd"] },
+      { "name": "infra-dr" , "variableSets": ["all", "provision-dr" ] }
+    ],
+
+    "variableSets": {
+      "all": {
+        "NeoVerboseLogging": "false",
+        "NeoDebugLogging": "false",
+        "NeoPsVersion": "1.2.135",
+        "AZURE_TENANT_ID": "c9871c9d-7fe6-4b1d-a97a-22b172b872e7"
+      },
+      "build": {
+        "CodeCoverageEnabled": "true",
+        "ContainerRegistry": "singular.azurecr.io",
+        "CodeCoverageClientName": "SingularSystems",
+        "NugetConfig": "{{SECRET:[singular-secrets][nuget-config]}}",
+        "AZURE_CLIENT_ID":"{{SECRET:[singular-secrets][singular-builder-service-principal]}}",
+        "AZURE_CLIENT_SECRET":"{{SECRET:[singular-secrets][singular-builder-service-principal-secret]}}",
+        "DOCKER_BUILDKIT": "1"
+      },
+      "deploy": {
+        "GitHubToken": "{{SECRET:[singular-secrets][singular-github-readonly-token]}}",
+        "GitHubRepository": "",
+        "GitHubRepositoryDeployBranch": "main"
+      },
+
+      "stg": {
+        "AZURE_SUBSCRIPTION_ID": "2e538ecd-e2f2-40d9-bc8a-272df8f5e2f7",
+        "AZURE_CLIENT_ID": "{{SECRET:[custom-secrets-sc-stg][sc-stg-sp-operations-app-id]}}",
+        "AZURE_CLIENT_SECRET": "{{SECRET:[custom-secrets-sc-stg][sc-stg-sp-operations-secret]}}"
+      },
+      "prd": {
+        "AZURE_SUBSCRIPTION_ID": "aa7782d9-0b79-4740-9750-caf85a5aba67",
+        "AZURE_CLIENT_ID": "{{SECRET:[custom-secrets-sc-prd][sc-prd-sp-operations-app-id]}}",
+        "AZURE_CLIENT_SECRET": "{{SECRET:[custom-secrets-sc-prd][sc-prd-sp-operations-secret]}}"
+      },
+      "dr": {
+        "AZURE_SUBSCRIPTION_ID": "aa7782d9-0b79-4740-9750-caf85a5aba67",
+        "AZURE_CLIENT_ID": "{{SECRET:[custom-secrets-sc-dr][sc-dr-sp-operations-app-id]}}",
+        "AZURE_CLIENT_SECRET": "{{SECRET:[custom-secrets-sc-dr][sc-dr-sp-operations-secret]}}"
+      },
+
+      "provision-stg": {
+        "AZURE_SUBSCRIPTION_ID": "2e538ecd-e2f2-40d9-bc8a-272df8f5e2f7",
+        "AZURE_CLIENT_ID": "{{SECRET:[custom-secrets-provisioner-sc-stg][client-id]}}",
+        "AZURE_CLIENT_SECRET": "{{SECRET:[custom-secrets-provisioner-sc-stg][client-secret]}}"
+      },
+      "provision-prd": {
+        "AZURE_SUBSCRIPTION_ID": "aa7782d9-0b79-4740-9750-caf85a5aba67",
+        "AZURE_CLIENT_ID": "{{SECRET:[custom-secrets-provisioner-sc-prd][client-id]}}",
+        "AZURE_CLIENT_SECRET": "{{SECRET:[custom-secrets-provisioner-sc-prd][client-secret]}}"
+      },
+      "provision-dr": {
+        "AZURE_SUBSCRIPTION_ID": "9463ef9f-a1bf-4da6-87db-67794fdd3fe2",
+        "AZURE_CLIENT_ID": "{{SECRET:[custom-secrets-provisioner-sc-dr][client-id]}}",
+        "AZURE_CLIENT_SECRET": "{{SECRET:[custom-secrets-provisioner-sc-dr][client-secret]}}"
+      }
+    }
+  },
+
+  "generators": {
+    "commonFiles": true,
+    "dotNetProjects": {
+      "enabled": true,
+      "dockerFileMoveRule": "always",
+      "dockerFileMoveLocation": "Server",
+      "dockerFileMoveExcludedProjectTypes": ["DbScriptRunner"],
+      "keepOriginalDockerfile": false
+    },
+    "reactProjects": {
+      "enabled": true
+    },
+    "buildPipelines": true,
+    "deployPipelines": true,
+    "operationalPipelines": true,
+    "scripts": {
+      "enabled": true,
+      "overwrite": true,
+      "restrictOverwrites": []
+    },
+    "serviceRunner": true,
+    "terraform": {
+      "enabled": true,
+      "appSpace": true,
+      "hostSpace": true,
+      "overwriteModules": true,
+      "overwriteTfvars": false
+    }
+  }
+}

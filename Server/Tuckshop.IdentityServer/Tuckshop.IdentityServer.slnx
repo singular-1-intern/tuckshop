@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../Directory.Packages.props" />
+    <File Path="../NuGet.Config" />
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Dockerfile" />
+    <File Path="exclusions.dic" />
+    <File Path="global.json" />
+    <File Path="ReadMe.md" />
+    <File Path="testenvironments.json" />
+  </Folder>
+  <Project Path="Tuckshop.IdentityServer.App/Tuckshop.IdentityServer.App.csproj" />
+  <Project Path="Tuckshop.IdentityServer.Clients/Tuckshop.IdentityServer.Clients.csproj" />
+  <Project Path="Tuckshop.IdentityServer.Contracts/Tuckshop.IdentityServer.Contracts.csproj" />
+  <Project Path="Tuckshop.IdentityServer.Models.Migrations/Tuckshop.IdentityServer.Models.Migrations.csproj" />
+  <Project Path="Tuckshop.IdentityServer.Models/Tuckshop.IdentityServer.Models.csproj" />
+  <Project Path="Tuckshop.IdentityServer.Tests/Tuckshop.IdentityServer.Tests.csproj" />
+  <Project Path="Tuckshop.IdentityServer/Tuckshop.IdentityServer.csproj" />
+</Solution>

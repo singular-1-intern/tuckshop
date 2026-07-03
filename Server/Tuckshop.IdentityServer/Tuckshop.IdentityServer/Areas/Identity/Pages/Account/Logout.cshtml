@@ -1,0 +1,29 @@
+﻿@page
+@model LogoutModel
+
+@{
+  ViewData["Title"] = "Logout";
+  ViewData["AuthPageTitle"] = "Logged out";
+  ViewData["AuthPageSubtitle"] = "You have successfully logged out of the application.";
+  ViewData["AuthVisualTitle"] = "";
+  ViewData["AuthVisualSubtitle"] = "";
+}
+
+<div class="auth-page__outcome-card auth-page__outcome-card--info">
+  <div class="auth-page__outcome-icon" aria-hidden="true">
+    <span class="material-symbols-rounded">logout</span>
+  </div>
+  <div class="auth-page__outcome-body">
+    <p class="auth-page__outcome-title">You have successfully logged out.</p>
+    <p class="auth-page__outcome-text">Your session has ended securely.</p>
+  </div>
+</div>
+<div class="row auth-page__cta-row">
+  <div class="col-md-12 text-center mt-2">
+    <button id="to-login-button" class="btn btn-primary w-100">Back to Login</button>
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_HelperScripts" />
+}

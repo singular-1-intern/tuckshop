@@ -1,0 +1,29 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "singular-neo.modelGeneration": {
+            "singleApi": true,
+            "typePathConfig": "App.Config",
+            "src\\Domain": {
+                "serverModelPath": "..\\..\\Server\\Tuckshop.Domain\\Tuckshop.Core.Models",
+                "serverApiPath": "..\\..\\Server\\Tuckshop.Domain\\Tuckshop.Core.Api",
+                "serverAlternatePaths": [
+                    "..\\..\\Server\\Tuckshop.Domain\\Tuckshop.Core.Contracts"
+                ]
+            }
+        },
+        "singular-neo.templating": {
+            "usesCards": true
+        },
+        "search.exclude": {
+            "**/.yarn": true,
+            "**/.pnp.*": true
+        },
+		"editor.tabSize": 4,
+        "js/ts.tsdk.path": ".yarn/sdks/typescript/lib"
+    }
+}

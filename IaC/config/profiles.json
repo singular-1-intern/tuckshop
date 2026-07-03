@@ -1,0 +1,44 @@
+{
+  "$schema": "https://files.singular-devops.com/schemas/neo-app-config/v1/neo-k8s-deploy-profiles-v1.0.0.json?1",
+  "comments": [
+    "This file defines configuration profiles which can apply to one or more environment.",
+    "Currently it is used to manage the CPU and memory allocations for each application."
+  ],
+  "profiles": [
+    {
+      "name": "Development",
+      "environments": [
+        "qa"
+      ],
+      "appResources": {
+        "domain"          : { "cpuRequest": "40m" , "memoryRequest": "750Mi" , "memoryLimit": "2000Mi" }, 
+        "identity-server" : { "cpuRequest": "40m" , "memoryRequest": "300Mi" , "memoryLimit": "600Mi"  }, 
+        "web-app"         : { "cpuRequest": "40m" , "memoryRequest": "15Mi"  , "memoryLimit": "30Mi"   }
+      }
+    },
+    {
+      "name": "Staging",
+      "environments": [
+        "uat",
+        "pp"
+      ],
+      "appResources": {
+        "domain"          : { "cpuRequest": "40m" , "memoryRequest": "750Mi" , "memoryLimit": "2000Mi" }, 
+        "identity-server" : { "cpuRequest": "40m" , "memoryRequest": "300Mi" , "memoryLimit": "600Mi"  }, 
+        "web-app"         : { "cpuRequest": "40m" , "memoryRequest": "15Mi"  , "memoryLimit": "30Mi"   }
+      }
+    },
+    {
+      "name": "Production",
+      "environments": [
+        "prd",
+        "dr"
+      ],
+      "appResources": {
+        "domain"          : { "cpuRequest": "80m" , "memoryRequest": "2000Mi", "memoryLimit": "2000Mi" }, 
+        "identity-server" : { "cpuRequest": "80m" , "memoryRequest": "600Mi" , "memoryLimit": "600Mi"  }, 
+        "web-app"         : { "cpuRequest": "80m" , "memoryRequest": "30Mi"  , "memoryLimit": "30Mi"   }
+      }
+    }
+  ]
+}
