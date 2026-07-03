@@ -7,6 +7,7 @@ import CatalogueApiClient from "./ApiClients/CatalogueApiClient";
 import ProductsApiClient from './ApiClients/ProductsApiClient';
 import OrdersCommandApiClient from './ApiClients/OrdersCommandApiClient';
 import OrdersQueryApiClient from './ApiClients/OrdersQueryApiClient';
+import CustomersApiClient from './ApiClients/CustomersApiClient';
 
 export const DomainAppModule = new AppServices.Module("Domain", container => {
 
@@ -15,6 +16,7 @@ export const DomainAppModule = new AppServices.Module("Domain", container => {
     container.bind(DomainTypes.ApiClients.ProductsApiClient).to(ProductsApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.OrdersCommandApiClient).to(OrdersCommandApiClient).inSingletonScope();
     container.bind(DomainTypes.ApiClients.OrdersQueryApiClient).to(OrdersQueryApiClient).inSingletonScope();
+    container.bind(DomainTypes.ApiClients.CustomersApiClient).to(CustomersApiClient).inSingletonScope();
     
     // Services
     container.bind(DomainTypes.Services.DataCache).to(DomainDataCache).inSingletonScope();

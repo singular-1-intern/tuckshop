@@ -29,7 +29,8 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                         <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()}>
                             {(order, orderMeta) => (
                                 <div>
-                                    <Neo.FormGroupInline bind={orderMeta.customerName} />
+                                    {/* <Neo.FormGroupInline bind={orderMeta.customerName} /> */}
+                                    <Neo.FormGroup bind={orderMeta.customerName} select={{ items: this.viewModel.customers, valueMember: "customerName", displayMember: "customerName" }} />
                                     <NeoGrid.Grid items={order.orderDetails}>
                                         {(orderDetail, orderDetailMeta) => (
                                             <NeoGrid.Row>

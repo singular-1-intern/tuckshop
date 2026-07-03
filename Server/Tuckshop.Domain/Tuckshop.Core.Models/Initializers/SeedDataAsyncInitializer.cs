@@ -50,7 +50,7 @@ namespace Tuckshop.Core.Models.Initializers
     {
       await this.GenerateProductSeedDataAsync().ConfigureAwait(false);
       await this.GenerateOrderSeedDataAsync().ConfigureAwait(false);
-      await this.GenerateCustomerSeedDataAsync().ConfigureAwait(false);
+      //await this.GenerateCustomerSeedDataAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -123,24 +123,23 @@ namespace Tuckshop.Core.Models.Initializers
       }
     }
 
-    private async Task GenerateCustomerSeedDataAsync()
-    {
-      //if ((this.environment == null || this.environment.IsDevelopment()) && !await this.context.Customers.AnyAsync().ConfigureAwait(false))
-      if (this.environment == null || this.environment.IsDevelopment())
-      {
-        var customers = new List<Customer>()
-        {
-          new Customer() { CustomerName = "Bob Lee Swagger" },
-          new Customer() { CustomerName = "Bob Shmob" },
-          new Customer() { CustomerName = "Joe Shmoe" },
-          new Customer() { CustomerName = "Bruce Spruce" },
-          new Customer() { CustomerName = "Bo van Do" },
-        };
+    //private async Task GenerateCustomerSeedDataAsync()
+    //{
+    //  if ((this.environment == null || this.environment.IsDevelopment()) && !await this.context.Customers.AnyAsync().ConfigureAwait(false))
+    //  {
+    //    var customers = new List<Customer>()
+    //    {
+    //      new Customer() { CustomerName = "Bob Lee Swagger" },
+    //      new Customer() { CustomerName = "Bob Shmob" },
+    //      new Customer() { CustomerName = "Joe Shmoe" },
+    //      new Customer() { CustomerName = "Bruce Spruce" },
+    //      new Customer() { CustomerName = "Bo van Do" },
+    //    };
 
-        this.context.Customers.AddRange(customers);
+    //    this.context.Customers.AddRange(customers);
 
-        await this.context.SaveChangesAsync().ConfigureAwait(false);
-      }
-    }
+    //    await this.context.SaveChangesAsync().ConfigureAwait(false);
+    //  }
+    //}
   }
 }

@@ -10,17 +10,28 @@
   /// </summary>
   public class Customer : ModelBase<Customer>
   {
+
+    private Customer()
+    {
+    }
+
+    public Customer(int customerId, string customerName)
+    {
+      this.CustomerId = customerId;
+      this.CustomerName = customerName;
+    }
+
     /// <summary>
     /// Gets or sets the Customer Id
     /// </summary>
-    public int CustomerId { get; set; }
+    public int CustomerId { get; private set; }
 
     /// <summary>
     /// Gets or sets the Customer Name
     /// </summary>
     [Required]
     [MaxLength(100)]
-    public string CustomerName { get; set; } = string.Empty;
+    public string CustomerName { get; private set; } = string.Empty;
 
     // Navigation Property - tells EF Core that an Customer contains one or many Orders.
     //public ICollection<Order> Orders { get; set; } = new List<Order>();

@@ -2,6 +2,7 @@ import { Views } from "@singularsystems/neo-react";
 import { AppService, Types } from "../DomainTypes";
 import Product from "../Models/Product";
 import { List } from "@singularsystems/neo-core";
+import Customer from "../Models/Customer";
 
 export default class ProductsVM extends Views.ViewModelBase {
   public get productsApiClient() {
@@ -22,6 +23,8 @@ export default class ProductsVM extends Views.ViewModelBase {
   }
 
   public products = new List(Product);
+
+  // public customers = new List(Customer);
 
   public async initialise() {
     const response = await this.taskRunner.waitFor(this.productsApiClient.get());

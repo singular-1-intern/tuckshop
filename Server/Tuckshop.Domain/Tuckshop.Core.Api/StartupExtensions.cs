@@ -64,6 +64,7 @@
     {
       services.TryAddSingleton<INeoMapper, NeoMapper>();
       services.AddScoped<CatalogueModelService>();
+      services.AddScoped<CustomersModelService>();
       services.AddScoped<OrdersModelService>();
       services.AddScoped<OrdersCommandService>();
       services.AddScoped<IProductPricesService, ProductPricesService>();
