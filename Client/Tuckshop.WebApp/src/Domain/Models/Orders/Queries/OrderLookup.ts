@@ -1,5 +1,6 @@
 import { Attributes, List, LookupBase } from '@singularsystems/neo-core';
 import OrderDetail from '../OrderDetail';
+import OrderDetailLookup from './OrderDetailLookup';
 
 export default class OrderLookup extends LookupBase {
 
@@ -15,9 +16,11 @@ export default class OrderLookup extends LookupBase {
     @Attributes.Date()
     public readonly orderedOn: Date = new Date();
 
+    @Attributes.Observable()
     @Attributes.Date()
     public completedOn: Date | null = null;
 
+    @Attributes.Observable()
     @Attributes.Date()
     public cancelledOn: Date | null = null;
 
@@ -33,7 +36,7 @@ export default class OrderLookup extends LookupBase {
     @Attributes.Float()
     public readonly orderTotal: number = 0;
 
-    public readonly items = new List(OrderDetail);
+    public readonly items = new List(OrderDetailLookup);
 
     // Client only properties / methods
     @Attributes.Observable()

@@ -4,6 +4,7 @@ namespace Tuckshop.Models.Orders.Queries
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using Tuckshop.Core.Models;
 
   public class OrderLookup
   {
@@ -17,7 +18,7 @@ namespace Tuckshop.Models.Orders.Queries
     public string CancelledBy { get; set; }
     public decimal OrderTotalExcl { get; set; }
     public decimal OrderTotal { get; set; }
-    public object Items { get; set; }
+    public List<OrderDetailLookup> Items { get; set; }
 
     /// <summary>
     /// Sets the <see cref="Items"/> property, and returns the order.

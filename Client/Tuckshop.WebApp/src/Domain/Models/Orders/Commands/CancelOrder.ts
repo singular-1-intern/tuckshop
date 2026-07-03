@@ -1,6 +1,7 @@
-import { Rules } from '@singularsystems/neo-core';
+import { ModelBase, NeoModel, Rules } from '@singularsystems/neo-core';
 
-export default class CancelOrder {
+@NeoModel
+export default class CancelOrder extends ModelBase {
 
     public orderId: number = 0;
 

@@ -3,7 +3,9 @@ import { Neo, NeoGrid, Views } from '@singularsystems/neo-react';
 import ViewOrdersVM from './ViewOrdersVM';
 import { observer } from 'mobx-react';
 import { OrderStatus } from '../../Models/Orders/Enums/OrderStatus';
-import { Data, Misc } from '@singularsystems/neo-core';
+import { Data, Misc, ModalUtils } from '@singularsystems/neo-core';
+import CancelOrder from '../../Models/Orders/Commands/CancelOrder';
+import OrderLookup from '../../Models/Orders/Queries/OrderLookup';
 
 class ViewOrdersParams {
     // TODO: Add parameters here in the form: public paramName = { isQuery?: boolean, required?: boolean };
@@ -19,6 +21,23 @@ export default class ViewOrdersView extends Views.ViewBase<ViewOrdersVM, ViewOrd
 
     protected viewParamsUpdated() {
 
+    }
+
+    private completeOrder(order: OrderLookup) {
+        ModalUtils.showYesNo("Complete order", "Are you sure you want to complete this order?", 
+                () => this.viewModel.completeOrder(order));
+    }
+
+    private async cancelOrder(order: OrderLookup) {
+        const cancelInfo = new CancelOrder();
+
+        if ((await ModalUtils.showOkCancel(
+            "Cancel order",
+            <Neo.FormGroup bind={cancelInfo.meta.reason} label="Please enter a reason:" />, 
+            cancelInfo)) === Misc.ModalResult.Yes) {
+
+            this.viewModel.cancelOrder(order, cancelInfo.reason);
+        }
     }
 
     public render() {
@@ -44,6 +63,14 @@ export default class ViewOrdersView extends Views.ViewBase<ViewOrdersVM, ViewOrd
                                 <NeoGrid.Column display={orderMeta.customerName} />
                                 <NeoGrid.Column display={orderMeta.orderedOn} dateProps={{formatString: "dd MMM - HH:mm"}} />
                                 <NeoGrid.Column display={orderMeta.orderTotal} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} />
+                                <NeoGrid.ButtonColumn>
+                                    {order.canAction &&
+                                    <>
+                                        <Neo.Button variant="danger" icon="times" onClick={() => this.cancelOrder(order)}>Cancel</Neo.Button>
+                                        <Neo.Button variant="success" icon="check" onClick={() => this.completeOrder(order)}>Complete</Neo.Button>
+                                    </>
+                                    }
+                                </NeoGrid.ButtonColumn>
                             </NeoGrid.Row>
                             <NeoGrid.ChildRow>
                                 <NeoGrid.Grid items={order.items}>

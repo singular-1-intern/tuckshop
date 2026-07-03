@@ -40,6 +40,11 @@
     [MaxLength(100)]
     public string CustomerName { get; private set; } = string.Empty;
 
+    //public int CustomerId { get; private set; }
+
+    //[ForeignKey(nameof(CustomerId))]
+    //public Customer? Customer { get; private set; }
+
     /// <summary>
     /// Gets the Completed User Event.
     /// </summary>

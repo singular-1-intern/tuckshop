@@ -26,19 +26,19 @@ export default class ViewOrdersVM extends Views.ViewModelBase {
     }
 
     public completeOrder(order: OrderLookup) {
-    this.taskRunner.run(async () => {
-        await this.ordersCommandApiClient.completeOrder({ orderId: order.orderId });
-        order.completedOn = new Date();
-    })
-}
+        this.taskRunner.run(async () => {
+            await this.ordersCommandApiClient.completeOrder({ orderId: order.orderId });
+            order.completedOn = new Date();
+        })
+    }
 
-public cancelOrder(order: OrderLookup, reason: string) {
-    this.taskRunner.run(async () => {
-        await this.ordersCommandApiClient.cancelOrder({ orderId: order.orderId, reason });
-        order.cancelledOn = new Date();
-        order.cancelledReason = reason;
-    });
-}
+    public cancelOrder(order: OrderLookup, reason: string) {
+        this.taskRunner.run(async () => {
+            await this.ordersCommandApiClient.cancelOrder({ orderId: order.orderId, reason });
+            order.cancelledOn = new Date();
+            order.cancelledReason = reason;
+        });
+    }
 
     public async initialise() {
 
