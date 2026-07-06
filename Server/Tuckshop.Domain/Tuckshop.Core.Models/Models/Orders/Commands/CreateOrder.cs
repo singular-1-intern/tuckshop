@@ -11,12 +11,18 @@ namespace Tuckshop.Models.Orders.Commands
   /// </summary>
   public class CreateOrder : ModelBase<CreateOrder>
   {
-    [Required]
-    [StringLength(50)]
     /// <summary>
-    /// Gets or sets the Customer Name.
+    /// Gets or sets the Customer Id.
     /// </summary>
-    public string CustomerName { get; set; } = string.Empty;
+    [Required]
+    public int CustomerId { get; set; }
+
+    //[Required]
+    //[StringLength(50)]
+    ///// <summary>
+    ///// Gets or sets the Customer Name.
+    ///// </summary>
+    //public string CustomerName { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the Order Details

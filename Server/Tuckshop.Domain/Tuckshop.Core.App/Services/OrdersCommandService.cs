@@ -11,6 +11,7 @@ using Tuckshop.Models.Orders.Commands;
 public class OrdersCommandService
 {
   private readonly OrdersModelService modelService;
+  private readonly CustomersModelService customersModelService;
   private readonly IProductPricesService priceService;
   private readonly IUserResolver<User> userResolver;
 
@@ -18,17 +19,21 @@ public class OrdersCommandService
   /// Initializes a new instance of the <see cref="OrdersCommandService"/> class.
   /// </summary>
   /// <param name="modelService">The orders model service</param>
+  /// <param name="customersModelService"></param>
   /// <param name="priceService">The price service</param>
   /// <param name="userResolver">The user resolver</param>
   public OrdersCommandService(
     // Hanldes db opr for Orders
     OrdersModelService modelService,
+     // jdf
+     CustomersModelService customersModelService,
     // Calcs/Retrieves product prices
     IProductPricesService priceService,
     // Gets info about the currently logged-in user
     IUserResolver<User> userResolver)
   {
     this.modelService = modelService;
+    this.customersModelService = customersModelService;
     this.priceService = priceService;
     this.userResolver = userResolver;
   }
@@ -48,8 +53,16 @@ public class OrdersCommandService
 
   private async Task<Order> CreateOrderEntityAsync(CreateOrder command)
   {
-    var order = new Order(command.CustomerName);
+    // Lookup the customer ID, in order to return the matching name
+    var customer = await this.customersModelService.GetByIdAsync(command.CustomerId).ConfigureAwait(false);
+
+    // Use the CustomerName from the CustomerId we just fetched
+    var order = new Order(customer.CustomerName);
+
+    // Extract all unique productIds from the order details into a HashSet
     var productIds = command.OrderDetails.Select(od => od.ProductId).ToHashSet();
+
+    // Use our GetProductPricesAsync class to get all product prices at once
     var prices = await this.priceService.GetProductPricesAsync(productIds).ConfigureAwait(false);
 
     foreach (var od in command.OrderDetails)

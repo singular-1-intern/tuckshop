@@ -8,9 +8,8 @@ export class CreateOrder extends ModelBase {
     this.makeObservable();
   }
 
-    @Rules.StringLength(50)
     @Rules.Required()
-    public customerName: string = "";
+    public customerId: number = 0;
 
     public orderDetails = new List(NewOrderDetail);
 
@@ -22,10 +21,10 @@ export class CreateOrder extends ModelBase {
   }
 
   public toString(): string {
-    if (this.isNew || !this.customerName) {
+    if (this.isNew || !this.customerId) {
       return "New create order";
     } else {
-      return this.customerName;
+      return `Order for customer ${this.customerId}`;
     }
   }
 }
@@ -37,20 +36,20 @@ export class NewOrderDetail extends ModelBase {
       super();
       this.makeObservable();
   }
-  public productId: number = 0;
+    public productId: number = 0;
 
-  @Attributes.Integer()
-  public quantity: number = 0;
+    @Attributes.Integer()
+    public quantity: number = 0;
 
-  // Client only properties / methods
-  @Attributes.NoTracking()
+    // Client only properties / methods
+    @Attributes.NoTracking()
   public productName: string = "";
 
-  @Attributes.NoTracking()
-  @Attributes.Float()
+    @Attributes.NoTracking()
+    @Attributes.Float()
   public price: number = 0;
 
-  @Attributes.Float()
+    @Attributes.Float()
   public get value() {
       return this.quantity * this.price;
   }

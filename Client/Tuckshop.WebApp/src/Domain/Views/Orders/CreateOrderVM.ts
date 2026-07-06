@@ -11,7 +11,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         private notifications = AppService.get(Types.Neo.UI.GlobalNotifications),
         private appDataCache = AppService.get(DomainTypes.Services.DataCache),
         private ordersCommandApiClient = AppService.get(DomainTypes.ApiClients.OrdersCommandApiClient),
-        private customersApiClient = AppService.get(DomainTypes.ApiClients.CustomersApiClient)) {
+        private customersApiClient = AppService.get(DomainTypes.ApiClients.CustomersApiClient)
+    ) {
 
         super(taskRunner);
         this.makeObservable();
