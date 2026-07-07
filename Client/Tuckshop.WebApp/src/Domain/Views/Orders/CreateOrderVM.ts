@@ -1,8 +1,10 @@
-import { Views } from '@singularsystems/neo-react';
+import { Neo, Views } from '@singularsystems/neo-react';
 import { AppService, DomainTypes, Types } from '../../DomainTypes';
 import { CreateOrder } from '../../Models/Orders/Commands/CreateOrder';
 import Customer from '../../Models/Customer';
 import List from '@singularsystems/neo-core/dist/Model/List';
+import { Misc, ModalUtils, Model } from '@singularsystems/neo-core';
+
 
 export default class CreateOrderVM extends Views.ViewModelBase {
 
@@ -57,4 +59,6 @@ export default class CreateOrderVM extends Views.ViewModelBase {
             this.newOrder = null;
         });
     }
+
+    public showBasicModal: boolean = false;
 }

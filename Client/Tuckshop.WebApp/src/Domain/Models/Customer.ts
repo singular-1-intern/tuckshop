@@ -1,4 +1,4 @@
-import { ModelBase, Rules, Validation } from '@singularsystems/neo-core';
+import { Attributes, ModelBase, Rules, Validation } from '@singularsystems/neo-core';
 
 export default class Customer extends ModelBase {
     static typeName = "Customer";
@@ -13,6 +13,9 @@ export default class Customer extends ModelBase {
     @Rules.Required()
     @Rules.StringLength(100)
     public customerName: string = "";
+
+    @Attributes.Float()
+    public walletBalance: number = 0;
 
     // Client only properties / methods
 

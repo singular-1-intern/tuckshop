@@ -1,4 +1,5 @@
 import React from 'react';
+import { ModalUtils } from '@singularsystems/neo-core';
 import { Neo, NeoGrid, Views } from '@singularsystems/neo-react';
 import CreateOrderVM from './CreateOrderVM';
 import { observer } from 'mobx-react';
@@ -27,10 +28,32 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
 			    <Neo.Card title="Create Order">
                     {this.viewModel.newOrder && 
                         <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()}>
-                            {(order, orderMeta) => (
-                                <div>
+                            {(order, orderMeta) => {
+                                const selectedCustomer = this.viewModel.customers.find(c => c.customerId === order.customerId);
+
+                                return <>
                                     {/* <Neo.FormGroupInline bind={orderMeta.customerName} /> */}
-                                    <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
+                                    <div className="row g-3 align-items-center mb-3">
+                                        <div className="col-md-8">
+                                            <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
+                                        </div>
+                                        <div className="col-md-4">
+                                            <div className="WalletBalance text-md-end text-start fw-semibold">
+                                                {selectedCustomer
+                                                    ? `Wallet balance: ${selectedCustomer.walletBalance}`
+                                                    : 'Wallet balance: _____'}
+                                            </div>
+                                            <Neo.Button
+                                                className="ms-1"
+                                                menuAlignment="right"
+                                                menuItems={[
+                                                    { text: "Deposit", icon: "money", onClick: () => ModalUtils.showMessage("Wallet Deposit", "You have successfully deposited funds.") },
+                                                    { text: "Withdraw", icon: "money", onClick: () => ModalUtils.showMessage("Wallet Withdraw", "You have successfully withdrawn funds.") }
+                                                ]}>
+                                                Manage Wallet
+                                            </Neo.Button>
+                                        </div>
+                                    </div>
                                     <NeoGrid.Grid items={order.orderDetails}>
                                         {(orderDetail, orderDetailMeta) => (
                                             <NeoGrid.Row>
@@ -44,8 +67,8 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                     <div className="text-right mt-3">
                                         <Neo.Button isSubmit size="lg" icon="coffee">Place Order</Neo.Button>
                                     </div>                                    
-                                </div>
-                            )}
+                                </>;
+                            }}
                         </Neo.Form>}
                         {!this.viewModel.newOrder && 
                             <Neo.Alert variant="success" heading="Order submitted" animateInitial className="mt-4">
