@@ -29,6 +29,12 @@
     [Column(TypeName = "money")]
     public decimal Price { get; set; }
 
+    [StringLength(300)]
+    /// <summary>
+    /// Gets or sets the ImageUrl.
+    /// </summary>
+    public string ImageUrl { get; set; } = string.Empty;
+
     /// <inheritdoc />
     protected override void AddBusinessRules(ValidationRules<Product> rules)
     {

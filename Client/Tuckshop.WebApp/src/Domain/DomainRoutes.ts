@@ -5,6 +5,7 @@ import ProductsView from './Views/ProductsView';
 import CreateOrderView from './Views/Orders/CreateOrderView';
 import ViewOrdersView from './Views/Orders/ViewOrdersView';
 import CustomersView from './Views/CustomersView';
+import DashboardView from './Views/DashboardView';
 
 export const viewOrdersRoute = { name: "View Orders", path: '/view-orders', component: ViewOrdersView, icon: "list_alt" };
 
@@ -19,9 +20,9 @@ const MenuRoutes: IAppMenuItem[] =
                 { 
                     name: "Create Order", path: "/create-order", icon: "add_shopping_cart", component: CreateOrderView
                 },
-                // { 
-                //     name: "View Orders", path: "/view-orders", icon: "list_alt", component: ViewOrdersView
-                // }, 
+                { 
+                    name: "Dashboard", path: "/dashboard", icon: "dashboard", component: DashboardView
+                }, 
                     viewOrdersRoute,
                 { 
                     name: "Customers", path: "/customers", icon: "people", component: CustomersView

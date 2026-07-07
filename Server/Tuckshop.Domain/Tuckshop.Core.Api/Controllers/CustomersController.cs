@@ -4,6 +4,7 @@
   using Tuckshop.App.Services;
   using Tuckshop.Core.App.Services;
   using Tuckshop.Core.Models;
+  using Tuckshop.Core.Models.Customers;
   using Tuckshop.Models;
   using Tuckshop.Models.Orders;
 

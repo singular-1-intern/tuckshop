@@ -14,7 +14,7 @@ export default class Home extends Views.ViewBase {
             <div>
                 <Neo.GridLayout lg={3}>
                     <Neo.Card title="Dashboard item 1">
-
+                        
                     </Neo.Card>
                     <Neo.Card title="Dashboard item 2">
 

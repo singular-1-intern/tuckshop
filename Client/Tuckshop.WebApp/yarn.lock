@@ -1983,6 +1983,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@highcharts/react@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "@highcharts/react@npm:5.2.2"
+  peerDependencies:
+    "@types/react": ">=18"
+    highcharts: ">=13.0.0"
+    react: ">=18"
+    react-dom: ">=18"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10c0/2bdc7442e1596e271f7d874e3be789a5e4aa4e1fdf9a5d9398880524d41110d8fbd07b028a9e6ec607186b298d82dee529cd33402644451fd6af942ef32d7288
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.13.0":
   version: 0.13.0
   resolution: "@humanwhocodes/config-array@npm:0.13.0"
@@ -8022,6 +8037,21 @@ __metadata:
   bin:
     he: bin/he
   checksum: 10c0/a27d478befe3c8192f006cdd0639a66798979dfa6e2125c6ac582a19a5ebfec62ad83e8382e6036170d873f46e4536a7e795bf8b95bf7c247f4cc0825ccc8c17
+  languageName: node
+  linkType: hard
+
+"highcharts@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "highcharts@npm:13.0.0"
+  peerDependencies:
+    jspdf: ^4.1.0
+    svg2pdf.js: ^2.7.0
+  peerDependenciesMeta:
+    jspdf:
+      optional: true
+    svg2pdf.js:
+      optional: true
+  checksum: 10c0/1c41fbf98bed1cbaab9abf5a5332d492f0eae9b2edd80ba0297ee248f1ca7b74864fe88237bb936050850bdbb82aa33336dd408dcbd6a7222109d8b0a81f97ac
   languageName: node
   linkType: hard
 
@@ -14488,6 +14518,7 @@ __metadata:
   dependencies:
     "@craco/craco": "npm:7.0.0"
     "@craco/types": "npm:7.0.0"
+    "@highcharts/react": "npm:^5.2.2"
     "@singularsystems/neo-authorisation": "npm:1.3.1"
     "@singularsystems/neo-canvas-grid": "npm:1.3.2"
     "@singularsystems/neo-core": "npm:1.4.2"
@@ -14503,6 +14534,7 @@ __metadata:
     bootstrap: "npm:5.3.3"
     core-js: "npm:3.38.1"
     decimal.js-light: "npm:2.5.1"
+    highcharts: "npm:^13.0.0"
     inversify: "npm:6.0.2"
     mobx: "npm:6.13.7"
     mobx-react: "npm:9.2.0"

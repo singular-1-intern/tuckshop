@@ -18,6 +18,9 @@ export default class Product extends ModelBase {
     @Rules.Required()
     public price: number = 0;
 
+    @Rules.StringLength(300)
+    public imageUrl: string = "";
+
     // Client only properties / methods
 
     protected static addBusinessRules(rules: Validation.Rules<Product>) {

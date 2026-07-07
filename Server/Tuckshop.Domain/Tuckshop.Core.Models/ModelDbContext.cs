@@ -7,6 +7,7 @@ namespace Tuckshop.Core.Models
   using Neo.Model.Processing;
   using Neo.Model.SqlServer;
   using Neo.OneTimeTokens;
+  using Tuckshop.Core.Models.Customers;
   using Tuckshop.Core.Models.Files;
   using Tuckshop.Core.Models.Identity;
 

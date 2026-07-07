@@ -37,10 +37,29 @@ export default class ProductsView extends Views.ViewBase<
             </div>
 
             <NeoGrid.Grid items={this.viewModel.products} showAddButton>
-              {(product, productMeta) => (
-                <NeoGrid.Row>
+              {(product, productMeta, rowIndex) => (
+                <NeoGrid.Row key={`${product.productId || 'new'}-${rowIndex}`}>
                   <NeoGrid.Column display={productMeta.productId} />
                   <NeoGrid.Column bind={productMeta.productName} />
+                  <NeoGrid.Column
+                    display={productMeta.imageUrl}
+                    label="Image"
+                    width={70}
+                    suppressDefaultContent={!!product.imageUrl}
+                  >
+                    {product.imageUrl && (
+                      <img
+                        src={product.imageUrl}
+                        alt={product.productName || "Product image"}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          borderRadius: "4px"
+                        }}
+                      />
+                    )}
+                  </NeoGrid.Column>
                   <NeoGrid.Column
                     bind={productMeta.price}
                     numProps={{ format: Misc.NumberFormat.CurrencyDecimals }}

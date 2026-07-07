@@ -18,6 +18,7 @@ dotnet tool update --global dotnet-ef
 dotnet ef migrations add InitialMigration --project Tuckshop.Core.Models.Migrations --context ModelDbContext
 
 dotnet ef migrations add {Name} --project Tuckshop.Core.Models.Migrations --context ModelDbContext
+dotnet ef migrations add AddedProductsImageUrl --project Tuckshop.Core.Models.Migrations --context ModelDbContext
 
 // TO ROLLBACK MIGRATIONS IN THE DB TO A SPECIFIC MIGRATION
 // ========================================================
