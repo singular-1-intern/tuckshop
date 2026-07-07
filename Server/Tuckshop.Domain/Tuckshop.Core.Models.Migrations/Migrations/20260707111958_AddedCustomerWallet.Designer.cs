@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tuckshop.Core.Models;
 
@@ -11,9 +12,11 @@ using Tuckshop.Core.Models;
 namespace Tuckshop.Core.Models.Migrations.Migrations
 {
     [DbContext(typeof(ModelDbContext))]
-    partial class ModelDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260707111958_AddedCustomerWallet")]
+    partial class AddedCustomerWallet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

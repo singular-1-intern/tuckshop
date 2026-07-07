@@ -1,6 +1,7 @@
-﻿namespace Tuckshop.Core.Models
+﻿namespace Tuckshop.Core.Models.Customers
 {
   using Neo.Model;
+  using Neo.Model.Exceptions;
   using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
@@ -19,6 +20,7 @@
     {
       this.CustomerId = customerId;
       this.CustomerName = customerName;
+      this.WalletBalance = 0m;
     }
 
     /// <summary>
@@ -33,8 +35,38 @@
     [MaxLength(100)]
     public string CustomerName { get; private set; } = string.Empty;
 
-    // Navigation Property - tells EF Core that an Customer contains one or many Orders.
-    //public ICollection<Order> Orders { get; set; } = new List<Order>();
+    [Column(TypeName = "money")]
+    public decimal WalletBalance { get; private set; }
+
+    public void IncreaseBalance(decimal amount)
+    {
+      if (amount <= 0)
+      {
+        throw new InvalidDomainOperationException("Please add a positive amount");
+      }
+
+      this.WalletBalance += amount;
+    }
+
+    public void DecreaseBalance(decimal amount)
+    {
+      if (amount <= 0)
+      {
+        throw new InvalidDomainOperationException("Amount must be a positive value");
+      }
+
+      if (amount > this.WalletBalance)
+      {
+        throw new InvalidDomainOperationException($"Insufficient wallet balance. Available: {this.WalletBalance:C}, Required: {amount:C}");
+      }
+
+      this.WalletBalance -= amount;
+    }
+
+    public bool HasSufficientBalance(decimal amount)
+    {
+      return this.WalletBalance >= amount;
+    }
 
   }
 }
