@@ -46,21 +46,20 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                        
                                         {selectedCustomer && (
                                             <>
-                                            <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 d-block text-start ps-0" onClick={() => order.customerId = 0}>Logout</button>
+                                            <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1" onClick={() => order.customerId = 0}>Logout</button>
                                             <div className="col-md-12 d-flex flex-direction-column flex-md-row align-items-center justify-content-center">
                                                 <div className="col-md-8">
                                                     <h1>Welcome back, <em>{selectedCustomer.customerName}</em></h1>
                                                 </div>
                                                
                                                 <div className="col-md-4 d-flex flex-column align-items-md-end align-items-start gap-2">
-                                                    <div className="WalletBalance text-md-end text-start fw-semibold">
+                                                    {/* <div className="WalletBalance text-md-end text-start fw-semibold">
                                                         {`Wallet balance: ${selectedCustomer.walletBalance}`}
-                                                    </div>
+                                                    </div> */}
                                                     <div className="manage-wallet-btn">
                                                         <Neo.Modal
                                                             title="Wallet Action"
                                                             bind={this.viewModel.meta.showBasicModal}
-                                                            acceptButton={{ text: 'Submit', onClick: () => this.viewModel.submitWalletAction() }}
                                                         >
                                                             <Neo.FormGroup bind={this.viewModel.meta.walletAmount} label="Amount" />
                                                             <div className="mt-2">
@@ -68,7 +67,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                                     variant="secondary"
                                                                     icon="credit-card"
                                                                     onClick={() => this.viewModel.startPaystackCheckout(selectedCustomer.customerId)}>
-                                                                    Pay with Paystack
+                                                                    {this.viewModel.walletAction === 'deposit' ? 'Deposit' : 'Withdraw'} with Paystack
                                                                 </Neo.Button>
                                                             </div>
                                                         </Neo.Modal>
@@ -79,7 +78,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                                 { text: "Deposit", icon: "money", onClick: () => this.viewModel.depositFunds(selectedCustomer.customerId) },
                                                                 { text: "Withdraw", icon: "money", onClick: () => this.viewModel.withdrawFunds(selectedCustomer.customerId) }
                                                             ]}>
-                                                            Manage Wallet
+                                                            <>Wallet balance: <strong>{`R ${selectedCustomer.walletBalance}`}</strong></>
                                                         </Neo.Button>
                                                     </div>
                                                 </div>

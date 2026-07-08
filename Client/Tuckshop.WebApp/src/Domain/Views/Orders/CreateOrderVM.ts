@@ -59,10 +59,15 @@ export default class CreateOrderVM extends Views.ViewModelBase {
     public submitOrder() {
         const orderData = this.newOrder!.toJSObject();
 
+        
+
         this.taskRunner.run(async () => {
             await this.ordersCommandApiClient.createOrder(orderData);
             this.newOrder = null;
+            // this.walletAction = "withdraw";
+            // this.submitWalletAction(orderData.totalAmount);
         });
+
     }
 
     // DEPOSIT & WITHDRAWAL OF FUNDS
@@ -71,7 +76,7 @@ export default class CreateOrderVM extends Views.ViewModelBase {
     public walletAmount: number = 0;
 
     private walletCustomerId: number = 0;
-    private walletAction: WalletAction = 'deposit';
+    public walletAction: WalletAction = 'deposit';
 
     public depositFunds(customerId: number) {
         this.openWalletModal(customerId, 'deposit');
@@ -129,19 +134,20 @@ export default class CreateOrderVM extends Views.ViewModelBase {
 
             const publicKey = process.env.REACT_APP_PAYSTACK_PK;
             if (!publicKey) {
-                console.error('Missing REACT_APP_PAYSTACK_PK environment variable.');
+                this.notifications.addDanger('Payment Failed', 'Paystack public API key is missing.', 4);
                 return;
             }
-
+            
             this.popup.newTransaction({
                 key: publicKey,
                 email: "test-customer@example.com",
                 amount: amount * 100,
-                onSuccess: (transaction: any) => {
-                    console.log("Payment successful! Reference:", transaction.reference);
+                onSuccess: () => {
+                    this.submitWalletAction(amount);
                 },
                 onCancel: () => {
-                    console.log("User closed the checkout popup.");
+                    this.notifications.addInfo('Payment cancelled', 'The payment was cancelled by the user.', 4);
+                    this.showBasicModal = false;
                 }
             });
         });
