@@ -28,6 +28,8 @@ namespace Tuckshop.Models.Orders.Commands
     /// Gets or sets the Order Details
     /// </summary>
     public ICollection<NewOrderDetail> OrderDetails { get; set; } = new List<NewOrderDetail>();
+    [StringLength(50)]
+    public string CustomerName { get; set; }
 
     /// <summary>
     /// Represents a new order detail

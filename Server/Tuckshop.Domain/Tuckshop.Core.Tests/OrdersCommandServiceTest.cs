@@ -9,6 +9,7 @@
   using Tuckshop.App.Services;
   using Tuckshop.Core.App.Services;
   using Tuckshop.Core.Models;
+  using Tuckshop.Core.Models.Customers;
   using Tuckshop.Models.Orders.Commands;
   using Xunit;
 
@@ -20,8 +21,15 @@
     public async Task CreateOrderAsync()
     {
       var service = await this.CreateOrdersCommandServiceAsync();
-      Order order = await this.CreateOrderWithCommandAsync(service, "Create Cmd");
-      Assert.Equal("Create Cmd", order.CustomerName);
+
+      // Create a test customer
+      var customer = new Customer(1, "Test Customer");
+      this.context.Customers.Add(customer);
+      await this.context.SaveChangesAsync();
+      this.context.DetachAllEntities();
+
+      Order order = await this.CreateOrderWithCommandAsync(service, customer.CustomerId);
+      Assert.Equal("Test Customer", order.CustomerName);
       Assert.Equal(2, order.OrderDetails.Count);
       Assert.Null(order.Completed.On);
       Assert.Null(order.Completed.By);
@@ -31,11 +39,11 @@
 
     private async Task<Order> CreateOrderWithCommandAsync(
       OrdersCommandService service,
-      string customerName)
+      int customerId)
     {
       var createCommand = new CreateOrder()
       {
-        CustomerName = customerName,
+        CustomerId = customerId,
         OrderDetails = new List<CreateOrder.NewOrderDetail>()
         {
           new CreateOrder.NewOrderDetail() { ProductId = 1, Quantity = 5 },
@@ -51,13 +59,12 @@
     private async Task<OrdersCommandService> CreateOrdersCommandServiceAsync()
     {
       var unitTestHelper = await UnitTestHelper.InitWithContextAsync().ConfigureAwait(false);
-      //var context = unitTestHelper.DbContext;
-      //this.context = await unitTestHelper.InitContextAsync().ConfigureAwait(false);
       this.context = unitTestHelper.DbContext;
-      var modelService = new OrdersModelService(this.context);
+      var ordersModelService = new OrdersModelService(this.context);
+      var customersModelService = new CustomersModelService(this.context);
       var priceService = new ProductPricesService(this.context);
       var userResolver = new TestUserResolver<User>(1);
-      var service = new OrdersCommandService(modelService, priceService, userResolver);
+      var service = new OrdersCommandService(ordersModelService, customersModelService, priceService, userResolver);
       return service;
     }
 
@@ -66,7 +73,13 @@
     {
       OrdersCommandService service = await CreateOrdersCommandServiceAsync().ConfigureAwait(false);
 
-      Order order = await CreateOrderWithCommandAsync(service, "Complete Cmd").ConfigureAwait(false);
+      // Create a test customer
+      var customer = new Customer(2, "Complete Customer");
+      this.context.Customers.Add(customer);
+      await this.context.SaveChangesAsync();
+      this.context.DetachAllEntities();
+
+      Order order = await CreateOrderWithCommandAsync(service, customer.CustomerId).ConfigureAwait(false);
 
       var completeCommand = new CompleteOrder()
       {
@@ -87,7 +100,13 @@
     {
       OrdersCommandService service = await CreateOrdersCommandServiceAsync().ConfigureAwait(false);
 
-      Order order = await CreateOrderWithCommandAsync(service, "Cancel Cmd").ConfigureAwait(false);
+      // Create a test customer
+      var customer = new Customer(3, "Cancel Customer");
+      this.context.Customers.Add(customer);
+      await this.context.SaveChangesAsync();
+      this.context.DetachAllEntities();
+
+      Order order = await CreateOrderWithCommandAsync(service, customer.CustomerId).ConfigureAwait(false);
 
       var cancelCommand = new CancelOrder()
       {

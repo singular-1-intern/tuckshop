@@ -1,9 +1,11 @@
-import { Neo, Views } from '@singularsystems/neo-react';
+import { Views } from '@singularsystems/neo-react';
 import { AppService, DomainTypes, Types } from '../../DomainTypes';
 import { CreateOrder } from '../../Models/Orders/Commands/CreateOrder';
 import Customer from '../../Models/Customer';
 import List from '@singularsystems/neo-core/dist/Model/List';
-import { Misc, ModalUtils, Model } from '@singularsystems/neo-core';
+import PaystackPop from '@paystack/inline-js';
+
+type WalletAction = 'deposit' | 'withdraw';
 
 
 export default class CreateOrderVM extends Views.ViewModelBase {
@@ -28,14 +30,14 @@ export default class CreateOrderVM extends Views.ViewModelBase {
 
     public newOrder: CreateOrder | null = null;
 
-
-    // Fetch Customers.
     public customers = new List(Customer);
 
     public async getCustomers() {
         const response = await this.taskRunner.waitFor(this.customersApiClient.get());
         this.customers.set(response.data);
     }
+
+    // SETUP NEW ORDER
 
     public async setupOrder() {
         const newOrder = new CreateOrder();
@@ -52,6 +54,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         this.newOrder = newOrder;
     }
 
+    // SUBMIT ORDERS
+
     public submitOrder() {
         const orderData = this.newOrder!.toJSObject();
 
@@ -61,61 +65,101 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         });
     }
 
-    public depositAmount: number = 0;
-    public withdrawAmount: number = 0;
-
-    public depositFunds(customerId: number, amount = this.depositAmount) {
-        if (!customerId || amount <= 0) {
-            return;
-        }
-
-        this.taskRunner.run(async () => {
-            await this.customersCommandApiClient.depositFunds({ customerId, amount });
-
-            this.showBasicModal = false;
-            this.depositAmount = 0;
-
-            this.notifications.addSuccess(
-                'Deposit successful',
-                `Deposited ${amount.toFixed(2)} successfully.`,
-                4
-            );
-        });
-    }
-
-    public withdrawFunds(customerId: number, amount = this.withdrawAmount) {
-        if (!customerId || amount <= 0) {
-            return;
-        }
-
-        this.taskRunner.run(async () => {
-            await this.customersCommandApiClient.withdrawFunds({ customerId, amount });
-
-            this.showBasicModal = false;
-            this.withdrawAmount = 0;
-
-            this.notifications.addSuccess(
-                'Withdrawal successful',
-                `Withdrew ${amount.toFixed(2)} successfully.`,
-                4
-            );
-        });
-    }
-
-    private async showInput() {
-
-    // Create a temporary observable to bind to.
-    const nameProperty = Model.ObservableProperty.required("Name", "");
-
-    const result = await ModalUtils.showOkCancel(
-        "What is your name?",
-        <Neo.FormGroup label="Type in your name below:" bind={nameProperty} />, 
-        nameProperty); // Pass the property / modal to make sure it is validated before the modal is accepted.
-
-    if (result === Misc.ModalResult.Yes) {
-        ModalUtils.showMessage("Name", "Your name is " + nameProperty.value);
-    }
-}
+    // DEPOSIT & WITHDRAWAL OF FUNDS
 
     public showBasicModal: boolean = false;
+    public walletAmount: number = 0;
+
+    private walletCustomerId: number = 0;
+    private walletAction: WalletAction = 'deposit';
+
+    public depositFunds(customerId: number) {
+        this.openWalletModal(customerId, 'deposit');
+    }
+
+    public withdrawFunds(customerId: number) {
+        this.openWalletModal(customerId, 'withdraw');
+    }
+
+    private openWalletModal(customerId: number, action: WalletAction) {
+        if (!customerId) {
+            return;
+        }
+
+        this.walletAction = action;
+        this.walletCustomerId = customerId;
+        this.walletAmount = 0;
+        this.showBasicModal = true;
+    }
+
+    public submitWalletAction(amount = this.walletAmount) {
+        if (!this.walletCustomerId || amount <= 0) {
+            return;
+        }
+
+        const action = this.walletAction;
+        const actionText = action === 'deposit' ? 'Deposit' : 'Withdrawal';
+
+        this.taskRunner.run(async () => {
+            if (action === 'deposit') {
+                await this.customersCommandApiClient.depositFunds({ customerId: this.walletCustomerId, amount });
+            } else {
+                await this.customersCommandApiClient.withdrawFunds({ customerId: this.walletCustomerId, amount });
+            }
+
+            await this.getCustomers();
+            this.showBasicModal = false;
+            this.walletAmount = 0;
+
+            this.notifications.addSuccess(
+                `${actionText} successful`,
+                `${actionText} of ${amount} successful.`,
+                4
+            );
+        });
+    }
+
+    public startPaystackCheckout(customerId: number, amount = this.walletAmount) {
+        if (!customerId || amount <= 0) {
+            return;
+        }
+
+        this.taskRunner.run(async () => {
+            await this.initPaystackPopup();
+
+            const publicKey = process.env.REACT_APP_PAYSTACK_PK;
+            if (!publicKey) {
+                console.error('Missing REACT_APP_PAYSTACK_PK environment variable.');
+                return;
+            }
+
+            this.popup.newTransaction({
+                key: publicKey,
+                email: "test-customer@example.com",
+                amount: amount * 100,
+                onSuccess: (transaction: any) => {
+                    console.log("Payment successful! Reference:", transaction.reference);
+                },
+                onCancel: () => {
+                    console.log("User closed the checkout popup.");
+                }
+            });
+        });
+    }
+
+    private _popup?: PaystackPop;
+
+    public get popup() {
+        if (!this._popup) {
+            throw new Error('Paystack popup not initialized yet');
+        }
+        return this._popup;
+    }
+
+    public async initPaystackPopup() {
+        if (!this._popup) {
+            const { default: PaystackPopCtor } = await import('@paystack/inline-js');
+            this._popup = new PaystackPopCtor() as any;
+        }
+    }
 }

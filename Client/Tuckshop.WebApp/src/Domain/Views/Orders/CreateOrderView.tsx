@@ -1,5 +1,4 @@
 import React from 'react';
-import { ModalUtils } from '@singularsystems/neo-core';
 import { Neo, NeoGrid, Views } from '@singularsystems/neo-react';
 import CreateOrderVM from './CreateOrderVM';
 import { observer } from 'mobx-react';
@@ -25,48 +24,88 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
     public render() {
         return (
             <div>
-			    <Neo.Card title="Create Order">
+			    <Neo.Card>
                     {this.viewModel.newOrder && 
                         <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()}>
                             {(order, orderMeta) => {
-                                const selectedCustomer = this.viewModel.customers.find(c => c.customerId === order.customerId);
+                                const selectedCustomerId = Number(order.customerId) || 0;
+                                let selectedCustomer = this.viewModel.customers.find(c => c.customerId === selectedCustomerId);
 
                                 return <>
-                                    {/* <Neo.FormGroupInline bind={orderMeta.customerName} /> */}
                                     <div className="row g-3 align-items-center mb-3">
-                                        <div className="col-md-8">
-                                            <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="WalletBalance text-md-end text-start fw-semibold">
-                                                {selectedCustomer
-                                                    ? `Wallet balance: ${selectedCustomer.walletBalance}`
-                                                    : 'Wallet balance: _____'}
+                                        {!selectedCustomer &&
+                                            (
+                                                <div className="login-screen">
+                                                    <h1>Login</h1>
+                                                    <div className="col-md-8">
+                                                        <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                       
+                                        {selectedCustomer && (
+                                            <>
+                                            <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 d-block text-start ps-0" onClick={() => order.customerId = 0}>Logout</button>
+                                            <div className="col-md-12 d-flex flex-direction-column flex-md-row align-items-center justify-content-center">
+                                                <div className="col-md-8">
+                                                    <h1>Welcome back, <em>{selectedCustomer.customerName}</em></h1>
+                                                </div>
+                                               
+                                                <div className="col-md-4 d-flex flex-column align-items-md-end align-items-start gap-2">
+                                                    <div className="WalletBalance text-md-end text-start fw-semibold">
+                                                        {`Wallet balance: ${selectedCustomer.walletBalance}`}
+                                                    </div>
+                                                    <div className="manage-wallet-btn">
+                                                        <Neo.Modal
+                                                            title="Wallet Action"
+                                                            bind={this.viewModel.meta.showBasicModal}
+                                                            acceptButton={{ text: 'Submit', onClick: () => this.viewModel.submitWalletAction() }}
+                                                        >
+                                                            <Neo.FormGroup bind={this.viewModel.meta.walletAmount} label="Amount" />
+                                                            <div className="mt-2">
+                                                                <Neo.Button
+                                                                    variant="secondary"
+                                                                    icon="credit-card"
+                                                                    onClick={() => this.viewModel.startPaystackCheckout(selectedCustomer.customerId)}>
+                                                                    Pay with Paystack
+                                                                </Neo.Button>
+                                                            </div>
+                                                        </Neo.Modal>
+                                                        <Neo.Button
+                                                            className="ms-1"
+                                                            menuAlignment="right"
+                                                            menuItems={[
+                                                                { text: "Deposit", icon: "money", onClick: () => this.viewModel.depositFunds(selectedCustomer.customerId) },
+                                                                { text: "Withdraw", icon: "money", onClick: () => this.viewModel.withdrawFunds(selectedCustomer.customerId) }
+                                                            ]}>
+                                                            Manage Wallet
+                                                        </Neo.Button>
+                                                    </div>
+                                                </div>
+                                                
                                             </div>
-                                            <Neo.Button
-                                                className="ms-1"
-                                                menuAlignment="right"
-                                                menuItems={[
-                                                    { text: "Deposit", icon: "money", onClick: () => ModalUtils.showMessage("Wallet Deposit", "You have successfully deposited funds.") },
-                                                    { text: "Withdraw", icon: "money", onClick: () => ModalUtils.showMessage("Wallet Withdrawal", "You have successfully withdrawn funds.") }
-                                                ]}>
-                                                Manage Wallet
-                                            </Neo.Button>
-                                        </div>
-                                    </div>
-                                    <NeoGrid.Grid items={order.orderDetails}>
-                                        {(orderDetail, orderDetailMeta) => (
-                                            <NeoGrid.Row>
-                                                <NeoGrid.Column display={orderDetailMeta.productName} />
-                                                <NeoGrid.Column display={orderDetailMeta.price} />
-                                                <NeoGrid.Column display={orderDetailMeta.value} sum />
-                                                <NeoGrid.Column bind={orderDetailMeta.quantity} />
-                                            </NeoGrid.Row>
+                                            </>
                                         )}
-                                    </NeoGrid.Grid>
-                                    <div className="text-right mt-3">
-                                        <Neo.Button isSubmit size="lg" icon="coffee">Place Order</Neo.Button>
-                                    </div>                                    
+                                    </div>
+                                    {selectedCustomer && (
+                                        <>
+                                            <NeoGrid.Grid items={order.orderDetails}>
+                                                {(orderDetail, orderDetailMeta) => (
+                                                    <NeoGrid.Row>
+                                                        <NeoGrid.Column display={orderDetailMeta.productName} />
+                                                        <NeoGrid.Column display={orderDetailMeta.price} />
+                                                        <NeoGrid.Column display={orderDetailMeta.value} sum />
+                                                        <NeoGrid.Column bind={orderDetailMeta.quantity} />
+                                                    </NeoGrid.Row>
+                                                )}
+                                            </NeoGrid.Grid>
+                                            <div className="text-right mt-3">
+                                                <Neo.Button isSubmit size="lg" icon="coffee">Place Order</Neo.Button>
+                                            </div>
+                                        </>
+                                    )}
+                                                                       
                                 </>;
                             }}
                         </Neo.Form>}

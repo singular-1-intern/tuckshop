@@ -30,6 +30,12 @@ export interface IOrdersCommandApiClient {
      */
     cancelOrder(command: Model.PartialPlainObject<CancelOrder>): AxiosPromise;
 
+    /**
+     * Initializes a Paystack transaction and returns an access code.
+     * @param command Payment initialization command.
+     */
+    initializePaystackTransaction(command: { customerId: number; amount: number }): AxiosPromise<{ access_code: string }>;
+
     // Client only properties / methods
 }
 
@@ -50,6 +56,10 @@ export default class OrdersCommandApiClient extends Data.ApiClientBase implement
 
     public cancelOrder(command: Model.PartialPlainObject<CancelOrder>): AxiosPromise {
         return this.axios.put(`${this.apiPath}/cancel`, command);
+    }
+
+    public initializePaystackTransaction(command: { customerId: number; amount: number }): AxiosPromise<{ access_code: string }> {
+        return this.axios.post(`${this.apiPath}/payment/initialize`, command);
     }
 
     // Client only properties / methods

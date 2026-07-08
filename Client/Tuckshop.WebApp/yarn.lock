@@ -2491,6 +2491,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@paystack/inline-js@npm:^2.23.1":
+  version: 2.23.1
+  resolution: "@paystack/inline-js@npm:2.23.1"
+  checksum: 10c0/bd5777291d590cd35a526e11396b6add02526e2dad7c029efa5a48bb3b6f10e4e716038f02d2e5a2c5de2078506659a4fda89f298d1e60ed7cf57e12b4913f1e
+  languageName: node
+  linkType: hard
+
 "@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.3":
   version: 0.5.17
   resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.17"
@@ -14519,6 +14526,7 @@ __metadata:
     "@craco/craco": "npm:7.0.0"
     "@craco/types": "npm:7.0.0"
     "@highcharts/react": "npm:^5.2.2"
+    "@paystack/inline-js": "npm:^2.23.1"
     "@singularsystems/neo-authorisation": "npm:1.3.1"
     "@singularsystems/neo-canvas-grid": "npm:1.3.2"
     "@singularsystems/neo-core": "npm:1.4.2"

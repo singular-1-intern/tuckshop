@@ -1,5 +1,6 @@
 namespace Tuckshop.App.Services
 {
+  using Neo.Model.Exceptions;
   using System.Threading.Tasks;
   using Tuckshop.Core.App.Services;
   using Tuckshop.Core.Models.Customers;
@@ -42,7 +43,14 @@ namespace Tuckshop.App.Services
     public async Task<Customer> WithdrawFundsAsync(WithdrawFunds command)
     {
       var customer = await this.modelService.GetByIdAsync(command.CustomerId).ConfigureAwait(false);
-      customer.DecreaseBalance(command.Amount);
+      if (command.Amount > customer.WalletBalance)
+      {
+        throw new InvalidDomainOperationException("test");
+      }
+      else
+      {
+        customer.DecreaseBalance(command.Amount);
+      }
       await this.modelService.SaveChangesAsync().ConfigureAwait(false);
       return customer;
     }
