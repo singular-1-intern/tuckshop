@@ -48,7 +48,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                 menuAlignment="right"
                                                 menuItems={[
                                                     { text: "Deposit", icon: "money", onClick: () => ModalUtils.showMessage("Wallet Deposit", "You have successfully deposited funds.") },
-                                                    { text: "Withdraw", icon: "money", onClick: () => ModalUtils.showMessage("Wallet Withdraw", "You have successfully withdrawn funds.") }
+                                                    { text: "Withdraw", icon: "money", onClick: () => ModalUtils.showMessage("Wallet Withdrawal", "You have successfully withdrawn funds.") }
                                                 ]}>
                                                 Manage Wallet
                                             </Neo.Button>

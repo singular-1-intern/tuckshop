@@ -13,7 +13,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         private notifications = AppService.get(Types.Neo.UI.GlobalNotifications),
         private appDataCache = AppService.get(DomainTypes.Services.DataCache),
         private ordersCommandApiClient = AppService.get(DomainTypes.ApiClients.OrdersCommandApiClient),
-        private customersApiClient = AppService.get(DomainTypes.ApiClients.CustomersApiClient)
+        private customersApiClient = AppService.get(DomainTypes.ApiClients.CustomersApiClient),
+        private customersCommandApiClient = AppService.get(DomainTypes.ApiClients.CustomersCommandApiClient)
     ) {
 
         super(taskRunner);
@@ -59,6 +60,62 @@ export default class CreateOrderVM extends Views.ViewModelBase {
             this.newOrder = null;
         });
     }
+
+    public depositAmount: number = 0;
+    public withdrawAmount: number = 0;
+
+    public depositFunds(customerId: number, amount = this.depositAmount) {
+        if (!customerId || amount <= 0) {
+            return;
+        }
+
+        this.taskRunner.run(async () => {
+            await this.customersCommandApiClient.depositFunds({ customerId, amount });
+
+            this.showBasicModal = false;
+            this.depositAmount = 0;
+
+            this.notifications.addSuccess(
+                'Deposit successful',
+                `Deposited ${amount.toFixed(2)} successfully.`,
+                4
+            );
+        });
+    }
+
+    public withdrawFunds(customerId: number, amount = this.withdrawAmount) {
+        if (!customerId || amount <= 0) {
+            return;
+        }
+
+        this.taskRunner.run(async () => {
+            await this.customersCommandApiClient.withdrawFunds({ customerId, amount });
+
+            this.showBasicModal = false;
+            this.withdrawAmount = 0;
+
+            this.notifications.addSuccess(
+                'Withdrawal successful',
+                `Withdrew ${amount.toFixed(2)} successfully.`,
+                4
+            );
+        });
+    }
+
+    private async showInput() {
+
+    // Create a temporary observable to bind to.
+    const nameProperty = Model.ObservableProperty.required("Name", "");
+
+    const result = await ModalUtils.showOkCancel(
+        "What is your name?",
+        <Neo.FormGroup label="Type in your name below:" bind={nameProperty} />, 
+        nameProperty); // Pass the property / modal to make sure it is validated before the modal is accepted.
+
+    if (result === Misc.ModalResult.Yes) {
+        ModalUtils.showMessage("Name", "Your name is " + nameProperty.value);
+    }
+}
 
     public showBasicModal: boolean = false;
 }
