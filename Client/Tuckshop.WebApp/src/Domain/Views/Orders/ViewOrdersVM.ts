@@ -3,6 +3,7 @@ import { AppService, DomainTypes, Types } from '../../DomainTypes';
 import OrderLookupCriteria from '../../Models/Orders/Queries/OrderLookupCriteria';
 import OrderLookup from '../../Models/Orders/Queries/OrderLookup';
 import List from '@singularsystems/neo-core/dist/Model/List';
+import Customer from '../../Models/Customer';
 
 export default class ViewOrdersVM extends Views.ViewModelBase {
 
@@ -10,7 +11,8 @@ export default class ViewOrdersVM extends Views.ViewModelBase {
         taskRunner = AppService.get(Types.Neo.TaskRunner),
         private notifications = AppService.get(Types.Neo.UI.GlobalNotifications),
         private ordersQueryApiClient = AppService.get(DomainTypes.ApiClients.OrdersQueryApiClient),
-        private ordersCommandApiClient = AppService.get(DomainTypes.ApiClients.OrdersCommandApiClient)) {
+        private ordersCommandApiClient = AppService.get(DomainTypes.ApiClients.OrdersCommandApiClient),
+        private customersApiClient = AppService.get(DomainTypes.ApiClients.CustomersApiClient)) {
 
         super(taskRunner);
         this.makeObservable();
@@ -40,7 +42,14 @@ export default class ViewOrdersVM extends Views.ViewModelBase {
         });
     }
 
-    public async initialise() {
+    public customers = new List(Customer);
 
+    public async getCustomers() {
+        const response = await this.taskRunner.waitFor(this.customersApiClient.get());
+        this.customers.set(response.data);
+    }
+
+    public async initialise() {
+        await this.getCustomers();
     }
 }

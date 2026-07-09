@@ -22,5 +22,10 @@
     /// Gets or sets the End Date filter value
     /// </summary>
     public DateTime? EndDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the CustomerName filter value.
+    /// </summary>
+    public String? CustomerName { get; set; }
   }
 }

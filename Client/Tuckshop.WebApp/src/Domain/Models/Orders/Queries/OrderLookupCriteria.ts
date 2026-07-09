@@ -16,6 +16,8 @@ export default class OrderLookupCriteria extends ValueObject {
     @Attributes.Date(Misc.TimeZoneFormat.None)
     public endDate: Date | null = null;
 
+    public customerName: String | null = null;
+
     // Client only properties / methods
 
     protected static addBusinessRules(rules: Validation.Rules<OrderLookupCriteria>) {

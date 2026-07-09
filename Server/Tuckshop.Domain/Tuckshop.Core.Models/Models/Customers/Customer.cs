@@ -2,6 +2,7 @@
 {
   using Neo.Model;
   using Neo.Model.Exceptions;
+  using Neo.Model.Validation;
   using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
@@ -67,6 +68,14 @@
     {
       return this.WalletBalance >= amount;
     }
+    protected override void AddBusinessRules(ValidationRules<Customer> rules)
+    {
+      base.AddBusinessRules(rules);
+
+      rules.FailWhen(c => c.WalletBalance <= 0, "Price must be above zero.");
+      rules.FailWhen(c => c.WalletBalance <= 10, "Minimum Deposit/Withdrawal is R10.");
+    }
+
 
   }
 }

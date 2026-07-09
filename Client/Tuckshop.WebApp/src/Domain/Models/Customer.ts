@@ -21,6 +21,8 @@ export default class Customer extends ModelBase {
 
     protected static addBusinessRules(rules: Validation.Rules<Customer>) {
         super.addBusinessRules(rules);
+        rules.failWhen(c => c.walletBalance <= 0, "Amount is required.");
+        rules.failWhen(c => c.walletBalance > 0 && c.walletBalance < 10, "Minimum amount is R10.");
     }
 
     public toString(): string {

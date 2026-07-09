@@ -45,6 +45,7 @@
                      || (criteria.OrderStatus == OrderStatus.Cancelled && o.Cancelled.On != null))
                 && (criteria.StartDate == null || o.OrderedOn >= criteria.StartDate)
                 && (criteria.EndDate == null || o.OrderedOn < criteria.EndDate.Value.AddDays(1))
+                && (criteria.CustomerName == null || o.CustomerName.Contains(criteria.CustomerName))
               select new
               {
                 o.OrderId,
@@ -114,6 +115,7 @@
                         || (criteria.OrderStatus == OrderStatus.Cancelled && o.Cancelled.On != null))
                    && (criteria.StartDate == null || o.OrderedOn >= criteria.StartDate)
                    && (criteria.EndDate == null || o.OrderedOn < criteria.EndDate.Value.AddDays(1))
+                   && (criteria.CustomerName == null || o.CustomerName.Contains(criteria.CustomerName))
                  select new
                  {
                    Order = new OrderLookup()

@@ -4,6 +4,9 @@ import { CreateOrder } from '../../Models/Orders/Commands/CreateOrder';
 import Customer from '../../Models/Customer';
 import List from '@singularsystems/neo-core/dist/Model/List';
 import PaystackPop from '@paystack/inline-js';
+import { Attributes, Rules, Validation } from '@singularsystems/neo-core';
+import OrderLookupCriteria from '../../Models/Orders/Queries/OrderLookupCriteria';
+import OrderLookup from '../../Models/Orders/Queries/OrderLookup';
 
 type WalletAction = 'deposit' | 'withdraw';
 
@@ -16,8 +19,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         private appDataCache = AppService.get(DomainTypes.Services.DataCache),
         private ordersCommandApiClient = AppService.get(DomainTypes.ApiClients.OrdersCommandApiClient),
         private customersApiClient = AppService.get(DomainTypes.ApiClients.CustomersApiClient),
-        private customersCommandApiClient = AppService.get(DomainTypes.ApiClients.CustomersCommandApiClient)
-    ) {
+        private customersCommandApiClient = AppService.get(DomainTypes.ApiClients.CustomersCommandApiClient),
+        private ordersQueryApiClient = AppService.get(DomainTypes.ApiClients.OrdersQueryApiClient)) {
 
         super(taskRunner);
         this.makeObservable();
@@ -28,13 +31,58 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         await this.setupOrder(); 
     }
 
+    public criteria = new OrderLookupCriteria();
+
+    public foundOrders = new List(OrderLookup);
+
+    public myOrdersDisplay: boolean = false;
+
+    public async findOrders() {
+        if (this.selectedCustomer) {
+            this.criteria.customerName = this.selectedCustomer;
+        }
+        const response = await this.taskRunner.waitFor(this.ordersQueryApiClient.getOrderLookupAsync(this.criteria.toQueryObject()));
+        this.foundOrders.set(response.data);
+    }
+
     public newOrder: CreateOrder | null = null;
 
     public customers = new List(Customer);
 
+    public selectedCustomer: string | null = null;
+
+    public selectedCustomerId: number = 0;
+
     public async getCustomers() {
         const response = await this.taskRunner.waitFor(this.customersApiClient.get());
         this.customers.set(response.data);
+    }
+
+    public showMyOrdersForCustomer(customerId: number) {
+        const customer = this.customers.find(c => c.customerId === customerId);
+        if (!customer) {
+            return;
+        }
+
+        this.selectedCustomerId = customer.customerId;
+        this.selectedCustomer = customer.customerName;
+        this.criteria.customerName = customer.customerName;
+        this.myOrdersDisplay = true;
+
+        this.taskRunner.run(async () => {
+            await this.findOrders();
+        });
+    }
+
+    public backToShop() {
+        this.myOrdersDisplay = false;
+    }
+
+    public clearSelectedCustomer() {
+        this.selectedCustomerId = 0;
+        this.selectedCustomer = null;
+        this.criteria.customerName = null;
+        this.myOrdersDisplay = false;
     }
 
     // SETUP NEW ORDER
@@ -57,23 +105,51 @@ export default class CreateOrderVM extends Views.ViewModelBase {
     // SUBMIT ORDERS
 
     public submitOrder() {
-        const orderData = this.newOrder!.toJSObject();
-
+        if (!this.newOrder) {
+            return;
+        }
         
+        const orderData = this.newOrder.toJSObject();
+        const customerId = this.newOrder.customerId;
+        const selectedCustomer = this.customers.find(c => c.customerId === customerId);
+        this.selectedCustomerId = customerId;
+        this.selectedCustomer = selectedCustomer?.customerName ?? null;
+        this.criteria.customerName = this.selectedCustomer;
+        const totalAmount = this.orderTotalAmount;
 
         this.taskRunner.run(async () => {
             await this.ordersCommandApiClient.createOrder(orderData);
-            this.newOrder = null;
-            // this.walletAction = "withdraw";
-            // this.submitWalletAction(orderData.totalAmount);
-        });
 
+            if (totalAmount > 0) {
+                const customer = this.customers.find(c => c.customerId === customerId);
+                const walletBalance = customer?.walletBalance ?? 0;
+                if (totalAmount > walletBalance) {
+                    this.notifications.addDanger(
+                        'Order Payment Failed',
+                        `Order total exceeds wallet balance. Please deposit atleast R ${totalAmount - walletBalance}  to complete the order.`,
+                        4
+                    );
+                    return;
+                }
+                await this.customersCommandApiClient.withdrawFunds({
+                    customerId,
+                    amount: totalAmount
+                });
+                await this.getCustomers();
+            }
+            this.newOrder = null;
+        });
     }
 
     // DEPOSIT & WITHDRAWAL OF FUNDS
 
     public showBasicModal: boolean = false;
+
+    @Attributes.Float()
+    @Rules.Required()
     public walletAmount: number = 0;
+
+    public currentWalletBalance: number = 0;
 
     private walletCustomerId: number = 0;
     public walletAction: WalletAction = 'deposit';
@@ -91,14 +167,23 @@ export default class CreateOrderVM extends Views.ViewModelBase {
             return;
         }
 
+        const customer = this.customers.find(c => c.customerId === customerId);
+
         this.walletAction = action;
         this.walletCustomerId = customerId;
+        this.currentWalletBalance = customer?.walletBalance ?? 0;
         this.walletAmount = 0;
         this.showBasicModal = true;
     }
 
+    protected addBusinessRules(rules: Validation.Rules<this>) {
+        super.addBusinessRules(rules);
+        rules.failWhen(c => (c.walletAmount ?? 0) <= 0, "Amount is required.");
+        rules.failWhen(c => (c.walletAmount ?? 0) > 0 && c.walletAmount < 10, "Minimum amount is R10.");
+    }
+
     public submitWalletAction(amount = this.walletAmount) {
-        if (!this.walletCustomerId || amount <= 0) {
+        if (!this.walletCustomerId || amount < 10) {
             return;
         }
 
@@ -124,8 +209,28 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         });
     }
 
+    public get orderTotalAmount() {
+        if (!this.newOrder) {
+            return 0;
+        }
+
+        return this.newOrder.orderDetails.reduce((sum, item) => sum + item.value, 0);
+    }
+
     public startPaystackCheckout(customerId: number, amount = this.walletAmount) {
-        if (!customerId || amount <= 0) {
+        if (!customerId || amount <= 0 ) {
+            this.notifications.addDanger('Payment Failed', 'Minimum Deposit/Withdrawal amount is R10.', 4);
+            return;
+        }
+
+        if (this.walletAction === 'withdraw' && amount > this.currentWalletBalance) {
+            this.notifications.addDanger(
+                'Withdrawal Failed',
+                'Withdrawal amount exceeds wallet balance.',
+                4
+            );
+            this.showBasicModal = false;
+            this.walletAmount = 0;
             return;
         }
 
@@ -146,7 +251,7 @@ export default class CreateOrderVM extends Views.ViewModelBase {
                     this.submitWalletAction(amount);
                 },
                 onCancel: () => {
-                    this.notifications.addInfo('Payment cancelled', 'The payment was cancelled by the user.', 4);
+                    this.notifications.addDanger('Payment cancelled', 'The payment was cancelled by the user.', 4);
                     this.showBasicModal = false;
                 }
             });
@@ -168,4 +273,5 @@ export default class CreateOrderVM extends Views.ViewModelBase {
             this._popup = new PaystackPopCtor() as any;
         }
     }
+
 }
