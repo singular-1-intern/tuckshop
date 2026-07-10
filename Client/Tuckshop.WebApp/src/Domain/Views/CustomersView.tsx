@@ -39,7 +39,7 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
                             <NeoGrid.Row>
                             <NeoGrid.Column display={customerMeta.customerId} />
                             <NeoGrid.Column bind={customerMeta.customerName} />
-                            <NeoGrid.ButtonColumn showDelete />
+                            <NeoGrid.ButtonColumn showDelete deleteButton={{ disabled: true }} />
                             </NeoGrid.Row>
                         )}
                         </NeoGrid.Grid>

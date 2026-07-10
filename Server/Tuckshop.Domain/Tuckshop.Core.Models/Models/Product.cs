@@ -3,6 +3,7 @@
   using Microsoft.EntityFrameworkCore;
   using Neo.Model;
   using Neo.Model.Validation;
+  using System;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,6 +35,11 @@
     /// Gets or sets the ImageUrl.
     /// </summary>
     public string ImageUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the isActive property.
+    /// </summary>
+    public bool isActive { get; set; }
 
     /// <inheritdoc />
     protected override void AddBusinessRules(ValidationRules<Product> rules)

@@ -21,6 +21,8 @@ export default class Product extends ModelBase {
     @Rules.StringLength(300)
     public imageUrl: string = "";
 
+    public isActive: boolean = true;
+
     // Client only properties / methods
 
     protected static addBusinessRules(rules: Validation.Rules<Product>) {

@@ -65,7 +65,7 @@ export default class ProductsView extends Views.ViewBase<
                       />
                     )}
                   </NeoGrid.Column>
-                  <NeoGrid.ButtonColumn showDelete />
+                  <NeoGrid.ButtonColumn deleteButton={{ disabled: true }} />
                 </NeoGrid.Row>
               )}
             </NeoGrid.Grid>

@@ -29,8 +29,6 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                         const selectedCustomerId = order.customerId || 0;
                         const selectedCustomer = this.viewModel.customers.find(c => c.customerId === selectedCustomerId);
                         const selectedOrderDetails = order.orderDetails.filter(orderDetail => orderDetail.quantity > 0);
-                        const orderTotal = selectedOrderDetails.reduce((total, orderDetail) => total + orderDetail.value, 0);
-                        const totalItems = selectedOrderDetails.reduce((total, orderDetail) => total + orderDetail.quantity, 0);
 
                         return (
                             <>
@@ -48,11 +46,11 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
 
                                         {selectedCustomer && (
                                             // {/* HEADER SECTION */}
-                                            <div className="header-section">
-                                                <div className="nav-btns d-flex justify-content-between mb-100">
+                                            <div className="header-section p-10">
+                                                <div className="nav-btns d-flex justify-content-between mb-4">
                                                     <button
                                                         type="button"
-                                                        className="btn btn-link btn-sm text-decoration-none text-start ps-0 col-md-1"
+                                                        className="btn btn-link text-decoration-none text-start ps-0 col-md-1"
                                                         onClick={() => {
                                                             order.customerId = 0;
                                                             this.viewModel.clearSelectedCustomer();
@@ -61,13 +59,13 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        className="btn btn-link btn-sm text-decoration-none col-md-1"
+                                                        className="btn btn-link text-decoration-none col-md-1"
                                                         onClick={() => this.viewModel.showMyOrdersForCustomer(selectedCustomer.customerId)}>
                                                         View my orders
                                                     </button>
                                                 </div>
 
-                                                <div className="col-md-12 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-20">
+                                                <div className="col-md-12 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
                                                     <div className="col-md-8">
                                                         <h1 className="mb-0">Welcome back, <em>{selectedCustomer.customerName}</em></h1>
                                                     </div>
@@ -110,7 +108,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                     <div className="main-section row g-3 mt-1">
                                         <div className="col-12 col-lg-9">
                                             {/* PRODUCTS CARDS */}
-                                            <Neo.Card title="Products" className="shadow rounded-4 h-100">
+                                            <Neo.Card title="Browse Products" className="shadow rounded-4 h-100">
                                                 <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3">
                                                     {order.orderDetails.map((orderDetail, orderDetailIndex) => (
                                                         <div key={orderDetail.productId || orderDetailIndex} className="col">
@@ -208,7 +206,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                         <Neo.Card className="shadow rounded-4"> 
                             <button type="button" className="btn btn-link btn-sm text-decoration-none col-md-1" onClick={() => this.viewModel.backToShop()}>Back to shop</button>
                         </Neo.Card>
-                        <Neo.Card title="Your Orders">
+                        <Neo.Card title={`${this.viewModel.selectedCustomer}'s Orders`} className="shadow rounded-4 mt-3">
                             <NeoGrid.Grid items={this.viewModel.foundOrders} >
                                 {(order, orderMeta) => (
                                     <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded}>
