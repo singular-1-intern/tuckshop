@@ -1,6 +1,6 @@
 import { IAppMenuItem, IAppRoute } from '../App/Services/RouteService';
-import CatalogueView from "./Views/Catalogue/CatalogueView";
-import * as CatalogueRoles from "./Models/Security/CatalogueRoles";
+// import CatalogueView from "./Views/Catalogue/CatalogueView";
+// import * as CatalogueRoles from "./Models/Security/CatalogueRoles";
 import ProductsView from './Views/ProductsView';
 import CreateOrderView from './Views/Orders/CreateOrderView';
 import ViewOrdersView from './Views/Orders/ViewOrdersView';
@@ -17,27 +17,27 @@ const MenuRoutes: IAppMenuItem[] =
             name: "Domain", children: 
             [
                 { 
-                    name: "Products", path: "/products", icon: "store", component: ProductsView 
-                },
-                { 
-                    name: "Create Order", path: "/create-order", icon: "add_shopping_cart", component: CreateOrderView
+                    name: "Tuckshop", path: "/tuckshop", icon: "store", component: CreateOrderView
                 },
                 { 
                     name: "Dashboard", path: "/dashboard", icon: "dashboard", component: DashboardView
+                },
+                { 
+                    name: "Products", path: "/products", icon: "add_shopping_cart", component: ProductsView 
                 }, 
                     viewOrdersRoute,
-                    viewMyOrdersRoute,
                 { 
                     name: "Customers", path: "/customers", icon: "people", component: CustomersView
-                },           
-                { 
-                    name: "Catalogue", 
-                    path: "/catalogue", 
-                    component: CatalogueView,
-                    icon: "browse",
-                    role: CatalogueRoles.CataloguePage.View,
-                    routeChildren: CatalogueView.getRouteChildren()
-                }
+                },
+                    viewMyOrdersRoute,
+                // { 
+                //     name: "Catalogue", 
+                //     path: "/catalogue", 
+                //     component: CatalogueView,
+                //     icon: "browse",
+                //     role: CatalogueRoles.CataloguePage.View,
+                //     routeChildren: CatalogueView.getRouteChildren()
+                // }
             ]
         }
     ];

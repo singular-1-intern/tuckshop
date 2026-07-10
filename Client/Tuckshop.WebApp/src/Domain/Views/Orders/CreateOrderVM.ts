@@ -54,6 +54,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
 
     public selectedCustomerId: number = 0;
 
+    public isOrderSuccessful: boolean = false;
+
     public async getCustomers() {
         const response = await this.taskRunner.waitFor(this.customersApiClient.get());
         this.customers.set(response.data);
@@ -77,6 +79,33 @@ export default class CreateOrderVM extends Views.ViewModelBase {
 
     public backToShop() {
         this.myOrdersDisplay = false;
+        if (!this.newOrder) {
+            this.isOrderSuccessful = false;
+            this.taskRunner.run(async () => {
+                await this.setupOrder();
+            });
+        }
+    }
+
+    public successAlert() {
+        this.isOrderSuccessful = true;
+    }
+
+    public showSelectedCustomerOrders() {
+        if (this.selectedCustomerId <= 0) {
+            return;
+        }
+
+        this.isOrderSuccessful = false;
+        this.showMyOrdersForCustomer(this.selectedCustomerId);
+    }
+
+    public createAnotherOrder() {
+        this.myOrdersDisplay = false;
+        this.isOrderSuccessful = false;
+        this.taskRunner.run(async () => {
+            await this.setupOrder();
+        });
     }
 
     public clearSelectedCustomer() {
@@ -148,6 +177,7 @@ export default class CreateOrderVM extends Views.ViewModelBase {
                 await this.getCustomers();
             }
             this.newOrder = null;
+            this.isOrderSuccessful = true;
         });
     }
 

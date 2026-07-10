@@ -2,9 +2,7 @@ import React from 'react';
 import { Neo, NeoGrid, Views } from '@singularsystems/neo-react';
 import CreateOrderVM from './CreateOrderVM';
 import { observer } from 'mobx-react';
-import { Link } from '@singularsystems/neo-react/dist/ReactComponents/_Exports';
-import { viewOrdersRoute } from '../../DomainRoutes';
-import { Data, Misc } from '@singularsystems/neo-core';
+import { Misc } from '@singularsystems/neo-core';
 
 class CreateOrderParams {
     // TODO: Add parameters here in the form: public paramName = { isQuery?: boolean, required?: boolean };
@@ -25,8 +23,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
     public render() {
         return (
             <div>
-                {/* <Neo.Card title="Mike's Tuckshop"> */}
-                    {this.viewModel.newOrder && (
+                {this.viewModel.newOrder && (
                         <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()}>
                             {(order, orderMeta) => {
                                 const selectedCustomerId = Number(order.customerId) || 0;
@@ -164,64 +161,48 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                 </div>
                                             </Neo.Card>
                                         )}
-
-                                        {this.viewModel.myOrdersDisplay && (
-                                            <div className="mt-3">
-                                                <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1" onClick={() => this.viewModel.backToShop()}>Back to shop</button>
-                                                <Neo.Card title="Criteria">
-                                                    <Neo.Form model={this.viewModel.criteria} onSubmit={() => this.viewModel.findOrders()}>
-                                                        {(crit, critMeta) => (
-                                                            <Neo.GridLayout md={2} lg={4}>
-                                                                <Neo.FormGroup bind={critMeta.customerName} readOnly />
-                                                                <Neo.Button icon="search" className="form-btn" isSubmit>Search</Neo.Button>
-                                                            </Neo.GridLayout>
-                                                        )}
-                                                    </Neo.Form>
-                                                </Neo.Card>
-
-                                                <Neo.Card title="Orders">
-                                                    <NeoGrid.Grid items={this.viewModel.foundOrders}>
-                                                        {(order, orderMeta) => (
-                                                            <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded}>
-                                                                <NeoGrid.Row>
-                                                                    <NeoGrid.Column display={orderMeta.customerName} />
-                                                                    <NeoGrid.Column display={orderMeta.orderedOn} dateProps={{ formatString: "dd MMM - HH:mm" }} />
-                                                                    <NeoGrid.Column display={orderMeta.orderTotal} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
-                                                                </NeoGrid.Row>
-                                                                <NeoGrid.ChildRow>
-                                                                    <NeoGrid.Grid items={order.items}>
-                                                                        {(orderDetail, orderDetailMeta) => (
-                                                                            <NeoGrid.Row>
-                                                                                <NeoGrid.Column display={orderDetailMeta.product} />
-                                                                                <NeoGrid.Column display={orderDetailMeta.vat} />
-                                                                                <NeoGrid.Column display={orderDetailMeta.value} />
-                                                                            </NeoGrid.Row>
-                                                                        )}
-                                                                    </NeoGrid.Grid>
-                                                                </NeoGrid.ChildRow>
-                                                            </NeoGrid.RowGroup>
-                                                        )}
-                                                    </NeoGrid.Grid>
-                                                </Neo.Card>
-                                            </div>
-                                        )}
                                     </>
                                 );
                             }}
                         </Neo.Form>
-                    )}
+                )}
 
-                    {!this.viewModel.newOrder && (
-                        <Neo.Alert variant="success" heading="Order submitted" animateInitial className="mt-4">
-                            Your order has been submitted, <Neo.Button variant="link" className="btn-link-inline" onClick={() => {
-                                if (this.viewModel.selectedCustomerId > 0) {
-                                    this.viewModel.showMyOrdersForCustomer(this.viewModel.selectedCustomerId);
-                                }
-                            }}>view your orders here</Neo.Button>,
-                            {' '}or <Neo.Button variant="link" className="btn-link-inline" onClick={() => this.viewModel.setupOrder()}>create another order</Neo.Button>.
-                        </Neo.Alert>
-                    )}
-                {/* </Neo.Card> */}
+                {this.viewModel.selectedCustomer && this.viewModel.myOrdersDisplay && (
+                    <div className="mt-3">
+                        <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1" onClick={() => this.viewModel.backToShop()}>Back to shop</button>
+                        <Neo.Card title="Your Orders">
+                            <NeoGrid.Grid items={this.viewModel.foundOrders}>
+                                {(order, orderMeta) => (
+                                    <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded}>
+                                        <NeoGrid.Row>
+                                            <NeoGrid.Column label='Order Reference' sort={false}>{`Order Number: #${order.orderId}`}</NeoGrid.Column>
+                                            <NeoGrid.Column display={orderMeta.orderedOn} dateProps={{ formatString: "dd MMM - HH:mm" }} />
+                                            <NeoGrid.Column display={orderMeta.orderTotal} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
+                                        </NeoGrid.Row>
+                                        <NeoGrid.ChildRow>
+                                            <NeoGrid.Grid items={order.items}>
+                                                {(orderDetail, orderDetailMeta) => (
+                                                    <NeoGrid.Row>
+                                                        <NeoGrid.Column display={orderDetailMeta.product} />
+                                                        <NeoGrid.Column display={orderDetailMeta.vat} />
+                                                        <NeoGrid.Column display={orderDetailMeta.value} />
+                                                    </NeoGrid.Row>
+                                                )}
+                                            </NeoGrid.Grid>
+                                        </NeoGrid.ChildRow>
+                                    </NeoGrid.RowGroup>
+                                )}
+                            </NeoGrid.Grid>
+                        </Neo.Card>
+                    </div>
+                )}
+
+                {!this.viewModel.newOrder && this.viewModel.isOrderSuccessful && !this.viewModel.myOrdersDisplay && (
+                    <Neo.Alert variant="success" heading="Order submitted" animateInitial className="mt-4">
+                        Your order has been submitted. <Neo.Button variant="link" className="btn-link-inline" onClick={() => this.viewModel.showSelectedCustomerOrders()}>View your orders here</Neo.Button>
+                        {' '}or <Neo.Button variant="link" className="btn-link-inline" onClick={() => this.viewModel.createAnotherOrder()}>create another order</Neo.Button>.
+                    </Neo.Alert>
+                )}
             </div>
         );
     }
