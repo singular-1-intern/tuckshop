@@ -1,6 +1,7 @@
 import { Views } from '@singularsystems/neo-react';
 import { AppService, DomainTypes, Types } from '../../DomainTypes';
 import { CreateOrder } from '../../Models/Orders/Commands/CreateOrder';
+import { NewOrderDetail } from '../../Models/Orders/Commands/CreateOrder';
 import Customer from '../../Models/Customer';
 import List from '@singularsystems/neo-core/dist/Model/List';
 import PaystackPop from '@paystack/inline-js';
@@ -96,10 +97,19 @@ export default class CreateOrderVM extends Views.ViewModelBase {
             const orderDetail = newOrder.orderDetails.addNew();
             orderDetail.productId = product.productId;
             orderDetail.productName = product.productName;
+            orderDetail.imageUrl = product.imageUrl;
             orderDetail.price = product.price;
         }
 
         this.newOrder = newOrder;
+    }
+
+    public incrementOrderDetailQuantity(orderDetail: NewOrderDetail) {
+        orderDetail.quantity += 1;
+    }
+
+    public decrementOrderDetailQuantity(orderDetail: NewOrderDetail) {
+        orderDetail.quantity = Math.max(0, orderDetail.quantity - 1);
     }
 
     // SUBMIT ORDERS

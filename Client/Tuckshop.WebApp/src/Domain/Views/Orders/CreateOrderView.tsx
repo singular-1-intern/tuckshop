@@ -25,17 +25,17 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
     public render() {
         return (
             <div>
-                <Neo.Card>
+                {/* <Neo.Card title="Mike's Tuckshop"> */}
                     {this.viewModel.newOrder && (
-                        <>
-                            <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()}>
-                                {(order, orderMeta) => {
-                                    const selectedCustomerId = Number(order.customerId) || 0;
-                                    const selectedCustomer = this.viewModel.customers.find(c => c.customerId === selectedCustomerId);
+                        <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()}>
+                            {(order, orderMeta) => {
+                                const selectedCustomerId = Number(order.customerId) || 0;
+                                const selectedCustomer = this.viewModel.customers.find(c => c.customerId === selectedCustomerId);
 
-                                    return (
-                                        <>
-                                            <div className="row g-3 align-items-center mb-3">
+                                return (
+                                    <>
+                                        <Neo.Card className="mb-2 p-10 shadow rounded-4">
+                                            <div className="row g-3 align-items-center">
                                                 {!selectedCustomer && !this.viewModel.myOrdersDisplay && (
                                                     <div className="login-screen">
                                                         <h1>Login</h1>
@@ -64,13 +64,14 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                                 View my orders
                                                             </button>
                                                         </div>
-                                                        <div className="col-md-12 d-flex flex-direction-column flex-md-row align-items-center justify-content-center">
+
+                                                        <div className="col-md-12 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
                                                             <div className="col-md-8">
-                                                                <h1>Welcome back, <em>{selectedCustomer.customerName}</em></h1>
+                                                                <h1 className="mb-0">Welcome back, <em>{selectedCustomer.customerName}</em></h1>
                                                             </div>
 
                                                             <div className="col-md-4 d-flex flex-column align-items-md-end align-items-start gap-2">
-                                                                <div className="manage-wallet-btn">
+                                                                <div className="manage-wallet-btn d-flex flex-wrap gap-2 justify-content-md-end">
                                                                     <Neo.Modal
                                                                         title="Wallet Action"
                                                                         bind={this.viewModel.meta.showBasicModal}
@@ -100,70 +101,114 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                     </>
                                                 )}
                                             </div>
+                                        </Neo.Card>
 
-                                            {selectedCustomer && !this.viewModel.myOrdersDisplay && (
-                                                <>
-                                                    <NeoGrid.Grid items={order.orderDetails}>
-                                                        {(orderDetail, orderDetailMeta) => (
-                                                            <NeoGrid.Row>
-                                                                <NeoGrid.Column display={orderDetailMeta.productName} />
-                                                                <NeoGrid.Column display={orderDetailMeta.price} />
-                                                                <NeoGrid.Column display={orderDetailMeta.value} sum />
-                                                                <NeoGrid.Column bind={orderDetailMeta.quantity} />
-                                                            </NeoGrid.Row>
+                                        {selectedCustomer && !this.viewModel.myOrdersDisplay && (
+                                            <Neo.Card title="Products" className="mt-3 shadow rounded-4">
+                                                <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-4 row-cols-xxl-5 g-3">
+                                                    {order.orderDetails.map((orderDetail, orderDetailIndex) => (
+                                                        <div key={orderDetail.productId || orderDetailIndex} className="col">
+                                                            <Neo.Card className="h-100 border-0 shadow rounded-4 overflow-hidden">
+                                                                <div className="ratio ratio-1x1 bg-light">
+                                                                    {orderDetail.imageUrl ? (
+                                                                        <img
+                                                                            src={orderDetail.imageUrl}
+                                                                            alt={orderDetail.productName || 'Product image'}
+                                                                            className="w-100 h-100"
+                                                                            style={{ objectFit: 'cover' }}
+                                                                        />
+                                                                    ) : (
+                                                                        <div className="d-flex h-100 w-100 align-items-center justify-content-center text-muted">
+                                                                            No image
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="card-body d-flex flex-column gap-2 p-3">
+                                                                    <div className="fw-semibold fs-6 text-truncate">{orderDetail.productName}</div>
+
+                                                                    <div className="d-flex align-items-center justify-content-between">
+                                                                        <span className="text-muted">Price</span>
+                                                                        <span className="fw-semibold">R {orderDetail.price.toFixed(2)}</span>
+                                                                    </div>
+
+                                                                    <div className="d-flex align-items-center justify-content-between gap-3">
+                                                                        <span className="text-muted">Quantity</span>
+                                                                        <div className="d-flex align-items-center gap-2">
+                                                                            <Neo.Button
+                                                                                variant="secondary"
+                                                                                icon="far-minus"
+                                                                                className="rounded-circle d-inline-flex align-items-center justify-content-center p-0"
+                                                                                style={{ width: '1.75rem', height: '1.75rem', minWidth: '1.75rem', minHeight: '1.75rem', lineHeight: '1' }}
+                                                                                onClick={() => this.viewModel.decrementOrderDetailQuantity(orderDetail)}
+                                                                                disabled={orderDetail.quantity <= 0}
+                                                                            />
+                                                                            <span className="fw-semibold text-center" style={{ minWidth: '1.5rem' }}>{orderDetail.quantity}</span>
+                                                                            <Neo.Button
+                                                                                variant="secondary"
+                                                                                icon="far-plus"
+                                                                                className="rounded-circle d-inline-flex align-items-center justify-content-center p-0"
+                                                                                style={{ width: '1.75rem', height: '1.75rem', minWidth: '1.75rem', minHeight: '1.75rem', lineHeight: '1' }}
+                                                                                onClick={() => this.viewModel.incrementOrderDetailQuantity(orderDetail)}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </Neo.Card>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <div className="text-right mt-3">
+                                                    <Neo.Button isSubmit size="lg" icon="coffee">Place Order</Neo.Button>
+                                                </div>
+                                            </Neo.Card>
+                                        )}
+
+                                        {this.viewModel.myOrdersDisplay && (
+                                            <div className="mt-3">
+                                                <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1" onClick={() => this.viewModel.backToShop()}>Back to shop</button>
+                                                <Neo.Card title="Criteria">
+                                                    <Neo.Form model={this.viewModel.criteria} onSubmit={() => this.viewModel.findOrders()}>
+                                                        {(crit, critMeta) => (
+                                                            <Neo.GridLayout md={2} lg={4}>
+                                                                <Neo.FormGroup bind={critMeta.customerName} readOnly />
+                                                                <Neo.Button icon="search" className="form-btn" isSubmit>Search</Neo.Button>
+                                                            </Neo.GridLayout>
+                                                        )}
+                                                    </Neo.Form>
+                                                </Neo.Card>
+
+                                                <Neo.Card title="Orders">
+                                                    <NeoGrid.Grid items={this.viewModel.foundOrders}>
+                                                        {(order, orderMeta) => (
+                                                            <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded}>
+                                                                <NeoGrid.Row>
+                                                                    <NeoGrid.Column display={orderMeta.customerName} />
+                                                                    <NeoGrid.Column display={orderMeta.orderedOn} dateProps={{ formatString: "dd MMM - HH:mm" }} />
+                                                                    <NeoGrid.Column display={orderMeta.orderTotal} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
+                                                                </NeoGrid.Row>
+                                                                <NeoGrid.ChildRow>
+                                                                    <NeoGrid.Grid items={order.items}>
+                                                                        {(orderDetail, orderDetailMeta) => (
+                                                                            <NeoGrid.Row>
+                                                                                <NeoGrid.Column display={orderDetailMeta.product} />
+                                                                                <NeoGrid.Column display={orderDetailMeta.vat} />
+                                                                                <NeoGrid.Column display={orderDetailMeta.value} />
+                                                                            </NeoGrid.Row>
+                                                                        )}
+                                                                    </NeoGrid.Grid>
+                                                                </NeoGrid.ChildRow>
+                                                            </NeoGrid.RowGroup>
                                                         )}
                                                     </NeoGrid.Grid>
-                                                    <div className="text-right mt-3">
-                                                        <Neo.Button isSubmit size="lg" icon="coffee">Place Order</Neo.Button>
-                                                    </div>
-                                                </>
-                                            )}
-                                        </>
-                                    );
-                                }}
-                            </Neo.Form>
-
-                            {this.viewModel.myOrdersDisplay && (
-                                <div>
-                                    <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1" onClick={() => this.viewModel.backToShop()}>Back to shop</button>
-                                    <Neo.Card title="Criteria">
-                                        <Neo.Form model={this.viewModel.criteria} onSubmit={() => this.viewModel.findOrders()}>
-                                            {(crit, critMeta) => (
-                                                <Neo.GridLayout md={2} lg={4}>
-                                                    <Neo.FormGroup bind={critMeta.customerName} readOnly />
-                                                    <Neo.Button icon="search" className="form-btn" isSubmit>Search</Neo.Button>
-                                                </Neo.GridLayout>
-                                            )}
-                                        </Neo.Form>
-                                    </Neo.Card>
-
-                                    <Neo.Card title="Orders">
-                                        <NeoGrid.Grid items={this.viewModel.foundOrders}>
-                                            {(order, orderMeta) => (
-                                                <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded}>
-                                                    <NeoGrid.Row>
-                                                        <NeoGrid.Column display={orderMeta.customerName} />
-                                                        <NeoGrid.Column display={orderMeta.orderedOn} dateProps={{ formatString: "dd MMM - HH:mm" }} />
-                                                        <NeoGrid.Column display={orderMeta.orderTotal} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
-                                                    </NeoGrid.Row>
-                                                    <NeoGrid.ChildRow>
-                                                        <NeoGrid.Grid items={order.items}>
-                                                            {(orderDetail, orderDetailMeta) => (
-                                                                <NeoGrid.Row>
-                                                                    <NeoGrid.Column display={orderDetailMeta.product} />
-                                                                    <NeoGrid.Column display={orderDetailMeta.vat} />
-                                                                    <NeoGrid.Column display={orderDetailMeta.value} />
-                                                                </NeoGrid.Row>
-                                                            )}
-                                                        </NeoGrid.Grid>
-                                                    </NeoGrid.ChildRow>
-                                                </NeoGrid.RowGroup>
-                                            )}
-                                        </NeoGrid.Grid>
-                                    </Neo.Card>
-                                </div>
-                            )}
-                        </>
+                                                </Neo.Card>
+                                            </div>
+                                        )}
+                                    </>
+                                );
+                            }}
+                        </Neo.Form>
                     )}
 
                     {!this.viewModel.newOrder && (
@@ -176,7 +221,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                             {' '}or <Neo.Button variant="link" className="btn-link-inline" onClick={() => this.viewModel.setupOrder()}>create another order</Neo.Button>.
                         </Neo.Alert>
                     )}
-                </Neo.Card>
+                {/* </Neo.Card> */}
             </div>
         );
     }

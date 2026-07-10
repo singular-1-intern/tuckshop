@@ -46,6 +46,9 @@ export class NewOrderDetail extends ModelBase {
   public productName: string = "";
 
     @Attributes.NoTracking()
+    public imageUrl: string = "";
+
+    @Attributes.NoTracking()
     @Attributes.Float()
   public price: number = 0;
 
