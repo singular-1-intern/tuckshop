@@ -56,6 +56,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
 
     public isOrderSuccessful: boolean = false;
 
+    public viewOrders: boolean = false;
+
     public async getCustomers() {
         const response = await this.taskRunner.waitFor(this.customersApiClient.get());
         this.customers.set(response.data);
@@ -72,6 +74,7 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         this.criteria.customerName = customer.customerName;
         this.myOrdersDisplay = true;
 
+        this.viewOrders = true;
         this.taskRunner.run(async () => {
             await this.findOrders();
         });

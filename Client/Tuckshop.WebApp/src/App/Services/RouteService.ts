@@ -51,29 +51,29 @@ export class RouteService {
             {
                 name: "Home", path: '/', component: Home, icon: "home", exact: true, allowAnonymous: true
             },
-            ...ReportingRoutes.MenuRoutes,
+            // ...ReportingRoutes.MenuRoutes,
 			...DomainRoutes.MenuRoutes,
-            { name: "Notifications", children: [
-                { name: "Templates", path: "/templates", icon: "format_image_left", component: TemplatesView, role: NotificationsRoles.SetupTemplates },
-                { name: "Template layouts", path: "/templateLayouts", icon: "layers", component: TemplateLayoutsView, role: NotificationsRoles.SetupLayouts },
-                { name: "Notification settings", path: "/notification-settings", icon: "inbox_customize", component: NotificationSettingsView, role: NotificationsRoles.ConfigureSettings },
-                { name: "View notifications", path: "/notifications", icon: "mail", component: NotificationsView, role: NotificationsRoles.ViewSentNotifications },
-            ]},
-            this.getAdministrationRoute(),
+            // { name: "Notifications", children: [
+            //     { name: "Templates", path: "/templates", icon: "format_image_left", component: TemplatesView, role: NotificationsRoles.SetupTemplates },
+            //     { name: "Template layouts", path: "/templateLayouts", icon: "layers", component: TemplateLayoutsView, role: NotificationsRoles.SetupLayouts },
+            //     { name: "Notification settings", path: "/notification-settings", icon: "inbox_customize", component: NotificationSettingsView, role: NotificationsRoles.ConfigureSettings },
+            //     { name: "View notifications", path: "/notifications", icon: "mail", component: NotificationsView, role: NotificationsRoles.ViewSentNotifications },
+            // ]},
+            // this.getAdministrationRoute(),
         ]
     }
 
-    private getAdministrationRoute() {
-        var adminRoute = { name: "Administration", children: [
-            { ...SecurityRoute, icon: "admin_panel_settings" },
-            ...IdentityRoutes.IdentityMenuRoutes,
-        ]};
+    // private getAdministrationRoute() {
+    //     var adminRoute = { name: "Administration", children: [
+    //         { ...SecurityRoute, icon: "admin_panel_settings" },
+    //         ...IdentityRoutes.IdentityMenuRoutes,
+    //     ]};
 
-        if (this.config.isDevelopment) {
-            adminRoute.children.push(IdentityRoutes.SecurityConfigRoute);
-        }
-        return adminRoute;
-    }
+    //     if (this.config.isDevelopment) {
+    //         adminRoute.children.push(IdentityRoutes.SecurityConfigRoute);
+    //     }
+    //     return adminRoute;
+    // }
 
 
     private getPureRoutes(): IAppRoute[] {

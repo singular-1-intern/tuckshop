@@ -23,7 +23,7 @@ export default class ProductsView extends Views.ViewBase<
 
   public render() {
     return (
-      <div>
+      <div style={{ transition: "opacity 0.5s" }}>
         <Neo.Card title="Products">
           <Neo.Form
             model={this.viewModel.products}
@@ -39,8 +39,13 @@ export default class ProductsView extends Views.ViewBase<
             <NeoGrid.Grid items={this.viewModel.products} showAddButton>
               {(product, productMeta, rowIndex) => (
                 <NeoGrid.Row key={`${product.productId || 'new'}-${rowIndex}`}>
-                  <NeoGrid.Column display={productMeta.productId} />
-                  <NeoGrid.Column bind={productMeta.productName} />
+                  {/* <NeoGrid.Column display={productMeta.productId} /> */}
+                  <NeoGrid.Column bind={productMeta.productName}  />
+                  <NeoGrid.Column
+                    bind={productMeta.price}
+                    numProps={{ format: Misc.NumberFormat.CurrencyDecimals }}
+                  />
+                  <NeoGrid.Column bind={productMeta.imageUrl} />
                   <NeoGrid.Column
                     display={productMeta.imageUrl}
                     label="Image"
@@ -60,10 +65,6 @@ export default class ProductsView extends Views.ViewBase<
                       />
                     )}
                   </NeoGrid.Column>
-                  <NeoGrid.Column
-                    bind={productMeta.price}
-                    numProps={{ format: Misc.NumberFormat.CurrencyDecimals }}
-                  />
                   <NeoGrid.ButtonColumn showDelete />
                 </NeoGrid.Row>
               )}

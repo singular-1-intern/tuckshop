@@ -24,85 +24,94 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
         return (
             <div>
                 {this.viewModel.newOrder && (
-                        <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()}>
-                            {(order, orderMeta) => {
-                                const selectedCustomerId = Number(order.customerId) || 0;
-                                const selectedCustomer = this.viewModel.customers.find(c => c.customerId === selectedCustomerId);
+                <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()} >
+                    {(order, orderMeta) => {
+                        const selectedCustomerId = order.customerId || 0;
+                        const selectedCustomer = this.viewModel.customers.find(c => c.customerId === selectedCustomerId);
+                        const selectedOrderDetails = order.orderDetails.filter(orderDetail => orderDetail.quantity > 0);
+                        const orderTotal = selectedOrderDetails.reduce((total, orderDetail) => total + orderDetail.value, 0);
+                        const totalItems = selectedOrderDetails.reduce((total, orderDetail) => total + orderDetail.quantity, 0);
 
-                                return (
-                                    <>
-                                        <Neo.Card className="mb-2 p-10 shadow rounded-4">
-                                            <div className="row g-3 align-items-center">
-                                                {!selectedCustomer && !this.viewModel.myOrdersDisplay && (
-                                                    <div className="login-screen">
-                                                        <h1>Login</h1>
-                                                        <div className="col-md-8">
-                                                            <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
-                                                        </div>
+                        return (
+                            <>
+                            {!this.viewModel.myOrdersDisplay && (
+                                <Neo.Card className="shadow rounded-4">
+                                    <div className="row g-3 align-items-center">
+                                        {!selectedCustomer &&  (
+                                            <div className="login-screen d-flex flex-column align-items-center justify-content-center" style={{ height: "75vh" }}>
+                                                <h1>Login</h1>
+                                                <div className="col-md-8">
+                                                    <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedCustomer && (
+                                            // {/* HEADER SECTION */}
+                                            <div className="header-section">
+                                                <div className="nav-btns d-flex justify-content-between mb-100">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-link btn-sm text-decoration-none text-start ps-0 col-md-1"
+                                                        onClick={() => {
+                                                            order.customerId = 0;
+                                                            this.viewModel.clearSelectedCustomer();
+                                                        }}>
+                                                        Logout
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-link btn-sm text-decoration-none col-md-1"
+                                                        onClick={() => this.viewModel.showMyOrdersForCustomer(selectedCustomer.customerId)}>
+                                                        View my orders
+                                                    </button>
+                                                </div>
+
+                                                <div className="col-md-12 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mt-20">
+                                                    <div className="col-md-8">
+                                                        <h1 className="mb-0">Welcome back, <em>{selectedCustomer.customerName}</em></h1>
                                                     </div>
-                                                )}
 
-                                                {selectedCustomer && !this.viewModel.myOrdersDisplay && (
-                                                    <>
-                                                        <div className="d-flex justify-content-between">
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1"
-                                                                onClick={() => {
-                                                                    order.customerId = 0;
-                                                                    this.viewModel.clearSelectedCustomer();
-                                                                }}>
-                                                                Logout
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1"
-                                                                onClick={() => this.viewModel.showMyOrdersForCustomer(selectedCustomer.customerId)}>
-                                                                View my orders
-                                                            </button>
-                                                        </div>
-
-                                                        <div className="col-md-12 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-                                                            <div className="col-md-8">
-                                                                <h1 className="mb-0">Welcome back, <em>{selectedCustomer.customerName}</em></h1>
-                                                            </div>
-
-                                                            <div className="col-md-4 d-flex flex-column align-items-md-end align-items-start gap-2">
-                                                                <div className="manage-wallet-btn d-flex flex-wrap gap-2 justify-content-md-end">
-                                                                    <Neo.Modal
-                                                                        title="Wallet Action"
-                                                                        bind={this.viewModel.meta.showBasicModal}
-                                                                    >
-                                                                        <Neo.FormGroup bind={this.viewModel.meta.walletAmount} label="Amount" />
-                                                                        <div className="mt-2">
-                                                                            <Neo.Button
-                                                                                variant="secondary"
-                                                                                icon="credit-card"
-                                                                                onClick={() => this.viewModel.startPaystackCheckout(selectedCustomer.customerId)}>
-                                                                                {this.viewModel.walletAction === 'deposit' ? 'Deposit' : 'Withdraw'} with Paystack
-                                                                            </Neo.Button>
-                                                                        </div>
-                                                                    </Neo.Modal>
+                                                    <div className="col-md-4 d-flex flex-column align-items-md-end align-items-start gap-2 pe-md-3">
+                                                        <div className="manage-wallet-btn d-flex flex-wrap gap-2 justify-content-md-end justify-content-start w-100">
+                                                            <Neo.Modal
+                                                                title="Wallet Action"
+                                                                bind={this.viewModel.meta.showBasicModal}
+                                                            >
+                                                                <Neo.FormGroup bind={this.viewModel.meta.walletAmount} label="Amount" />
+                                                                <div className="mt-2">
                                                                     <Neo.Button
-                                                                        className="ms-1"
-                                                                        menuAlignment="right"
-                                                                        menuItems={[
-                                                                            { text: "Deposit", icon: "money", onClick: () => this.viewModel.depositFunds(selectedCustomer.customerId) },
-                                                                            { text: "Withdraw", icon: "money", onClick: () => this.viewModel.withdrawFunds(selectedCustomer.customerId) }
-                                                                        ]}>
-                                                                        <>Wallet balance: <strong>{`R ${selectedCustomer.walletBalance}`}</strong></>
+                                                                        variant="secondary"
+                                                                        icon="credit-card"
+                                                                        onClick={() => this.viewModel.startPaystackCheckout(selectedCustomer.customerId)}>
+                                                                        {this.viewModel.walletAction === 'deposit' ? 'Deposit' : 'Withdraw'} with Paystack
                                                                     </Neo.Button>
                                                                 </div>
-                                                            </div>
+                                                            </Neo.Modal>
+                                                            <Neo.Button
+                                                                className="me-md-2"
+                                                                menuAlignment="right"
+                                                                menuItems={[
+                                                                    { text: "Deposit", icon: "money", onClick: () => this.viewModel.depositFunds(selectedCustomer.customerId) },
+                                                                    { text: "Withdraw", icon: "money", onClick: () => this.viewModel.withdrawFunds(selectedCustomer.customerId) }
+                                                                ]}>
+                                                                <>Wallet balance: <strong>{`R ${selectedCustomer.walletBalance}`}</strong></>
+                                                            </Neo.Button>
                                                         </div>
-                                                    </>
-                                                )}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </Neo.Card>
+                                        )}
+                                    </div>
+                                </Neo.Card>)}
 
-                                        {selectedCustomer && !this.viewModel.myOrdersDisplay && (
-                                            <Neo.Card title="Products" className="mt-3 shadow rounded-4">
-                                                <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-4 row-cols-xxl-5 g-3">
+                                {/* MAIN PRODUCT SECTION */}
+                                {selectedCustomer && !this.viewModel.myOrdersDisplay && (
+                                    <div className="main-section row g-3 mt-1">
+                                        <div className="col-12 col-lg-9">
+                                            {/* PRODUCTS CARDS */}
+                                            <Neo.Card title="Products" className="shadow rounded-4 h-100">
+                                                <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3">
                                                     {order.orderDetails.map((orderDetail, orderDetailIndex) => (
                                                         <div key={orderDetail.productId || orderDetailIndex} className="col">
                                                             <Neo.Card className="h-100 border-0 shadow rounded-4 overflow-hidden">
@@ -155,27 +164,56 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                         </div>
                                                     ))}
                                                 </div>
+                                            </Neo.Card>
+                                        </div>
+                                        
+                                        {/* ORDER SUMMARY CARD */}
+                                        <div className="col-12 col-lg-3">
+                                            <Neo.Card title="Order Summary" className="shadow rounded-4 h-100">
+                                                <div className="d-flex flex-column gap-3">
 
-                                                <div className="text-right mt-3">
-                                                    <Neo.Button isSubmit size="lg" icon="coffee">Place Order</Neo.Button>
+                                                    {selectedOrderDetails.length > 0 ? (
+                                                        <NeoGrid.Grid items={selectedOrderDetails}>
+                                                            {(orderDetail, orderDetailMeta) => (
+                                                                <NeoGrid.Row>
+                                                                    <NeoGrid.Column display={orderDetailMeta.productName} />
+                                                                    <NeoGrid.Column label="Qty" display={orderDetailMeta.quantity} sum />
+                                                                    <NeoGrid.Column display={orderDetailMeta.value} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} sum />
+                                                                </NeoGrid.Row>
+                                                            )}
+                                                        </NeoGrid.Grid>
+                                                    ) : (
+                                                        <div className="text-muted">
+                                                            <p>No items in your order yet.</p>
+                                                        </div>
+                                                    )}
+
+                                                    <Neo.Button className="mt-2" isSubmit icon="coffee">
+                                                        Place Order
+                                                    </Neo.Button>
                                                 </div>
                                             </Neo.Card>
-                                        )}
-                                    </>
-                                );
-                            }}
-                        </Neo.Form>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        );
+                    }}
+                </Neo.Form>
                 )}
 
+                {/* VIEW YOUR ORDERS TAB */}
                 {this.viewModel.selectedCustomer && this.viewModel.myOrdersDisplay && (
-                    <div className="mt-3">
-                        <button type="button" className="btn btn-link btn-sm text-decoration-none mb-2 text-start ps-0 col-md-1" onClick={() => this.viewModel.backToShop()}>Back to shop</button>
+                    <div className="view-your-orders-section mt-3">
+                        <Neo.Card className="shadow rounded-4"> 
+                            <button type="button" className="btn btn-link btn-sm text-decoration-none col-md-1" onClick={() => this.viewModel.backToShop()}>Back to shop</button>
+                        </Neo.Card>
                         <Neo.Card title="Your Orders">
-                            <NeoGrid.Grid items={this.viewModel.foundOrders}>
+                            <NeoGrid.Grid items={this.viewModel.foundOrders} >
                                 {(order, orderMeta) => (
                                     <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded}>
                                         <NeoGrid.Row>
-                                            <NeoGrid.Column label='Order Reference' sort={false}>{`Order Number: #${order.orderId}`}</NeoGrid.Column>
+                                            <NeoGrid.Column label='Order Reference' sort={orderMeta.orderId}>{`Order Number: #${order.orderId}`}</NeoGrid.Column>
                                             <NeoGrid.Column display={orderMeta.orderedOn} dateProps={{ formatString: "dd MMM - HH:mm" }} />
                                             <NeoGrid.Column display={orderMeta.orderTotal} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} />
                                         </NeoGrid.Row>
@@ -184,8 +222,8 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                 {(orderDetail, orderDetailMeta) => (
                                                     <NeoGrid.Row>
                                                         <NeoGrid.Column display={orderDetailMeta.product} />
-                                                        <NeoGrid.Column display={orderDetailMeta.vat} />
-                                                        <NeoGrid.Column display={orderDetailMeta.value} />
+                                                        <NeoGrid.Column display={orderDetailMeta.vat} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} sum />
+                                                        <NeoGrid.Column display={orderDetailMeta.value} numProps={{ format: Misc.NumberFormat.CurrencyDecimals }} sum />
                                                     </NeoGrid.Row>
                                                 )}
                                             </NeoGrid.Grid>
