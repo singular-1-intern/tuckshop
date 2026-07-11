@@ -37,9 +37,9 @@
     public string ImageUrl { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the isActive property.
+    /// Gets or sets the stockCount property.
     /// </summary>
-    public bool isActive { get; set; }
+    public int stockCount { get; set; }
 
     /// <inheritdoc />
     protected override void AddBusinessRules(ValidationRules<Product> rules)
@@ -47,6 +47,7 @@
       base.AddBusinessRules(rules);
 
       rules.FailWhen(c => c.Price <= 0, "Price must be above zero.");
+      rules.FailWhen(c => c.stockCount < 0, "Minimum stock count of an item is 0.");
     }
   }
 }

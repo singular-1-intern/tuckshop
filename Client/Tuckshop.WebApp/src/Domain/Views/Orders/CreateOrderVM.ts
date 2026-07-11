@@ -18,6 +18,7 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         taskRunner = AppService.get(Types.Neo.TaskRunner),
         private notifications = AppService.get(Types.Neo.UI.GlobalNotifications),
         private appDataCache = AppService.get(DomainTypes.Services.DataCache),
+        private productsApiClient = AppService.get(DomainTypes.ApiClients.ProductsApiClient),
         private ordersCommandApiClient = AppService.get(DomainTypes.ApiClients.OrdersCommandApiClient),
         private customersApiClient = AppService.get(DomainTypes.ApiClients.CustomersApiClient),
         private customersCommandApiClient = AppService.get(DomainTypes.ApiClients.CustomersCommandApiClient),
@@ -127,10 +128,12 @@ export default class CreateOrderVM extends Views.ViewModelBase {
 
         for (const product of products) {
             const orderDetail = newOrder.orderDetails.addNew();
+
             orderDetail.productId = product.productId;
             orderDetail.productName = product.productName;
             orderDetail.imageUrl = product.imageUrl;
             orderDetail.price = product.price;
+            orderDetail.stockCount = product.stockCount;
         }
 
         this.newOrder = newOrder;
@@ -150,7 +153,8 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         if (!this.newOrder) {
             return;
         }
-        
+
+        const orderedItems = this.newOrder.orderDetails.filter(orderDetail => orderDetail.quantity > 0);
         const orderData = this.newOrder.toJSObject();
         const customerId = this.newOrder.customerId;
         const selectedCustomer = this.customers.find(c => c.customerId === customerId);
@@ -160,7 +164,26 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         const totalAmount = this.orderTotalAmount;
 
         this.taskRunner.run(async () => {
+            const products = await this.taskRunner.waitFor(this.appDataCache.products.getDataAsync());
+            const productsById = new Map(products.map(product => [product.productId, product]));
+
+            for (const item of orderedItems) {
+                const product = productsById.get(item.productId);
+                if (!product) {
+                    this.notifications.addDanger(
+                        'Order failed',
+                        `Unable to find product: ${item.productName}.`,
+                        4
+                    );
+                    return;
+                }
+                
+                product.stockCount -= item.quantity;
+            }
+
             await this.ordersCommandApiClient.createOrder(orderData);
+            await this.productsApiClient.saveList(products.map(product => product.toJSObject()));
+            this.appDataCache.products.expire();
 
             if (totalAmount > 0) {
                 const customer = this.customers.find(c => c.customerId === customerId);

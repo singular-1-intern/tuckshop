@@ -36,25 +36,29 @@ export class NewOrderDetail extends ModelBase {
       super();
       this.makeObservable();
   }
-    public productId: number = 0;
+  public productId: number = 0;
 
-    @Attributes.Integer()
-    public quantity: number = 0;
+  @Attributes.Integer()
+  public quantity: number = 0;
 
-    // Client only properties / methods
-    @Attributes.NoTracking()
+  // Client only properties / methods
+
+  @Attributes.NoTracking()
+  public stockCount: number = 0;
+
+  @Attributes.NoTracking()
   public productName: string = "";
 
-    @Attributes.NoTracking()
-    public imageUrl: string = "";
+  @Attributes.NoTracking()
+  public imageUrl: string = "";
 
-    @Attributes.NoTracking()
-    @Attributes.Float()
+  @Attributes.NoTracking()
+  @Attributes.Float()
   public price: number = 0;
 
-    @Attributes.Float()
+  @Attributes.Float()
   public get value() {
-      return this.quantity * this.price;
+    return this.quantity * this.price;
   }
 
   protected canSerialise(shouldSerialise: boolean) {

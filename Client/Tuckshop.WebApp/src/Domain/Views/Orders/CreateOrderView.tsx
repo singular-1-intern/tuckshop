@@ -104,7 +104,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                 </Neo.Card>)}
 
                                 {/* MAIN PRODUCT SECTION */}
-                                {selectedCustomer && !this.viewModel.myOrdersDisplay && (
+                                {selectedCustomer && !this.viewModel.myOrdersDisplay && 
                                     <div className="main-section row g-3 mt-1">
                                         <div className="col-12 col-lg-9">
                                             {/* PRODUCTS CARDS */}
@@ -146,6 +146,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                                                 style={{ width: '1.75rem', height: '1.75rem', minWidth: '1.75rem', minHeight: '1.75rem', lineHeight: '1' }}
                                                                                 onClick={() => this.viewModel.decrementOrderDetailQuantity(orderDetail)}
                                                                                 disabled={orderDetail.quantity <= 0}
+                                                                                onTouchStart={() => this.viewModel.decrementOrderDetailQuantity(orderDetail)}
                                                                             />
                                                                             <span className="fw-semibold text-center" style={{ minWidth: '1.5rem' }}>{orderDetail.quantity}</span>
                                                                             <Neo.Button
@@ -154,9 +155,19 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                                                 className="rounded-circle d-inline-flex align-items-center justify-content-center p-0"
                                                                                 style={{ width: '1.75rem', height: '1.75rem', minWidth: '1.75rem', minHeight: '1.75rem', lineHeight: '1' }}
                                                                                 onClick={() => this.viewModel.incrementOrderDetailQuantity(orderDetail)}
+                                                                                disabled={orderDetail.quantity >= orderDetail.stockCount}
                                                                             />
                                                                         </div>
                                                                     </div>
+                                                                    {orderDetail.stockCount <= 0 ? (
+                                                                        <div className="text-danger" style={{ fontSize: '0.75rem' }}>Out of stock</div>
+                                                                    ) : orderDetail.quantity === orderDetail.stockCount ? (
+                                                                        <div className="text-warning" style={{ fontSize: '0.75rem' }}>
+                                                                            Only {orderDetail.stockCount} left
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="text-muted" style={{ fontSize: '0.75rem' }}>In stock</div>
+                                                                    )}
                                                                 </div>
                                                             </Neo.Card>
                                                         </div>
@@ -193,7 +204,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                             </Neo.Card>
                                         </div>
                                     </div>
-                                )}
+                                }
                             </>
                         );
                     }}

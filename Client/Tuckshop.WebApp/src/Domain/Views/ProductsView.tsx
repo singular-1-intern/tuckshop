@@ -65,6 +65,7 @@ export default class ProductsView extends Views.ViewBase<
                       />
                     )}
                   </NeoGrid.Column>
+                  <NeoGrid.Column bind={productMeta.stockCount} />
                   <NeoGrid.ButtonColumn deleteButton={{ disabled: true }} />
                 </NeoGrid.Row>
               )}

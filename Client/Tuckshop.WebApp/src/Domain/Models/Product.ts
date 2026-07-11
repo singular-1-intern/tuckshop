@@ -7,7 +7,7 @@ export default class Product extends ModelBase {
         super();
         this.makeObservable();
     }
-
+    
     public productId: number = 0;
 
     @Rules.Required()
@@ -21,13 +21,15 @@ export default class Product extends ModelBase {
     @Rules.StringLength(300)
     public imageUrl: string = "";
 
-    public isActive: boolean = true;
+    @Attributes.Integer()
+    public stockCount: number = 0;
 
     // Client only properties / methods
 
     protected static addBusinessRules(rules: Validation.Rules<Product>) {
         super.addBusinessRules(rules);
         rules.failWhen(c => c.price <= 0, "Price must be above zero.");
+        rules.failWhen(c => c.stockCount < 0, "Minimum stock count of an item is 0.");
     }
 
     public toString(): string {
