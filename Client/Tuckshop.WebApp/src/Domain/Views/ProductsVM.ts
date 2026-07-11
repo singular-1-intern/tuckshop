@@ -2,7 +2,6 @@ import { Views } from "@singularsystems/neo-react";
 import { AppService, Types } from "../DomainTypes";
 import Product from "../Models/Product";
 import { List } from "@singularsystems/neo-core";
-import Customer from "../Models/Customer";
 
 export default class ProductsVM extends Views.ViewModelBase {
   public get productsApiClient() {
