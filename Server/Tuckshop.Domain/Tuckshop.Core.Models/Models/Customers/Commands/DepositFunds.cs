@@ -19,7 +19,6 @@ namespace Tuckshop.Core.Models.Customers.Commands
     /// <summary>
     /// Gets or sets the amount to deposit
     /// </summary>
-    [Required]
     [Column(TypeName = "money")]
     public decimal Amount { get; set; }
 

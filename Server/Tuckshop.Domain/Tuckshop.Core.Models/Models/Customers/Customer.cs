@@ -6,6 +6,7 @@
   using System.Collections.Generic;
   using System.ComponentModel.DataAnnotations;
   using System.ComponentModel.DataAnnotations.Schema;
+  using System.Linq;
 
   /// <summary>
   /// A class representing a Customer
@@ -17,11 +18,12 @@
     {
     }
 
-    public Customer(int customerId, string customerName)
+    public Customer(int customerId, string customerName, string customerCellNo = "")
     {
       this.CustomerId = customerId;
       this.CustomerName = customerName;
       this.WalletBalance = 0m;
+      this.CustomerCellNo = customerCellNo;
     }
 
     /// <summary>
@@ -38,6 +40,10 @@
 
     [Column(TypeName = "money")]
     public decimal WalletBalance { get; private set; }
+
+    [Required]
+    [StringLength(10)]
+    public string CustomerCellNo { get; private set; } = string.Empty;
 
     public void IncreaseBalance(decimal amount)
     {
@@ -68,14 +74,18 @@
     {
       return this.WalletBalance >= amount;
     }
+
     protected override void AddBusinessRules(ValidationRules<Customer> rules)
     {
       base.AddBusinessRules(rules);
 
-      rules.FailWhen(c => c.WalletBalance <= 0, "Price must be above zero.");
-      rules.FailWhen(c => c.WalletBalance <= 10, "Minimum Deposit/Withdrawal is R10.");
+      rules.FailWhen(
+          c => c.CustomerCellNo.Length != 10,
+          "Customer cell number must be 10 digits.");
+
+      rules.FailWhen(
+          c => !string.IsNullOrEmpty(c.CustomerCellNo) && !c.CustomerCellNo.All(char.IsDigit),
+          "Customer cell number must be numeric.");
     }
-
-
   }
 }
