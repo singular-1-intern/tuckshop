@@ -69,9 +69,9 @@ export default class HomeVM extends Views.ViewModelBase {
     public getOrderStatusSymbol(order: OrderLookup) {
         switch (order.orderStatus) {
             case OrderStatus.Completed:
-                return "check";
+                return "task_alt";
             case OrderStatus.Cancelled:
-                return "close";
+                return "cancel";
             case OrderStatus.Pending:
                 return "hourglass";
             default:
@@ -79,16 +79,16 @@ export default class HomeVM extends Views.ViewModelBase {
         }
     }
 
-    public getOrderStatusColor(order: OrderLookup) {
+    public getOrderStatusVariant(order: OrderLookup) {
         switch (order.orderStatus) {
             case OrderStatus.Completed:
-                return "#198754";
+                return "success";
             case OrderStatus.Cancelled:
-                return "#dc3545";
+                return "danger";
             case OrderStatus.Pending:
-                return "#fd7e14";
+                return "warning";
             default:
-                return "#6c757d";
+                return "secondary";
         }
     }
 
@@ -126,7 +126,8 @@ export default class HomeVM extends Views.ViewModelBase {
             title: { text: undefined },
             xAxis: {
                 categories,
-                title: { text: null },
+                title: { text: null, style: { color: '#000000',} },
+                labels: { overflow: 'justify', style: { color: '#000000' } },
                 gridLineWidth: 1,
                 lineWidth: 0
             },
@@ -136,7 +137,7 @@ export default class HomeVM extends Views.ViewModelBase {
                     text: 'Stock Count',
                     align: 'high'
                 },
-                labels: { overflow: 'justify' },
+                labels: { overflow: 'justify', style: { color: '#000000' } },
                 gridLineWidth: 0
             },
             tooltip: {

@@ -162,6 +162,16 @@ export default class CreateOrderVM extends Views.ViewModelBase {
         this.selectedCustomer = selectedCustomer?.customerName ?? null;
         this.criteria.customerName = this.selectedCustomer;
         const totalAmount = this.orderTotalAmount;
+        const walletBalance = selectedCustomer?.walletBalance ?? 0;
+
+        if (totalAmount > walletBalance) {
+            this.notifications.addDanger(
+                'Order Payment Failed',
+                `Order total exceeds wallet balance. Please deposit atleast R ${totalAmount - walletBalance}  to complete the order.`,
+                4
+            );
+            return;
+        }
 
         this.taskRunner.run(async () => {
             const products = await this.taskRunner.waitFor(this.appDataCache.products.getDataAsync());
@@ -186,16 +196,6 @@ export default class CreateOrderVM extends Views.ViewModelBase {
             this.appDataCache.products.expire();
 
             if (totalAmount > 0) {
-                const customer = this.customers.find(c => c.customerId === customerId);
-                const walletBalance = customer?.walletBalance ?? 0;
-                if (totalAmount > walletBalance) {
-                    this.notifications.addDanger(
-                        'Order Payment Failed',
-                        `Order total exceeds wallet balance. Please deposit atleast R ${totalAmount - walletBalance}  to complete the order.`,
-                        4
-                    );
-                    return;
-                }
                 await this.customersCommandApiClient.withdrawFunds({
                     customerId,
                     amount: totalAmount

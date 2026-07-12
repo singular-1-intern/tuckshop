@@ -40,17 +40,16 @@ export default class ProductsView extends Views.ViewBase<
               {(product, productMeta, rowIndex) => (
                 <NeoGrid.Row key={`${product.productId || 'new'}-${rowIndex}`}>
                   {/* <NeoGrid.Column display={productMeta.productId} /> */}
-                  <NeoGrid.Column bind={productMeta.productName}  />
+                  <NeoGrid.Column bind={productMeta.productName} width={400}/>
                   <NeoGrid.Column
-                    bind={productMeta.price}
-                    numProps={{ format: Misc.NumberFormat.CurrencyDecimals }}
-                  />
-                  <NeoGrid.Column bind={productMeta.imageUrl} />
+                    bind={productMeta.price} numProps={{ format: Misc.NumberFormat.CurrencyDecimals}} alignment={'left'} width={150} />
+                  <NeoGrid.Column bind={productMeta.imageUrl} alignment={'left'} />
                   <NeoGrid.Column
                     display={productMeta.imageUrl}
                     label="Image"
-                    width={70}
+                    width={150}
                     suppressDefaultContent={!!product.imageUrl}
+                    alignment={'center'}
                   >
                     {product.imageUrl && (
                       <img
@@ -65,8 +64,8 @@ export default class ProductsView extends Views.ViewBase<
                       />
                     )}
                   </NeoGrid.Column>
-                  <NeoGrid.Column bind={productMeta.stockCount} />
-                  <NeoGrid.ButtonColumn deleteButton={{ disabled: true }} />
+                  <NeoGrid.Column bind={productMeta.stockCount} alignment={'left'} width={150}/>
+                  <NeoGrid.ButtonColumn deleteButton={{ disabled: true }} alignment={'center'} width={150}/>
                 </NeoGrid.Row>
               )}
             </NeoGrid.Grid>

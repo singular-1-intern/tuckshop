@@ -17,12 +17,16 @@ export default class Customer extends ModelBase {
     @Attributes.Float()
     public walletBalance: number = 0;
 
+    @Rules.Required()
+    @Rules.StringLength(10)
+    public customerCellNo: string = "";
+
     // Client only properties / methods
 
     protected static addBusinessRules(rules: Validation.Rules<Customer>) {
         super.addBusinessRules(rules);
-        rules.failWhen(c => c.walletBalance <= 0, "Amount is required.");
-        rules.failWhen(c => c.walletBalance > 0 && c.walletBalance < 10, "Minimum amount is R10.");
+        rules.failWhen(c => c.customerCellNo.length !== 10, "Customer cell number must be 10 digits.");
+        rules.failWhen(c => c.customerCellNo.length > 0 && !/^\d+$/.test(c.customerCellNo), "Customer cell number must be numeric.");
     }
 
     public toString(): string {

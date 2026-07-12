@@ -12,7 +12,6 @@ export default class WithdrawFunds extends ModelBase {
     public customerId: number = 0;
 
     @Attributes.Float()
-    @Rules.Required()
     public amount: number = 0;
 
     @Rules.StringLength(255)

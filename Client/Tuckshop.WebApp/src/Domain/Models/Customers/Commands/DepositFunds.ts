@@ -12,7 +12,6 @@ export default class DepositFunds extends ModelBase {
     public customerId: number = 0;
 
     @Attributes.Float()
-    @Rules.Required()
     public amount: number = 0;
 
     // Client only properties / methods
