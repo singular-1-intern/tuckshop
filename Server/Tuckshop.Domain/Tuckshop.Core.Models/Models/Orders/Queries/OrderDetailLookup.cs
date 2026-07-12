@@ -7,5 +7,6 @@ namespace Tuckshop.Models.Orders.Queries
     public decimal Price { get; set; }
     public decimal Value { get; set; }
     public decimal VAT { get; set; }
+    public int Quantity { get; set; }
   }
 }

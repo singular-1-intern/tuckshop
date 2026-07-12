@@ -17,13 +17,6 @@ namespace Tuckshop.Models.Orders.Commands
     [Required]
     public int CustomerId { get; set; }
 
-    //[Required]
-    //[StringLength(50)]
-    ///// <summary>
-    ///// Gets or sets the Customer Name.
-    ///// </summary>
-    //public string CustomerName { get; set; } = string.Empty;
-
     /// <summary>
     /// Gets or sets the Order Details
     /// </summary>

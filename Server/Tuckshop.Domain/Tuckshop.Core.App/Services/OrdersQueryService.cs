@@ -87,11 +87,15 @@
                  CancelledOn = orderGroup.Key.CancelledOn,
                  CancelledBy = orderGroup.Key.CancelledByFirstName == null ? string.Empty : $"{orderGroup.Key.CancelledByFirstName} {orderGroup.Key.CancelledByLastName}",
                  CancelledReason = orderGroup.Key.CancelledReason,
+                 OrderStatus = orderGroup.Key.CancelledOn != null ? OrderStatus.Cancelled
+                             : orderGroup.Key.CompletedOn != null ? OrderStatus.Completed
+                             : OrderStatus.Pending,
                  OrderTotalExcl = orderGroup.Sum(x => x.Value - x.VAT),
                  OrderTotal = orderGroup.Sum(x => x.Value),
                  Items = orderGroup.Select(x => new OrderDetailLookup()
                  {
                    Product = x.ProductName,
+                   Quantity = x.Quantity,
                    Price = x.Value / x.Quantity,
                    Value = x.Value,
                    VAT = x.VAT,
@@ -128,10 +132,14 @@
                      CancelledReason = o.Cancelled.Reason,
                      CompletedBy = completedBy.FirstName == null ? string.Empty : $"{completedBy.FirstName} {completedBy.LastName}",
                      CancelledBy = cancelledBy.FirstName == null ? string.Empty : $"{cancelledBy.FirstName} {cancelledBy.LastName}",
+                     OrderStatus = o.Cancelled.On != null ? OrderStatus.Cancelled
+                                 : o.Completed.On != null ? OrderStatus.Completed
+                                 : OrderStatus.Pending,
                    },
                    OrderDetail = new OrderDetailLookup()
                    {
                      Product = p.ProductName,
+                     Quantity = od.Quantity,
                      Price = od.Value / od.Quantity,
                      Value = od.Value,
                      VAT = od.VAT,

@@ -5,6 +5,7 @@ namespace Tuckshop.Models.Orders.Queries
   using System.Collections.Generic;
   using System.Linq;
   using Tuckshop.Core.Models;
+  using Tuckshop.Models.Orders.Enums;
 
   public class OrderLookup
   {
@@ -18,6 +19,7 @@ namespace Tuckshop.Models.Orders.Queries
     public string CancelledBy { get; set; }
     public decimal OrderTotalExcl { get; set; }
     public decimal OrderTotal { get; set; }
+    public OrderStatus OrderStatus { get; set; }
     public List<OrderDetailLookup> Items { get; set; }
 
     /// <summary>
