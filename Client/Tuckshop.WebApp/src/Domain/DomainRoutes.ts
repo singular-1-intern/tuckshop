@@ -23,6 +23,9 @@ const MenuRoutes: IAppMenuItem[] =
                     viewOrdersRoute,
                 { 
                     name: "Customers", path: "/customers", icon: "people", component: CustomersView
+                },
+                {
+                    name: "Dashboard", path: "/dashboard", icon: "dashboard", component: DashboardView
                 }
                 // { 
                 //     name: "Catalogue", 

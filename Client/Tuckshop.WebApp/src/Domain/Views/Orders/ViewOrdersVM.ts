@@ -19,7 +19,6 @@ export default class ViewOrdersVM extends Views.ViewModelBase {
     }    
 
     public criteria = new OrderLookupCriteria();
-
     public foundOrders = new List(OrderLookup);
 
     public async findOrders() {

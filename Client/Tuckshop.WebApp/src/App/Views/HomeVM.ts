@@ -3,63 +3,65 @@ import { AppService, Types } from '../Services/AppService';
 import { DomainTypes } from '../../Domain/DomainTypes';
 import { List } from '@singularsystems/neo-core';
 import Product from '../../Domain/Models/Product';
+import OrderLookupCriteria from '../../Domain/Models/Orders/Queries/OrderLookupCriteria';
+import OrderLookup from '../../Domain/Models/Orders/Queries/OrderLookup';
 import { type ChartOptions } from '@highcharts/react';
+import { OrderStatus } from '../../Domain/Models/Orders/Enums/OrderStatus';
 
 export default class HomeVM extends Views.ViewModelBase {
-
-    private readonly pieColors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
-
-    private readonly pieData = [
-        { name: 'Toyota', value: 13529 },
-        { name: 'VW', value: 6322 },
-        { name: 'Suzuki', value: 4287 },
-        { name: 'Nissan', value: 3167 },
-        { name: 'Hyundai', value: 2980 },
-        { name: 'Ford', value: 2341 }
-    ];
 
     constructor(
         taskRunner = AppService.get(Types.Neo.TaskRunner),
         private notifications = AppService.get(Types.Neo.UI.GlobalNotifications),
-        private productsApiClient = AppService.get(DomainTypes.ApiClients.ProductsApiClient)) {
+        private productsApiClient = AppService.get(DomainTypes.ApiClients.ProductsApiClient),
+        private ordersQueryApiClient = AppService.get(DomainTypes.ApiClients.OrdersQueryApiClient),
+        private ordersCommandApiClient = AppService.get(DomainTypes.ApiClients.OrdersCommandApiClient),    ) {
 
         super(taskRunner);
         this.makeObservable();
     }
 
     public products = new List(Product);
+    public criteria = new OrderLookupCriteria();
+    public foundOrders = new List(OrderLookup);
+    public dayOfDate = "";
+
+    public getDay() {
+        const today = new Date();
+    }
+
 
     public async initialise() {
         const response = await this.taskRunner.waitFor(this.productsApiClient.get());
         this.products.set(response.data);
+
+        await this.findPendingOrders();
+    }
+
+    public async findPendingOrders() {
+        this.criteria.orderStatus = OrderStatus.Pending;
+
+        const response = await this.taskRunner.waitFor(this.ordersQueryApiClient.getOrderLookupAsync(this.criteria.toQueryObject()));
+        this.foundOrders.set(response.data);
+    }
+
+    public completeOrder(order: OrderLookup) {
+        this.taskRunner.run(async () => {
+            await this.ordersCommandApiClient.completeOrder({ orderId: order.orderId });
+            order.completedOn = new Date();
+        })
+    }
+
+    public cancelOrder(order: OrderLookup, reason: string) {
+        this.taskRunner.run(async () => {
+            await this.ordersCommandApiClient.cancelOrder({ orderId: order.orderId, reason });
+            order.cancelledOn = new Date();
+            order.cancelledReason = reason;
+        });
     }
 
     public get hasProducts() {
         return this.products.length > 0;
-    }
-
-    public get pieChartOptions(): ChartOptions {
-        return {
-            chart: { type: 'pie', backgroundColor: '#fff' },
-            title: { text: 'Car Sales' },
-            plotOptions: {
-                pie: {
-                    innerSize: '70%',
-                    dataLabels: {
-                        enabled: false,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                        style: { fontSize: '10px' }
-                    }
-                }
-            },
-            series: [{
-                type: 'pie',
-                name: 'Value',
-                data: this.pieData,
-                colors: this.pieColors,
-                showInLegend: true
-            }]
-        };
     }
 
     public get stockBarChartOptions(): ChartOptions {
@@ -74,7 +76,7 @@ export default class HomeVM extends Views.ViewModelBase {
 
         return {
             chart: { type: 'bar', backgroundColor: '#fff' },
-            title: { text: 'Stock Count by Product' },
+            title: { text: undefined },
             xAxis: {
                 categories,
                 title: { text: null },

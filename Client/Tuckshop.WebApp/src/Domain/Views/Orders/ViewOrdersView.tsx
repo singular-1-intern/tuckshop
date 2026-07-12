@@ -78,8 +78,8 @@ export default class ViewOrdersView extends Views.ViewBase<ViewOrdersVM, ViewOrd
                                 {(orderDetail, orderDetailMeta) => (
                                     <NeoGrid.Row>
                                         <NeoGrid.Column display={orderDetailMeta.product} />
-                                        <NeoGrid.Column display={orderDetailMeta.vat} />
-                                        <NeoGrid.Column display={orderDetailMeta.value} />
+                                        <NeoGrid.Column display={orderDetailMeta.vat} sum/>
+                                        <NeoGrid.Column display={orderDetailMeta.value} sum/>
                                     </NeoGrid.Row>
                                 )} 
                                 </NeoGrid.Grid>
