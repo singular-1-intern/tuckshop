@@ -2,7 +2,6 @@ import { Routing as NeoRouting } from '@singularsystems/neo-core';
 import { Routing } from '@singularsystems/neo-react';
 import { injectable } from 'inversify';
 import { AppService, Types } from './AppService';
-import Home from '../Views/Home';
 import NotFound from '../Components/404NotFound';
 import OidcLoginRedirect from '../Views/Security/OidcLoginRedirect';
 import { AppConfig } from '../Models/AppConfig';
@@ -48,9 +47,6 @@ export class RouteService {
 
     private getMenuRoutes(): IAppMenuItem[] {
         return [
-            {
-                name: "Home", path: '/', component: Home, icon: "home", exact: true, allowAnonymous: true
-            },
             // ...ReportingRoutes.MenuRoutes,
 			...DomainRoutes.MenuRoutes,
             // { name: "Notifications", children: [

@@ -39,30 +39,28 @@ export default class ProductsView extends Views.ViewBase<
             <NeoGrid.Grid items={this.viewModel.products} showAddButton>
               {(product, productMeta, rowIndex) => (
                 <NeoGrid.Row key={`${product.productId || 'new'}-${rowIndex}`}>
-                  {/* <NeoGrid.Column display={productMeta.productId} /> */}
-                  <NeoGrid.Column bind={productMeta.productName} width={400}/>
+                  <NeoGrid.Column bind={productMeta.productName} alignment={'left'} width={400}/>
                   <NeoGrid.Column
                     bind={productMeta.price} numProps={{ format: Misc.NumberFormat.CurrencyDecimals}} alignment={'left'} width={150} />
                   <NeoGrid.Column
-                    display={productMeta.imageUrl}
+                    bind={productMeta.imageUrl}
                     label="Image Url"
-                    width={180}
-                    suppressDefaultContent
+                    alignment={'left'}
+                    width={260}
+                  />
+                  <NeoGrid.Column
+                    display={productMeta.imageUrl}
+                    label="Image"
+                    width={120}
+                    suppressDefaultContent={!!product.imageUrl}
                     alignment={'center'}
                   >
-                    {product.imageUrl ? (
+                    {product.imageUrl && (
                       <img
                         src={product.imageUrl}
                         alt={product.productName || "Product image"}
                         className="product-grid-thumbnail"
                       />
-                    ) : (
-                      <span
-                        className="product-image-url-text"
-                        title={product.imageUrl || "No image url"}
-                      >
-                        {product.imageUrl || "No image url"}
-                      </span>
                     )}
                   </NeoGrid.Column>
                   <NeoGrid.Column bind={productMeta.stockCount} alignment={'left'} width={150}/>

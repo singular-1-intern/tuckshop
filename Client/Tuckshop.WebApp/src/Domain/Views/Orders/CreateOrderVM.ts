@@ -168,7 +168,7 @@ export default class CreateOrderVM extends Views.ViewModelBase {
             this.notifications.addDanger(
                 'Order Payment Failed',
                 `Order total exceeds wallet balance. Please deposit atleast R ${totalAmount - walletBalance}  to complete the order.`,
-                4
+                7
             );
             return;
         }
