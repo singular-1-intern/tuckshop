@@ -6,7 +6,7 @@ import Scrollbar from 'react-custom-scrollbars';
 import { AppService, Types } from '../Services/AppService';
 import { IAppLayout, ScreenSize } from '../Services/AppLayout';
 import { IAppMenuItem } from "../Services/RouteService";
-import sidebarBackground from '../assets/img/Neo-charcoal.png';
+import sidebarBackground from '../assets/img/mikes-mart.png';
 import { Neo } from '@singularsystems/neo-react';
 
 interface ISidebarProps {
