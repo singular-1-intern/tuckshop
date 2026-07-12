@@ -24,18 +24,14 @@ export default class HomeVM extends Views.ViewModelBase {
     public products = new List(Product);
     public criteria = new OrderLookupCriteria();
     public foundOrders = new List(OrderLookup);
-    public dayOfDate = "";
-
-    public getDay() {
-        const today = new Date();
-    }
-
+    public todaysOrders = new List(OrderLookup);
 
     public async initialise() {
         const response = await this.taskRunner.waitFor(this.productsApiClient.get());
         this.products.set(response.data);
 
         await this.findPendingOrders();
+        await this.findTodaysOrders();
     }
 
     public async findPendingOrders() {
@@ -44,6 +40,30 @@ export default class HomeVM extends Views.ViewModelBase {
         const response = await this.taskRunner.waitFor(this.ordersQueryApiClient.getOrderLookupAsync(this.criteria.toQueryObject()));
         this.foundOrders.set(response.data);
     }
+
+    public async findTodaysOrders() {
+        const todayCriteria = new OrderLookupCriteria();
+        const now = new Date();
+
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+        todayCriteria.startDate = startOfDay;
+        todayCriteria.endDate = endOfDay;
+
+        const response = await this.taskRunner.waitFor(this.ordersQueryApiClient.getOrderLookupAsync(todayCriteria.toQueryObject()));
+
+        this.todaysOrders.set(response.data);
+    }
+
+    public getOrderStatusText(order: OrderLookup) {
+    switch (order.orderStatus) {
+        case OrderStatus.Pending: return "Pending";
+        case OrderStatus.Completed: return "Completed";
+        case OrderStatus.Cancelled: return "Cancelled";
+        default: return "Unknown";
+    }
+}
 
     public completeOrder(order: OrderLookup) {
         this.taskRunner.run(async () => {

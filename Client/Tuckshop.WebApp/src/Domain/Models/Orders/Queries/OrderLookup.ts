@@ -1,6 +1,7 @@
 import { Attributes, List, LookupBase } from '@singularsystems/neo-core';
 import OrderDetail from '../OrderDetail';
 import OrderDetailLookup from './OrderDetailLookup';
+import { OrderStatus } from '../Enums/OrderStatus';
 
 export default class OrderLookup extends LookupBase {
 
@@ -36,9 +37,12 @@ export default class OrderLookup extends LookupBase {
     @Attributes.Float()
     public readonly orderTotal: number = 0;
 
+    public readonly orderStatus: OrderStatus | null = null;
+
     public readonly items = new List(OrderDetailLookup);
 
     // Client only properties / methods
+
     @Attributes.Observable()
     public isExpanded = false;
 

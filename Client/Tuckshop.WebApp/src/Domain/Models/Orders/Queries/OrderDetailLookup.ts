@@ -18,5 +18,8 @@ export default class OrderDetailLookup extends LookupBase {
     @Attributes.Float()
     public readonly vat: number = 0;
 
+    @Attributes.Integer()
+    public readonly quantity: number = 0;
+
     // Client only properties / methods
 }

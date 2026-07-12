@@ -35,7 +35,6 @@ export default class Home extends Views.ViewBase<HomeVM> {
         return (
             <div>
                 <Neo.GridLayout lg={3}>
-
                     <Neo.Card title="Pending Orders">
                       <NeoGrid.Grid items={this.viewModel.foundOrders}>
                         {(order, orderMeta) => (
@@ -62,8 +61,8 @@ export default class Home extends Views.ViewBase<HomeVM> {
                                 {(orderDetail, orderDetailMeta) => (
                                     <NeoGrid.Row>
                                         <NeoGrid.Column display={orderDetailMeta.product} />
-                                        <NeoGrid.Column display={orderDetailMeta.vat} sum/>
-                                        <NeoGrid.Column display={orderDetailMeta.value} sum/>
+                                        <NeoGrid.Column display={orderDetailMeta.quantity}/>
+                                        <NeoGrid.Column display={orderDetailMeta.value} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} sum/>
                                     </NeoGrid.Row>
                                 )} 
                                 </NeoGrid.Grid>
@@ -74,7 +73,31 @@ export default class Home extends Views.ViewBase<HomeVM> {
                     </Neo.Card>
 
                     <Neo.Card title="Today's Orders">
-                        
+                        <NeoGrid.Grid items={this.viewModel.todaysOrders}>
+                    {(order, orderMeta) => (
+                        <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded} >
+                            <NeoGrid.Row>
+                                <NeoGrid.Column display={orderMeta.customerName} />
+                                <NeoGrid.Column display={orderMeta.orderTotal} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} />
+                                <NeoGrid.Column label="Status">
+                                {this.viewModel.getOrderStatusText(order)}
+                              </NeoGrid.Column>
+                            </NeoGrid.Row>
+                            <NeoGrid.ChildRow>
+                                <NeoGrid.Grid items={order.items}>
+                                {(orderDetail, orderDetailMeta) => (
+                                    <NeoGrid.Row>
+                                        <NeoGrid.Column display={orderDetailMeta.product} />
+                                        <NeoGrid.Column display={orderDetailMeta.quantity}/>
+                                        <NeoGrid.Column display={orderDetailMeta.vat} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} sum/>
+                                        <NeoGrid.Column display={orderDetailMeta.value} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} sum/>
+                                    </NeoGrid.Row>
+                                )} 
+                                </NeoGrid.Grid>
+                            </NeoGrid.ChildRow>
+                        </NeoGrid.RowGroup>
+                    )}
+                      </NeoGrid.Grid>
                     </Neo.Card>
 
                     <Neo.Card title="Stock Levels">
