@@ -3,6 +3,7 @@ import { Neo, NeoGrid, Views } from '@singularsystems/neo-react';
 import CreateOrderVM from './CreateOrderVM';
 import { observer } from 'mobx-react';
 import { Misc } from '@singularsystems/neo-core';
+import mikesMartLogo from '../../../App/assets/img/mikes-mart.png';
 
 class CreateOrderParams {
     // TODO: Add parameters here in the form: public paramName = { isQuery?: boolean, required?: boolean };
@@ -22,7 +23,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
 
     public render() {
         return (
-            <div>
+            <div className="create-order-view">
                 {this.viewModel.newOrder && (
                 <Neo.Form model={this.viewModel.newOrder} showSummaryModal onSubmit={() => this.viewModel.submitOrder()} >
                     {(order, orderMeta) => {
@@ -33,13 +34,25 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                         return (
                             <>
                             {!this.viewModel.myOrdersDisplay && (
-                                <Neo.Card className="shadow rounded-4">
+                                <Neo.Card className="order-shell-card rounded-4">
                                     <div className="row g-3 align-items-center">
-                                        {!selectedCustomer &&  (
-                                            <div className="login-screen d-flex flex-column align-items-center justify-content-center" style={{ height: "75vh" }}>
-                                                <h1>Login</h1>
-                                                <div className="col-md-8">
-                                                    <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
+                                        {!selectedCustomer && (
+                                            <div className="login-screen">
+                                                <div className="login-card">
+                                                    <img src={mikesMartLogo} className="login-card-logo" alt="Mike's Mart" />
+                                                    <h1 className="create-order-login-title">Login</h1>
+                                                    <div className="login-card-form">
+                                                        <Neo.FormGroup bind={orderMeta.customerId} select={{ items: this.viewModel.customers, valueMember: "customerId", displayMember: "customerName" }} />
+                                                        <Neo.Button
+                                                            className="login-card-cta"
+                                                            variant="primary"
+                                                            icon="login"
+                                                            type="button"
+                                                            onClick={() => undefined}
+                                                        >
+                                                            Enter
+                                                        </Neo.Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}
@@ -108,11 +121,11 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                     <div className="main-section row g-3 mt-1">
                                         <div className="col-12 col-lg-9">
                                             {/* PRODUCTS CARDS */}
-                                            <Neo.Card title="Browse Products" className="shadow rounded-4 h-100">
+                                            <Neo.Card title={<span style={{ fontSize: '2rem' }}>Browse Products</span>} className="browse-products-shell rounded-4 h-100">
                                                 <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3">
                                                     {order.orderDetails.map((orderDetail, orderDetailIndex) => (
                                                         <div key={orderDetail.productId || orderDetailIndex} className="col">
-                                                            <Neo.Card className="h-100 border-0 shadow rounded-4 overflow-hidden">
+                                                            <Neo.Card className="product-tile-card h-100 border-0 rounded-4 overflow-hidden">
                                                                 <div className="ratio ratio-1x1 bg-light">
                                                                     {orderDetail.imageUrl ? (
                                                                         <img
@@ -197,7 +210,7 @@ export default class CreateOrderView extends Views.ViewBase<CreateOrderVM, Creat
                                                         </div>
                                                     )}
 
-                                                    <Neo.Button className="mt-2" isSubmit icon="coffee">
+                                                    <Neo.Button className="mt-2" variant="primary" isSubmit icon="coffee">
                                                         Place Order
                                                     </Neo.Button>
                                                 </div>

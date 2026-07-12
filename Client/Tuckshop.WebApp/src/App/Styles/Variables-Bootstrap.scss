@@ -1,8 +1,8 @@
 $body-color: $text-color;
 
 // Override bootstrap colors
-$primary: $main-color;
-$secondary: #495057;
+$primary: $action-primary;
+$secondary: $action-secondary;
 $success: #12ce74;
 $danger: #e34548;
 $warning: #f5853f;
@@ -10,8 +10,8 @@ $info: #6bb8ff;
 $light: #ecf0f4;
 $dark: #343a40;
 
-$primary-highlight: #2541c2;
-$secondary-highlight: #2c3238;
+$primary-highlight: mix($action-primary, black, 88%);
+$secondary-highlight: mix($action-secondary, black, 86%);
 $tertiary-highlight: #727c87;
 $success-highlight: #17a35f;
 $danger-highlight: #d52124;

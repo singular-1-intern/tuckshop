@@ -8,7 +8,8 @@ body {
 
 .app-header-panel {
     z-index: 5;
-    background: #fff;
+    background: $surface-elevated;
+    color: $text-color;
     font-size: 14px;
     box-shadow: $box-shadow-root;
     border-radius: $component-border-radius;
@@ -17,7 +18,7 @@ body {
         position: fixed;
         top: 0;
         border-radius: 0 0 $component-border-radius $component-border-radius;
-        background: rgba(255, 255, 255, 0.85);
+        background: rgba($surface-elevated, 0.9);
         backdrop-filter: blur(10px);
 
         .app-breadcrumb {
@@ -47,7 +48,7 @@ body {
         cursor: pointer;
 
         &:hover {
-            color: $primary;
+            color: $text-color;
         }
     }
 
@@ -61,7 +62,7 @@ body {
         padding: 15px 24px;
         cursor: pointer;
         position: relative;
-        color: $main-color;
+        color: $text-color;
 
         &:hover .app-user-card {
             display: inline-block;
@@ -130,7 +131,7 @@ div.bread-crumb {
 
             a,
             span {
-                color: $main-color;
+                color: $text-color;
             }
         }
 
@@ -141,7 +142,7 @@ div.bread-crumb {
         a,
         span {
             display: inline-block;
-            color: initial;
+            color: $text-color;
         }
     }
 }
@@ -151,7 +152,7 @@ div.bread-crumb {
     width: $menu-width;
     z-index: 4;
     height: 100%;
-    background: $component-header-background;
+    background: $sidebar-background;
     box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.14);
     transition: width ease-in-out $menu-animation-speed,
         left ease-in-out $menu-animation-speed;
@@ -179,7 +180,7 @@ div.bread-crumb {
     align-items: center;
     justify-content: center;
     margin-top: $content-area-margin;
-    background: $white;
+    background: $surface-elevated;
     border-top-left-radius: $component-border-radius;
     border-top-right-radius: $component-border-radius;
     box-shadow: $box-shadow-root;

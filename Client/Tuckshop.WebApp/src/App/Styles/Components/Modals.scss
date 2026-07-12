@@ -5,6 +5,7 @@
     background: $main-color;
     color: $main-text-color;
     border: none;
+    box-shadow: inset 0 -3px 0 mix($brand-coral, #8f2d29, 55%);
     padding: 0.8rem 1rem;
 
     .modal-title {

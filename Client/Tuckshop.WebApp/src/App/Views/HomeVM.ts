@@ -128,7 +128,7 @@ export default class HomeVM extends Views.ViewModelBase {
                 categories,
                 title: { text: null, style: { color: '#000000',} },
                 labels: { overflow: 'justify', style: { color: '#000000' } },
-                gridLineWidth: 1,
+                gridLineWidth: 0,
                 lineWidth: 0
             },
             yAxis: {
@@ -137,7 +137,7 @@ export default class HomeVM extends Views.ViewModelBase {
                     text: 'Stock Count',
                     align: 'high'
                 },
-                labels: { overflow: 'justify', style: { color: '#000000' } },
+                labels: { overflow: 'justify', style: { color: '#000000', fontWeight: '900' } },
                 gridLineWidth: 0
             },
             tooltip: {
@@ -149,14 +149,16 @@ export default class HomeVM extends Views.ViewModelBase {
                 bar: {
                     dataLabels: { enabled: true },
                     groupPadding: 0.1,
-                    borderRadius: '50%'
+                    borderRadius: '50%',
+                    borderWidth: 0,
+                    borderColor: 'transparent'
                 }
             },
             series: [
                 {
                     type: 'bar',
                     name: 'Stock Count',
-                    color: '#1f77b4',
+                    color: '#adb5bd',
                     data: stockData
                 }
             ]

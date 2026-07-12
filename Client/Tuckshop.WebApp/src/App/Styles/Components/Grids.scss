@@ -76,3 +76,113 @@ table.table {
     /* Removes left and right padding on borderless tables. */
     // @include removeEdgeCellPadding();
 }
+
+.product-grid-thumbnail {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.product-image-url-text {
+    display: inline-block;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.create-order-view {
+    .order-shell-card {
+        background: transparent;
+        box-shadow: none;
+        border: none;
+    }
+
+    .login-screen {
+        min-height: 75vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        background: #ffffff;
+        border-radius: $component-border-radius;
+        box-shadow: 0 16px 32px rgba($box-shadow-color, 0.16);
+        padding: 2rem 3rem;
+    }
+
+    .login-card-logo {
+        display: block;
+        margin: 0 auto 1rem;
+        max-width: 250px;
+        width: 100%;
+        height: auto;
+    }
+
+    .create-order-login-title {
+        margin-bottom: 1.25rem;
+        font-size: 2rem;
+        text-align: center;
+        color: $brand-green;
+    }
+
+    .login-card-form {
+        width: 100%;
+
+        .form-control,
+        .react-select-bs__control {
+            border-radius: $component-border-radius;
+            border-color: $input-border-color;
+            min-height: calc(1.5em + 0.8rem + 2px);
+        }
+
+        .form-control:focus,
+        .react-select-bs__control--is-focused {
+            border-color: $input-focus-border-color;
+            box-shadow: 0 0 0 0.2rem rgba($action-primary, 0.2);
+        }
+    }
+
+    .login-card-cta {
+        width: 100%;
+        margin-top: 0.75rem;
+    }
+
+    .header-section {
+        width: 100%;
+        border: 1px solid $nested-component-border-color;
+        border-radius: 0.75rem;
+        background: #ffffff;
+        box-shadow: $box-shadow-root;
+        padding: 1rem;
+    }
+
+    .browse-products-shell {
+        background: transparent;
+        box-shadow: none;
+        border: none;
+
+        > .card-header,
+        > .card-body {
+            background: transparent;
+        }
+    }
+
+    .product-tile-card {
+        background: #fafaf9;
+        border-radius: 0.75rem;
+        box-shadow: $box-shadow-root;
+
+        > .card-body {
+            background: #fafaf9;
+        }
+    }
+}

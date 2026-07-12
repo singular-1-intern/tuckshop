@@ -24,14 +24,14 @@ export default class ProductsView extends Views.ViewBase<
   public render() {
     return (
       <div style={{ transition: "opacity 0.5s" }}>
-        <Neo.Card title="Products">
+        <Neo.Card title={<span style={{ fontSize: '2rem' }}>Products</span>}>
           <Neo.Form
             model={this.viewModel.products}
             onSubmit={() => this.viewModel.saveProducts()}
             showSummaryModal
           >
             <div className="mb-3">
-              <Neo.Button isSubmit variant="success" icon="check">
+              <Neo.Button isSubmit variant="primary" icon="check">
                 Save
               </Neo.Button>
             </div>
@@ -43,25 +43,26 @@ export default class ProductsView extends Views.ViewBase<
                   <NeoGrid.Column bind={productMeta.productName} width={400}/>
                   <NeoGrid.Column
                     bind={productMeta.price} numProps={{ format: Misc.NumberFormat.CurrencyDecimals}} alignment={'left'} width={150} />
-                  <NeoGrid.Column bind={productMeta.imageUrl} alignment={'left'} />
                   <NeoGrid.Column
                     display={productMeta.imageUrl}
-                    label="Image"
-                    width={150}
-                    suppressDefaultContent={!!product.imageUrl}
+                    label="Image Url"
+                    width={180}
+                    suppressDefaultContent
                     alignment={'center'}
                   >
-                    {product.imageUrl && (
+                    {product.imageUrl ? (
                       <img
                         src={product.imageUrl}
                         alt={product.productName || "Product image"}
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                          borderRadius: "4px"
-                        }}
+                        className="product-grid-thumbnail"
                       />
+                    ) : (
+                      <span
+                        className="product-image-url-text"
+                        title={product.imageUrl || "No image url"}
+                      >
+                        {product.imageUrl || "No image url"}
+                      </span>
                     )}
                   </NeoGrid.Column>
                   <NeoGrid.Column bind={productMeta.stockCount} alignment={'left'} width={150}/>

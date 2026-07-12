@@ -21,14 +21,14 @@ export default class CustomersView extends Views.ViewBase<CustomersVM, Customers
     public render() {
         return (
             <div>
-			    <Neo.Card title="Customers">
+                <Neo.Card title={<span style={{ fontSize: '2rem' }}>Customers</span>}>
                     <Neo.Form
                         model={this.viewModel.customers}
                         onSubmit={() => this.viewModel.saveCustomers()}
                         showSummaryModal
                     >
                         <div className="mb-3">
-                            <Neo.Button isSubmit variant="success" icon="check">
+                            <Neo.Button isSubmit variant="primary" icon="check">
                                 Save
                             </Neo.Button>
                         </div>

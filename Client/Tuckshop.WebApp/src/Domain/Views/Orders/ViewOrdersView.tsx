@@ -43,7 +43,7 @@ export default class ViewOrdersView extends Views.ViewBase<ViewOrdersVM, ViewOrd
     public render() {
         return (
             <div>
-                <Neo.Card title="Criteria">
+                <Neo.Card title={<span style={{ fontSize: '2rem' }}>Criteria</span>}>
                     <Neo.Form model={this.viewModel.criteria} onSubmit={() => this.viewModel.findOrders()}>
                     {(crit, critMeta) => (
                         <Neo.GridLayout md={2} lg={4}>
@@ -56,7 +56,7 @@ export default class ViewOrdersView extends Views.ViewBase<ViewOrdersVM, ViewOrd
                     )}
                     </Neo.Form>
                 </Neo.Card>
-                <Neo.Card title="Orders">
+                <Neo.Card title={<span style={{ fontSize: '2rem' }}>Orders</span>}>
                 <NeoGrid.Grid items={this.viewModel.foundOrders}>
                     {(order, orderMeta) => (
                         <NeoGrid.RowGroup expandProperty={orderMeta.isExpanded} >

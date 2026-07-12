@@ -110,6 +110,28 @@
 
   color: white;
 
+  &.btn-primary,
+  &.btn-primary:not(:disabled):hover,
+  &.btn-primary:not(:disabled):active,
+  &.btn-primary:not(:disabled):focus {
+    color: $action-primary-text;
+  }
+
+  &.btn-outline-primary {
+    color: $primary;
+  }
+
+  &.btn-secondary,
+  &.btn-secondary:not(:disabled):hover,
+  &.btn-secondary:not(:disabled):active,
+  &.btn-secondary:not(:disabled):focus,
+  &.btn-outline-secondary,
+  &.btn-outline-secondary:not(:disabled):hover,
+  &.btn-outline-secondary:not(:disabled):active,
+  &.btn-outline-secondary:not(:disabled):focus {
+    color: $action-secondary-text;
+  }
+
   &.btn-light, &.btn-outline-light {
     &:not(:disabled) {
       color: $text-color;

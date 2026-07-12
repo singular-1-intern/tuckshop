@@ -33,7 +33,7 @@ export default class IdentityProvidersView extends Views.ViewBase<IdentityProvid
                     {/* Tenant Identity Providers List */}
                     <NeoGrid.Grid items={this.viewModel.identityProviderLookups}
                         addButton={{
-                            text: "Add", variant: "primary", icon: "plus", isSubmit: false,
+                            text: "Add", variant: "secondary", icon: "plus", isSubmit: false,
                             onClick: () => { this.viewModel.addProvider(); }
                         }}>
                         {(item, meta) => (

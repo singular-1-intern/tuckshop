@@ -3,16 +3,35 @@ $grey-light: #dee2e6;       // bs-grey-300
 $grey-medium: #adb5bd;      // bs-grey-500
 $grey-medium-dark: #6c757d; // bs-grey-600
 
+// Mike's Mart brand palette
+$brand-green: #aed382;
+$brand-coral: #f15a53;
+$brand-creme: #fcd1b4;
+$brand-soft-yellow: #f0ebd7;
+
+// Brand-derived surfaces (kept light for readability with dark text)
+$sidebar-background: mix($brand-soft-yellow, white, 72%);
+$sidebar-hover-background: mix($brand-green, white, 68%);
+$surface-background: $brand-soft-yellow;
+$surface-elevated: mix($brand-creme, white, 82%);
+$brand-border-soft: mix($brand-green, $grey-light, 35%);
+
+// Action palette
+$action-primary: #6b8f4c;
+$action-primary-text: #ffffff;
+$action-secondary: $brand-green;
+$action-secondary-text: #212529;
+
 // App style
-$main-color: #4361ee;
-$main-text-color: white;
+$main-color: $brand-green;
+$main-text-color: #212529;
 $main-font-size: 14px;
 $secondary-font-size: 12px;
-$main-background: #f1f4f8;
+$main-background: $surface-background;
 $text-color: #212529;
 $component-header-background: #ffffff;
 $component-header-text-color: #212529;
-$nested-component-border-color: $grey-light;
+$nested-component-border-color: $brand-border-soft;
 $box-shadow-color: #212529;
 $box-shadow-root: 0px 2px 4px 0px rgba($box-shadow-color, 0.05);
 $box-shadow-inner: 0px 4px 8px 0px rgba($box-shadow-color, 0.08);

@@ -120,6 +120,7 @@ div.toast-container:empty {
     margin-top: 25px;
     border-radius: $component-border-radius;
     border: none;
+    border-top: 3px solid mix($brand-green, white, 72%);
     box-shadow: $box-shadow-root;
 
     .card-header {

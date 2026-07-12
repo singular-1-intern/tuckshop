@@ -6,7 +6,7 @@
 }
 
 .sidebar {
-    background: white;
+    background: $sidebar-background;
     height: 100%;
     display: flex;
     flex-flow: column nowrap;
@@ -18,9 +18,11 @@
         font-size: 0;
         padding: 26px 15px 18px 15px;
         position: relative;
+        display: flex;
+        justify-content: center;
 
         img {
-            width: 100%;
+            width: auto;
             max-width: 120px;
         }
     }
@@ -37,7 +39,7 @@
         cursor: pointer;
         position: absolute;
         box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1); /* Offset, blur, spread, color (with transparency) */
-        background-color: white;
+        background-color: $surface-elevated;
         border-radius: 4px;
         height: 24px;
         width: 24px;
@@ -95,7 +97,7 @@
                 transition: ease-in-out $menu-animation-speed;
 
                 span.static-item {
-                    color: $grey-medium-dark;
+                    color: mix($text-color, $brand-green, 82%);
                     text-transform: uppercase;
                     font-weight: 700;
                     font-size: 11px;
@@ -103,8 +105,8 @@
             }
 
             a:hover {
-                background-color: $grey-medium;
-                color: white;
+                background-color: $sidebar-hover-background;
+                color: $text-color;
             }
 
             a {
@@ -140,11 +142,11 @@
             }
 
             a.active {
-                background-color: adjust-color($main-color, $lightness: 1%);
-                color: $main-text-color;
+                background-color: $brand-green;
+                color: $text-color;
 
                 .sidebar-icon {
-                    color: $main-text-color;
+                    color: $text-color;
                 }
             }
 
