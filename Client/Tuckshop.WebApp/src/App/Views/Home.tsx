@@ -80,8 +80,16 @@ export default class Home extends Views.ViewBase<HomeVM> {
                                 <NeoGrid.Column display={orderMeta.customerName} />
                                 <NeoGrid.Column display={orderMeta.orderTotal} numProps={{format: Misc.NumberFormat.CurrencyDecimals}} />
                                 <NeoGrid.Column label="Status">
-                                {this.viewModel.getOrderStatusText(order)}
-                              </NeoGrid.Column>
+                                  <span
+                                    className="d-inline-flex align-items-center gap-2 fw-semibold"
+                                    style={{ color: this.viewModel.getOrderStatusColor(order) }}
+                                  >
+                                    <span>{this.viewModel.getOrderStatusText(order)}</span>
+                                    <span className="material-symbols-outlined" style={{ fontSize: '1rem', lineHeight: 1 }}>
+                                      {this.viewModel.getOrderStatusSymbol(order)}
+                                    </span>
+                                  </span>
+                                </NeoGrid.Column>
                             </NeoGrid.Row>
                             <NeoGrid.ChildRow>
                                 <NeoGrid.Grid items={order.items}>

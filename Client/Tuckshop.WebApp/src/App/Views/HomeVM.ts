@@ -58,12 +58,39 @@ export default class HomeVM extends Views.ViewModelBase {
 
     public getOrderStatusText(order: OrderLookup) {
     switch (order.orderStatus) {
-        case OrderStatus.Pending: return "Pending";
+        case OrderStatus.Pending: 
+            return "Pending";
         case OrderStatus.Completed: return "Completed";
         case OrderStatus.Cancelled: return "Cancelled";
         default: return "Unknown";
     }
 }
+
+    public getOrderStatusSymbol(order: OrderLookup) {
+        switch (order.orderStatus) {
+            case OrderStatus.Completed:
+                return "check";
+            case OrderStatus.Cancelled:
+                return "close";
+            case OrderStatus.Pending:
+                return "hourglass";
+            default:
+                return "help";
+        }
+    }
+
+    public getOrderStatusColor(order: OrderLookup) {
+        switch (order.orderStatus) {
+            case OrderStatus.Completed:
+                return "#198754";
+            case OrderStatus.Cancelled:
+                return "#dc3545";
+            case OrderStatus.Pending:
+                return "#fd7e14";
+            default:
+                return "#6c757d";
+        }
+    }
 
     public completeOrder(order: OrderLookup) {
         this.taskRunner.run(async () => {
